@@ -3,3 +3,5 @@ This will install all project requirements
 
 Run "uvicorn main:app --reload"
 This will start the server
+
+Note: Always do these in a virtual environment
