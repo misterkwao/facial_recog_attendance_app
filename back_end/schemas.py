@@ -1,9 +1,11 @@
 from pydantic import BaseModel
+from datetime import datetime
 from typing import Union
 
 
 class TokenData(BaseModel):
     user_id: Union[str, None] = None
+    user_name: str
 
 
 class ModelInput(BaseModel):
@@ -72,3 +74,15 @@ class StudentProfileUpdate(BaseModel):
      year_enrolled: int
      student_current_level: int
      student_name: str
+
+class ClassLocation(BaseModel):
+     longitude: float
+     latitude: float
+
+class CreateClass(BaseModel):
+     course_title: str
+     course_level: int
+     location: ClassLocation
+     start_time: datetime
+     end_time: datetime
+     no_of_attendees: int

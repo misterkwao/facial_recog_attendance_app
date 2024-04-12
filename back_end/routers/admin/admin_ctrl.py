@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from security import oauth2
+from security import oauth2_Admin
 import schemas
 import pydantic
 from bson.objectid import ObjectId
@@ -18,16 +18,16 @@ router = APIRouter(
 
 # Admin functionalities
 @router.get('/admin/user-manangement')
-async def get_admin_profile(current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def get_admin_profile(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     try:
        return admin_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
 
 @router.patch('/admin/user-management')
-async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.User = Depends(oauth2.get_current_user)):
-       admin_profile = admin_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username} })
-       admin_auth =  admin_auth_collection.find_one_and_update({"_id": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username} })
+async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
+       admin_profile = admin_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username,"updatedAt":datetime.now()} })
+       admin_auth =  admin_auth_collection.find_one_and_update({"_id": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username,"updatedAt":datetime.now()} })
        if admin_auth and admin_profile:
         return {
                 "detail": "Successfully updated"
@@ -37,7 +37,7 @@ async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.
 
 
 @router.delete('/admin/user-manangement')
-async def delete_admin_account(current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def delete_admin_account(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
        admin_profile = admin_profile_collection.find_one_and_delete({"owner": ObjectId(current_user.user_id)})
        admin_auth = admin_auth_collection.find_one_and_delete({"_id": ObjectId(current_user.user_id)})
        if admin_auth and admin_profile:
@@ -50,7 +50,7 @@ async def delete_admin_account(current_user:schemas.User = Depends(oauth2.get_cu
        
 # Student and Lecturer functionalities
 @router.get('/admin/user-manangement/all')
-async def get_all_users(current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def get_all_users(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
    try:
        lecturer_profiles = lecturer_profile_collection.find({})
        student_profiles = student_profile_collection.find({})
@@ -65,7 +65,7 @@ async def get_all_users(current_user:schemas.User = Depends(oauth2.get_current_u
 
 # Admin to lecturer functionalities
 @router.post('/admin/user-manangement/lecturer')
-async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # Hash incoming request password
     hashed_password = hashing.Hash.get_pwd_hashed(request.password)
     try:
@@ -95,7 +95,7 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
 
 @router.patch("/admin/user-manangement/lecturer/{id}")
-async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # This function only updates the allowed courses of a lecturer
     # In order for simple update, 
     # if you want to added new courses, just add the new course to the already existing courses and send the json array of objects
@@ -111,7 +111,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
     
 
 @router.delete("/admin/user-manangement/lecturer/{id}")
-async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
 
     lecturer = lecturer_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
     lecturer_profile = lecturer_profile_collection.find_one_and_delete({"owner": ObjectId(id)})
@@ -126,7 +126,7 @@ async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2.get
 
 # Admin to student  functionalities
 @router.post('/admin/user-manangement/student')
-async def create_student(request:schemas.CreateStudent,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def create_student(request:schemas.CreateStudent,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # Hash incoming request password
     hashed_password = hashing.Hash.get_pwd_hashed(request.password)
 
@@ -163,7 +163,7 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
         
 
 @router.delete("/admin/user-manangement/student/{id}")
-async def delete_student(id: str,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def delete_student(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     student_auth = student_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
     student_profile =student_profile_collection.find_one_and_delete({"owner": ObjectId(id)})
 
@@ -176,7 +176,7 @@ async def delete_student(id: str,current_user:schemas.User = Depends(oauth2.get_
     
 
 @router.patch("/admin/user-manangement/student/{id}")
-async def update_student(request:schemas.StudentProfileUpdate,id: str,current_user:schemas.User = Depends(oauth2.get_current_user)):
+async def update_student(request:schemas.StudentProfileUpdate,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # These are the selected fields that can be changed without affecting data integrity
     try:
       student_name_update = student_auth_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "student_name": request.student_name} })

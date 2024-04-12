@@ -1,8 +1,24 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import  dotenv_values
 from pymongo.mongo_client import MongoClient
 from routers.admin import admin_auth, admin_ctrl
+from routers.lecturers import lecturer_ctrl, lecturer_auth
+
 app = FastAPI()
+origins = [
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 config = dotenv_values('.env')
 
@@ -19,3 +35,6 @@ def home_page():
 
 app.include_router(admin_auth.router)
 app.include_router(admin_ctrl.router)
+
+app.include_router(lecturer_auth.router)
+app.include_router(lecturer_ctrl.router)
