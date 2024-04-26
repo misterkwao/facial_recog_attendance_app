@@ -33,8 +33,9 @@ config = dotenv_values('.env')
 def home_page():
     return 'Welcome to Facial Recognition'
 
-app.include_router(admin_auth.router)
-app.include_router(admin_ctrl.router)
 
 app.include_router(lecturer_auth.router)
 app.include_router(lecturer_ctrl.router)
+app.include_router(admin_auth.router)
+app.include_router(admin_ctrl.router)
+
