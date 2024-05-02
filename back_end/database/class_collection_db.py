@@ -17,7 +17,7 @@ def create_class_collection():
     db.command("collMod", "stu_lec_classes", validator={
             "$jsonSchema": {
             "bsonType": "object",
-            "required": ["lecturer_name", "creator","course_title", "course_level","start_time","end_time","no_of_attendees","location"],
+            "required": ["lecturer_name", "creator","course_title", "course_level","course_semester_level","start_time","end_time","no_of_attendees","location"],
             "properties": {
                 "lecturer_name": {
                     "bsonType": "string",
@@ -32,6 +32,10 @@ def create_class_collection():
                     "description": "must be a string and is required"
                 },
                 "course_level":{
+                    "bsonType": "int",
+                    "description": "must be an integer and is required"
+                },
+                "course_semester_level":{
                     "bsonType": "int",
                     "description": "must be an integer and is required"
                 },

@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.get('/lecturer')
-async def get_admin_profile(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+async def get_profile(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
     try:
        lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
        return lecturer
@@ -51,6 +51,7 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
             "creator": ObjectId(current_user.user_id),
             "course_title": request.course_title,
             "course_level": request.course_level,
+            "course_semester_level": request.course_semester_level,
             "location":{
                 "longitude": request.location.longitude,
                 "latitude": request.location.latitude

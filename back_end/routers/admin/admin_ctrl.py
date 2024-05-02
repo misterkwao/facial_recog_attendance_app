@@ -162,19 +162,6 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
         
 
-@router.delete("/admin/user-manangement/student/{id}")
-async def delete_student(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
-    student_auth = student_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
-    student_profile =student_profile_collection.find_one_and_delete({"owner": ObjectId(id)})
-
-    if student_auth and student_profile:
-        return {
-            "detail": "Successfully deleted"
-        }
-    else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
-    
-
 @router.patch("/admin/user-manangement/student/{id}")
 async def update_student(request:schemas.StudentProfileUpdate,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # These are the selected fields that can be changed without affecting data integrity
@@ -193,3 +180,17 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
             }
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+
+
+@router.delete("/admin/user-manangement/student/{id}")
+async def delete_student(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
+    student_auth = student_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
+    student_profile =student_profile_collection.find_one_and_delete({"owner": ObjectId(id)})
+
+    if student_auth and student_profile:
+        return {
+            "detail": "Successfully deleted"
+        }
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
+    

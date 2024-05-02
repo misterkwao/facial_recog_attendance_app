@@ -82,6 +82,7 @@ class ClassLocation(BaseModel):
 class CreateClass(BaseModel):
      course_title: str
      course_level: int
+     course_semester_level: int
      location: ClassLocation
      start_time: datetime
      end_time: datetime
