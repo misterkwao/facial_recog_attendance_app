@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException, UploadFile
 import schemas
 from typing import Annotated
-import math, os
+import math
 from . import EncodeGen, recognition
 import pydantic
 from bson.objectid import ObjectId
@@ -65,14 +65,9 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
 async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     try:
        profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
-
        image = await file.read()
-       f = open(f"images/{file.filename}", "wb")
-       f.write(image)
-       f.close()
-       if EncodeGen.face_encode(f"images/{file.filename}",file.filename,profile["student_college"],profile["year_enrolled"]):
+       if EncodeGen.face_encode(image,file.filename,profile["student_college"],profile["year_enrolled"]):
            student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
-           os.remove(f"images/{file.filename}")
            return {
                "detail": "Face enrolled successfully",
            }
@@ -109,11 +104,7 @@ async def mark_attendance(id,file: UploadFile,current_user:schemas.User = Depend
 
         # Face recognition
         image = await file.read()
-        f = open(f"images/{file.filename}", "wb")
-        f.write(image)
-        f.close()
-        student = recognition.student_face_recognition(f"images/{file.filename}",profile["student_college"],profile["year_enrolled"])
-        os.remove(f"images/{file.filename}")
+        student = recognition.student_face_recognition(image,profile["student_college"],profile["year_enrolled"])
          #  Updating class and student attendance
         if profile["student_name"] == student[0]:
          class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}})

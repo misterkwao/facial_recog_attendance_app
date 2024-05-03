@@ -1,5 +1,6 @@
 import face_recognition
 import joblib
+from io import BytesIO
 
 def face_encode(image,filename,student_college,student_year_enrolled):
     # assuming new student enrolls the face
@@ -7,7 +8,7 @@ def face_encode(image,filename,student_college,student_year_enrolled):
     new_student_image = []
 
     new_student_name.append(filename.split('.')[0])
-    new_student_image.append(face_recognition.load_image_file(image))
+    new_student_image.append(face_recognition.load_image_file(BytesIO(image)))
 
     def image_to_enconding(student_images):
         encodings = face_recognition.face_encodings(student_images[0])[0]

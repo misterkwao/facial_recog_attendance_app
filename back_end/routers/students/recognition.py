@@ -1,6 +1,7 @@
 import face_recognition
 import numpy as np
 import joblib
+from io import BytesIO
 
 def student_face_recognition(stu_image,student_college,student_year_enrolled):
     # Importing the encoding file
@@ -11,7 +12,7 @@ def student_face_recognition(stu_image,student_college,student_year_enrolled):
     file.close()
 
     # recognition against database
-    image = face_recognition.load_image_file(stu_image)
+    image = face_recognition.load_image_file(BytesIO(stu_image))
 
     faceCurFrame = face_recognition.face_locations(image)
     face_landmarks_list = face_recognition.face_landmarks(image)
