@@ -18,45 +18,50 @@ router = APIRouter(
 
 @router.get('/student')
 async def student_profile(current_user:schemas.User = Depends(oauth2_student.get_current_user)):       
+    student_classes = []
+    # querying against the actual courses
+    def class_match(student_current_level):
+        number = math.ceil((student_current_level/100)-1) # To get the array number of the student's current level
+        for upcoming_class in classes[0]["classes"]:
+            match upcoming_class["course_semester_level"]:
+                case 1:
+                    # searching first semester courses
+                    for index,course in enumerate(profile["allowed_courses"][number]["first_semester_courses"]):
+                        if course["course_title"] == upcoming_class["course_title"]:
+                            student_classes.append(upcoming_class)
+                case _:
+                    # searching second semester courses
+                    for index,course in enumerate(profile["allowed_courses"][number]["second_semester_courses"]):
+                        if course["course_title"] == upcoming_class["course_title"]:
+                                            student_classes.append(upcoming_class)
+
+
     try:
         profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
-        student_current_level = profile["student_current_level"]
-        classes =  list(class_collection.aggregate([
-            {
-               "$match": { "course_level": student_current_level}
-            },
-            { 
-                        "$group": {
-                            "_id": {"year":{"$year": "$createdAt"},"month":{"$month":"$createdAt"},"week":{"$week": "$createdAt"}},
-                            "classes":{"$push":{"$cond": [ { "$eq": [{"$week": datetime.now()}, {"$week": "$createdAt"}] }, "$$CURRENT", "No classes"]}}
-                            }
-            },
-            {"$limit" :1}
-        ]))
-        
-        # querying against the actual courses
-        def class_match(student_current_level):
-            number = math.ceil((student_current_level/100)-1) # To get the array number of the student's current level
-            for upcoming_class in classes[0]["classes"]:
-                    match upcoming_class["course_semester_level"]:
-                            case 1:
-                                # searching first semester courses
-                                for index,course in enumerate(profile["allowed_courses"][number]["first_semester_courses"]):
-                                    if course["course_title"] == upcoming_class["course_title"]:
-                                        student_classes.append(upcoming_class)
-                            case _:
-                                # searching second semester courses
-                                for index,course in enumerate(profile["allowed_courses"][number]["second_semester_courses"]):
-                                    if course["course_title"] == upcoming_class["course_title"]:
-                                        student_classes.append(upcoming_class)
+        if profile is not None:
+            student_current_level = profile["student_current_level"]
+            classes =  list(class_collection.aggregate([
+                {
+                "$match": { "course_level": student_current_level}
+                },
+                { 
+                            "$group": {
+                                "_id": {"year":{"$year": "$createdAt"},"month":{"$month":"$createdAt"},"week":{"$week": "$createdAt"}},
+                                "classes":{"$push":{"$cond": [ { "$eq": [{"$week": datetime.now()}, {"$week": "$createdAt"}] }, "$$CURRENT", "No classes"]}}
+                                }
+                },
+                {"$limit" :1}
+            ]))
+            
+            if "No classes" not in classes[0]["classes"]:
+              class_match(student_current_level)
 
-
-        student_classes = []
-        class_match(student_current_level)
-        return {
-            "profile": profile,
-            "upcoming_classes": student_classes
-        }
+            return {
+                "profile": profile,
+                "upcoming_classes": "No Upcoming Classes" if "No classes" in classes[0]["classes"] else student_classes
+            }
+        else:
+            return "Student does not exist"
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
 
@@ -78,27 +83,25 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
 
 @router.post("/student/attendance/class/{id}")
 async def mark_attendance(id,file: UploadFile,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+     # getting the no of attendance value from student
+    def class_match(course_level):
+        number = math.ceil((course_level/100)-1) # To get the array number of the student's current level
+        match curr_class["course_semester_level"]:
+            case 1:
+                # searching first semester courses
+                for index,course in enumerate(profile["allowed_courses"][number]["first_semester_courses"]):
+                    if course["course_title"] == curr_class["course_title"]:
+                         return course["no_of_attendance"], index
+            case _:
+                # searching second semester courses
+                for index,course in enumerate(profile["allowed_courses"][number]["second_semester_courses"]):
+                    if course["course_title"] == curr_class["course_title"]:
+                        return course["no_of_attendance"], index
+                            
     try:
         profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
         curr_class = class_collection.find_one({"_id": ObjectId(id)})
         attendance_value = curr_class["no_of_attendees"]
-
-        # getting the no of attendance value from student
-        def class_match(course_level):
-            number = math.ceil((course_level/100)-1) # To get the array number of the student's current level
-            match curr_class["course_semester_level"]:
-                case 1:
-                     # searching first semester courses
-                     for index,course in enumerate(profile["allowed_courses"][number]["first_semester_courses"]):
-                        if course["course_title"] == curr_class["course_title"]:
-                                 return course["no_of_attendance"], index
-                case _:
-                    # searching second semester courses
-                    for index,course in enumerate(profile["allowed_courses"][number]["second_semester_courses"]):
-                        if course["course_title"] == curr_class["course_title"]:
-                            return course["no_of_attendance"], index
-
-        
 
         no_of_att, course_index = class_match(curr_class["course_level"])
 
