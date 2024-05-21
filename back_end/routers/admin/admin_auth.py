@@ -2,7 +2,7 @@ from fastapi import APIRouter,status,Depends,HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from database.admin_auth_profile_db import admin_auth_collection, admin_profile_collection
-import schemas, models
+import schemas
 from security import hashing, jwt_auth
 import pydantic
 from bson.objectid import ObjectId
