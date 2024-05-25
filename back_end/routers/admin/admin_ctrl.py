@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from database.admin_auth_profile_db import admin_auth_collection, admin_profile_collection
 from database.lecturer_auth_profile_db import lecturer_auth_collection,lecturer_profile_collection
 from database.student_auth_profile_db import student_auth_collection, student_profile_collection
+from database.class_collection_db import class_locations_collection
 from security import hashing
 from datetime import datetime
 
@@ -17,14 +18,14 @@ router = APIRouter(
 )
 
 # Admin functionalities
-@router.get('/admin/user-manangement')
+@router.get('/admin')
 async def get_admin_profile(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     try:
        return admin_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
 
-@router.patch('/admin/user-management')
+@router.patch('/admin')
 async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
        admin_profile = admin_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username,"updatedAt":datetime.now()} })
        admin_auth =  admin_auth_collection.find_one_and_update({"_id": ObjectId(current_user.user_id)},{ '$set': { "username" : request.username,"updatedAt":datetime.now()} })
@@ -36,7 +37,7 @@ async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
 
 
-@router.delete('/admin/user-manangement')
+@router.delete('/admin')
 async def delete_admin_account(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
        admin_profile = admin_profile_collection.find_one_and_delete({"owner": ObjectId(current_user.user_id)})
        admin_auth = admin_auth_collection.find_one_and_delete({"_id": ObjectId(current_user.user_id)})
@@ -61,6 +62,54 @@ async def get_all_users(current_user:schemas.User = Depends(oauth2_Admin.get_cur
         } 
    except Exception as e:
        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+
+
+#Class methods
+@router.post('/admin/user-manangement/class')
+async def create_class_location(request:schemas.CreateClassLocation,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
+    try:
+        create_class_location = class_locations_collection.insert({
+            "class_name": request.class_name,
+            "college_location": request.college_location,
+            "location":{
+                "longitude": request.location.longitude,
+                "latitude": request.location.latitude
+            },
+            "createdAt": datetime.now()
+        })
+        if create_class_location:
+            return {
+                "detail": "Class location created Successfully"
+            }
+    except Exception as e:
+        response = str(e)
+        if "duplicate key error collection" in response:
+           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Class location already exists")
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
+
+@router.get('/admin/user-manangement/class')
+async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
+    try:
+        class_locations = class_locations_collection.find({})
+        if class_locations:
+            return{
+                "class_locations": list(class_locations)
+            }
+    except Exception as e:
+       raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+
+@router.delete("/admin/user-manangement/class/{id}")
+async def delete_class_location(id: str, current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
+        
+        class_location = class_locations_collection.find_one_and_delete({"_id": ObjectId(id)})
+        if class_location:
+            return {
+            "detail": "Successfully deleted"
+        }
+        else:
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
+
 
 
 # Admin to lecturer functionalities

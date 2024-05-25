@@ -87,3 +87,8 @@ class CreateClass(BaseModel):
      start_time: datetime
      end_time: datetime
      no_of_attendees: int
+
+class CreateClassLocation(BaseModel):
+     class_name: str
+     college_location: str
+     location: ClassLocation

@@ -8,6 +8,7 @@ config = dotenv_values('.env')
 client = MongoClient(config['MONGO_URI'])
 db = client.facerecog_db #name of database
 
+#Students and lecturer classes
 def create_class_collection():
     try:
         db.create_collection("stu_lec_classes")
@@ -80,5 +81,61 @@ def create_class_collection():
     
     })
 
+
 create_class_collection()
 class_collection =db.stu_lec_classes
+
+#Class locations
+def create_class_location_collection():
+    try:
+        db.create_collection("class_locations")
+    except Exception as e:
+        return e
+    
+    db.command("collMod", "class_locations", validator={
+            "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["class_name", "college_location","location"],
+            "properties": {
+                "class_name": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                },
+                "college_location": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                },
+                "location": {
+                    "bsonType": "object",
+                    "required": ["longitude", "latitude"],
+                        "additionalProperties": False,
+                        "description": "'items' must contain the stated fields.",
+                        "properties":{
+                            "longitude":{
+                                "bsonType": "double",
+                                "description":"must be the level of student to be lectured"
+                            },
+                            "latitude":{
+                                "bsonType": "double",
+                                "description": "must be a integer and is required"
+                            }
+                        }
+                },
+                "createdAt":{
+                    "bsonType": "date",
+                    "description": "must be a date and is required"
+                },
+                "updatedAt":{
+                    "bsonType": "date",
+                    "description": "must be a date and is required"
+                }
+            }
+        }
+    })
+
+
+create_class_location_collection()
+class_locations_collection = db.class_locations
+
+#To prevent duplicate class
+class_locations_collection.create_index([("class_name", pymongo.ASCENDING)], unique=True)
