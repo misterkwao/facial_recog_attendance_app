@@ -39,7 +39,7 @@ def home_page():
 # Routers
 app.include_router(admin_auth.router)
 app.include_router(admin_ctrl.router)
-app.include_router(lecturer_auth.router)
-app.include_router(lecturer_ctrl.router)
 app.include_router(students_auth.router)
 app.include_router(students_ctrl.router)
+app.include_router(lecturer_auth.router)
+app.include_router(lecturer_ctrl.router)
