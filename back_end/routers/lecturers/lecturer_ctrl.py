@@ -25,14 +25,37 @@ async def get_profile(current_user:schemas.User = Depends(oauth2_lecturer.get_cu
        return lecturer
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
-    
+
+@router.get('/lecturer/classes/current-classes')
+async def get_current_classes(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+    try:
+        classes= list(class_collection.aggregate([
+             { "$match": { "$expr" : { "$eq": [ '$creator' , { "$toObjectId": current_user.user_id } ] } } },
+             { 
+                            "$group": {
+                                "_id": {"year":{"$year": "$createdAt"},"month":{"$month":"$createdAt"},"week":{"$week": "$createdAt"}},
+                                "classes":{"$push":{"$cond": [ { "$eq": [{"$week": datetime.now()}, {"$week": "$createdAt"}] }, "$$CURRENT", "No classes"]}}
+                                }
+            },
+            {"$sort":{"_id":-1}},
+            {"$limit": 1}
+        ]))
+        if classes:
+            return{
+                "current_classes" : classes[0]["classes"]
+            }
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Class not found")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+
 @router.get('/lecturer/classes/statistics')
 async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
 
     try:
        #Getting the number of students per lecturer course
        same_course_count = 0
-       totals = {"Mathematics":150}
+       totals = {"Mathematics":150,"Software Eng":200}
        lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
        student_profiles = list(student_profile_collection.find({}))
        for lecturer_course in lecturer["allowed_courses"]:
@@ -84,19 +107,45 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
                     } 
                 }
             },
+            {
+                "$group": {
+                    "_id": {"year":"$_id.year","month":"$_id.month"},
+                    "months":{
+                        "$push":{
+                            "month":"$_id.month",
+                            "weeks":"$weeks"
+                        }
+                    } 
+                }
+            },
+            {"$unwind":"$months"},
+            {"$sort": {"months.month":-1}},
+            {
+                "$group": {
+                    "_id": {"year":"$_id.year"},
+                    "months":{
+                        "$push":{
+                            "month":"$_id.month",
+                            "weeks":"$months.weeks"
+                        }
+                    } 
+                }
+            },
             {"$sort": {"_id":-1}},
             {"$limit": 1}
         ]))
         
-       for month in statistics:
+       year = statistics[0]
+       for month in year["months"]:
            for week in month["weeks"]:
-               for wk_class in week["classes"]:
-                   wk_class["performance"] = ((wk_class["no_of_attendees"]/totals[wk_class["course_title"]])*100)
-                   wk_class["expected_no_attendees"] = totals[wk_class["course_title"]]
-           
+               for week_class in week["classes"]:
+                    week_class["performance"] = ((week_class["no_of_attendees"]/totals[week_class["course_title"]])*100)
+                    week_class["expected_no_attendees"] = totals[week_class["course_title"]]
+
        return statistics
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+
 
 @router.get('/lecturer/classes/class-locations')
 async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
