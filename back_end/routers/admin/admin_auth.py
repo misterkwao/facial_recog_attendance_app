@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from database.admin_auth_profile_db import admin_auth_collection, admin_profile_collection
 import schemas
-from security import hashing, jwt_auth
+from security import hashing, jwt_auth, oauth2_Admin
 import pydantic
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.post('/admin_auth/signup')
-async def create_admin(request: schemas.AdminSignup):
+async def create_admin(request: schemas.AdminSignup, current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     # hash user password
     user_hashed_password = hashing.Hash.get_pwd_hashed(request.password)
    
@@ -54,7 +54,7 @@ async def admin_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Credentials")
     else:
         if hashing.Hash.verify_hashed_password(form_data.password, data["password"]):
-           access_token = jwt_auth.create_access_token(data={"sub":str(data["_id"]),"sub_name":data["username"]})
+           access_token = jwt_auth.create_access_token(data={"sub":str(data["_id"]),"sub_name":data["username"],"sub_role":'admin'})
            return schemas.Token(access_token=access_token,token_type="bearer")   
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Credentials")

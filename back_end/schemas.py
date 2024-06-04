@@ -6,6 +6,7 @@ from typing import Union
 class TokenData(BaseModel):
     user_id: Union[str, None] = None
     user_name: str
+    user_role: str
 
 
 class ModelInput(BaseModel):
@@ -31,7 +32,9 @@ class AdminUpdate(BaseModel):
     username: str
 
 class User(BaseModel):
-    id: str
+    user_id: Union[str, None] = None
+    user_name: str
+    user_role: str
 
 class allowedCourses(BaseModel):
         level: int
