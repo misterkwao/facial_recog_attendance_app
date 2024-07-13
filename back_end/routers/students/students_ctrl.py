@@ -55,11 +55,17 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
                 ]))
                 
                 if "No classes" not in classes[0]["classes"]:
+                    #This means there are classes
                     class_match(student_current_level)
 
                     return {
                         "profile": profile,
-                        "upcoming_classes": "No Upcoming Classes" if "No classes" in classes[0]["classes"] else student_classes
+                        "upcoming_classes":student_classes
+                    }
+                else:
+                     return {
+                        "profile": profile,
+                        "upcoming_classes": "No Upcoming Classes"
                     }
             else:
                 return "Student does not exist"

@@ -31,6 +31,7 @@ app.add_middleware(
 # except Exception as e:
 #     print(e)
 # app.add_middleware(rate_limit.AdvancedMiddleware)
+
 @app.get('/')
 def home_page():
     return 'Welcome to Facial Recognition'
@@ -39,7 +40,7 @@ def home_page():
 # Routers
 app.include_router(admin_auth.router)
 app.include_router(admin_ctrl.router)
-app.include_router(students_auth.router)
-app.include_router(students_ctrl.router)
 app.include_router(lecturer_auth.router)
 app.include_router(lecturer_ctrl.router)
+app.include_router(students_auth.router)
+app.include_router(students_ctrl.router)
