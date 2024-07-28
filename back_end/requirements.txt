@@ -4,7 +4,7 @@ passlib
 bcrypt
 python-jose
 joblib
-numpy
+numpy==1.26.4
 face_recognition
 pymongo[srv]==3.11
 piexif
