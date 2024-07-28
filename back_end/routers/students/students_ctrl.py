@@ -86,7 +86,7 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
 
             image_bytes= await file.read()
             if EncodeGen.face_encode(image_bytes,current_user.user_name,profile["student_college"],profile["year_enrolled"]):
-                # student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
+                student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
                 return {
                     "detail": "Face enrolled successfully",
                 }

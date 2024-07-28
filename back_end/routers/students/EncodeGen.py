@@ -86,14 +86,14 @@ def face_encode(image,student_name,student_college,student_year_enrolled):
 
         # saving new details
         facialencodingsWithNames = [encodings, student_names]
-        print(facialencodingsWithNames)
+        # print(facialencodingsWithNames)
         file = open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'wb')
         joblib.dump(facialencodingsWithNames, file)
         file.close()
         return True #This means the file was Updated successfully
     except:
         facialencodingsWithNames = [[new_encoding], [new_student_name]]
-        print(facialencodingsWithNames)
+        # print(facialencodingsWithNames)
         file = open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'wb')
         joblib.dump(facialencodingsWithNames, file)
         file.close()
