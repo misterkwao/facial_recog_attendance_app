@@ -7,3 +7,4 @@ joblib
 numpy
 face_recognition
 pymongo[srv]==3.11
+piexif

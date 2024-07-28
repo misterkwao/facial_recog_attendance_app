@@ -67,6 +67,7 @@ class CreateStudent(BaseModel):
      student_email: str
      year_enrolled: int
      student_current_level: int
+     student_current_semester: int
      password: str
      allowed_courses: Union[list,allowedStudentCourses]
      is_face_enrolled: bool

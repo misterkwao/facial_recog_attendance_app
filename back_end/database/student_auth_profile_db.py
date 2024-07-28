@@ -61,7 +61,7 @@ def create_student_profile_collection():
     db.command("collMod", "student_profile", validator={
             "$jsonSchema": {
             "bsonType": "object",
-            "required": ["student_name", "owner", "year_enrolled", "student_current_level","allowed_courses","is_face_enrolled","student_college","student_department"],
+            "required": ["student_name", "owner", "year_enrolled", "student_current_level","student_current_semester","allowed_courses","is_face_enrolled","student_college","student_department"],
             "properties": {
                 "student_name": {
                     "bsonType": "string",
@@ -72,6 +72,10 @@ def create_student_profile_collection():
                     "description": "must be an integer and is required"
                 },
                 "student_current_level":{
+                    "bsonType": "int",
+                    "description": "must be an integer and is required"
+                },
+                "student_current_semester":{
                     "bsonType": "int",
                     "description": "must be an integer and is required"
                 },

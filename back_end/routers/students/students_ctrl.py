@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, status, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, status, HTTPException, UploadFile, Response
 import schemas
 from typing import Annotated
 import math
+from PIL import Image
+from io import BytesIO
+import piexif
 from . import EncodeGen, recognition
 import pydantic
 from bson.objectid import ObjectId
@@ -72,7 +75,7 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 @router.post('/student/enroll-face')
@@ -80,9 +83,10 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
     if current_user.user_role == "student":
         try:
             profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
-            image = await file.read()
-            if EncodeGen.face_encode(image,file.filename,profile["student_college"],profile["year_enrolled"]):
-                student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
+
+            image_bytes= await file.read()
+            if EncodeGen.face_encode(image_bytes,current_user.user_name,profile["student_college"],profile["year_enrolled"]):
+                # student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
                 return {
                     "detail": "Face enrolled successfully",
                 }
@@ -90,11 +94,11 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
-@router.post("/student/attendance/class/{id}")
-async def mark_attendance(id,file: UploadFile,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+@router.post("/student/attendance/class/{id}", status_code=200)
+async def mark_attendance(id,file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     if current_user.user_role == "student":
      # getting the no of attendance value from student
         def class_match(course_level):
@@ -119,10 +123,10 @@ async def mark_attendance(id,file: UploadFile,current_user:schemas.User = Depend
             no_of_att, course_index = class_match(curr_class["course_level"])
 
             # Face recognition
-            image = await file.read()
-            student = recognition.student_face_recognition(image,profile["student_college"],profile["year_enrolled"])
+            image_bytes= await file.read()
+            student = recognition.student_face_recognition(image_bytes,profile["student_college"],profile["year_enrolled"])
             #  Updating class and student attendance
-            if profile["student_name"] == student[0]:
+            if profile["student_name"] == student:
                class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}})
                match curr_class["course_semester_level"]:
                         case 1:
@@ -144,11 +148,12 @@ async def mark_attendance(id,file: UploadFile,current_user:schemas.User = Depend
                                 "detail": "Attendance marked successfully"
                             }
             else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
                 return {
                     "detail": "Recognition failed"
                 }
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     

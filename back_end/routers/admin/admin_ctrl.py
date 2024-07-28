@@ -27,7 +27,7 @@ async def get_admin_profile(current_user:schemas.User = Depends(oauth2_Admin.get
       except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.patch('/admin')
 async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
@@ -41,7 +41,7 @@ async def update_admin_profile(request:schemas.AdminUpdate,current_user:schemas.
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
        else:
-           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+           raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 @router.delete('/admin')
@@ -56,7 +56,7 @@ async def delete_admin_account(current_user:schemas.User = Depends(oauth2_Admin.
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
        else:
-           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+           raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
        
 # Student and Lecturer functionalities
@@ -74,7 +74,7 @@ async def get_all_users(current_user:schemas.User = Depends(oauth2_Admin.get_cur
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
    else:
-       raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+       raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 #Class methods
@@ -102,7 +102,7 @@ async def create_class_location(request:schemas.CreateClassLocation,current_user
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.get('/admin/user-manangement/class')
 async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
@@ -116,7 +116,7 @@ async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_Adm
         except Exception as e:
          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.delete("/admin/user-manangement/class/{id}")
 async def delete_class_location(id: str, current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
@@ -129,7 +129,7 @@ async def delete_class_location(id: str, current_user:schemas.User = Depends(oau
         else:
          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 
@@ -164,7 +164,7 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.patch("/admin/user-manangement/lecturer/{id}")
 async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
@@ -182,7 +182,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 
 @router.delete("/admin/user-manangement/lecturer/{id}")
@@ -198,7 +198,7 @@ async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2_Adm
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 
 # Admin to student  functionalities
@@ -219,6 +219,7 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
                 "student_name": request.student_name,
                 "year_enrolled" :request.year_enrolled,
                 "student_current_level": request.student_current_level,
+                "student_current_semester": request.student_current_semester,
                 "is_face_enrolled": request.is_face_enrolled,
                 "student_college": request.student_college,
                 "student_department": request.student_department,
@@ -238,7 +239,7 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
         
 
 @router.patch("/admin/user-manangement/student/{id}")
@@ -250,6 +251,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
             student_update = student_profile_collection.find_one_and_update({"owner": ObjectId(id)},
                                                         { '$set': { "year_enrolled" : request.year_enrolled,
                                                                     "student_current_level": request.student_current_level,
+                                                                    "student_current_semester": request.student_current_semester,
                                                                     "student_name": request.student_name,
                                                                     "updatedAt": datetime.now()
                                                                     } }
@@ -261,7 +263,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 @router.delete("/admin/user-manangement/student/{id}")
@@ -277,5 +279,5 @@ async def delete_student(id: str,current_user:schemas.User = Depends(oauth2_Admi
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     

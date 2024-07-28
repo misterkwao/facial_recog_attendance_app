@@ -27,7 +27,7 @@ async def get_profile(current_user:schemas.User = Depends(oauth2_lecturer.get_cu
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.get('/lecturer/classes/current-classes')
 async def get_current_classes(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
@@ -53,7 +53,7 @@ async def get_current_classes(current_user:schemas.User = Depends(oauth2_lecture
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.get('/lecturer/classes/statistics')
 async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
@@ -152,7 +152,7 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
 @router.get('/lecturer/classes/class-locations')
@@ -167,7 +167,7 @@ async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_lec
         except Exception as e:
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 @router.post('/lecturer/classes/class')
 async def create_class(request:schemas.CreateClass,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
@@ -199,7 +199,7 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 
 @router.delete("/lecturer/classes/class/{id}")
@@ -216,5 +216,5 @@ async def delete_class(id, current_user:schemas.User = Depends(oauth2_lecturer.g
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
