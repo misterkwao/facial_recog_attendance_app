@@ -54,6 +54,7 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
                                     "classes":{"$push":{"$cond": [ { "$eq": [{"$week": datetime.now()}, {"$week": "$createdAt"}] }, "$$CURRENT", "No classes"]}}
                                     }
                     },
+                    {"$sort":{"_id": -1}},
                     {"$limit" :1}
                 ]))
                 
