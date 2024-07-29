@@ -87,10 +87,12 @@ class CreateClass(BaseModel):
      course_title: str
      course_level: int
      course_semester_level: int
+     class_name : str
      location: ClassLocation
      start_time: datetime
      end_time: datetime
      no_of_attendees: int
+     attendee_names: list
 
 class CreateClassLocation(BaseModel):
      class_name: str

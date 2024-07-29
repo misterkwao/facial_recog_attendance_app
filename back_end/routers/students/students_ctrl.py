@@ -128,7 +128,8 @@ async def mark_attendance(id,file: UploadFile,response: Response,current_user:sc
             student = recognition.student_face_recognition(image_bytes,profile["student_college"],profile["year_enrolled"])
             #  Updating class and student attendance
             if profile["student_name"] == student:
-               class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}})
+               class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}, 
+                                                                           '$push':{"attendee_names": current_user.user_name}})
                match curr_class["course_semester_level"]:
                         case 1:
                             number = math.ceil((curr_class["course_level"]/100)-1)
