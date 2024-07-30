@@ -178,6 +178,7 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
                 "creator": ObjectId(current_user.user_id),
                 "course_title": request.course_title,
                 "course_level": request.course_level,
+                "class_name": request.class_name,
                 "course_semester_level": request.course_semester_level,
                 "location":{
                     "longitude": request.location.longitude,
@@ -194,7 +195,7 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
                 }
         except Exception as e:
             response = str(e)
-            if "document failed validation" in response:
+            if "Document failed validation" in response:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please provide required fields")
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
