@@ -1,0 +1,73 @@
+{
+  "student_name": "",
+  "student_email": "",
+  "year_enrolled": 0,
+  "student_current_level": 0,
+  "student_current_semester": 0,
+  "password": "string",
+  "allowed_courses": [
+    {
+        "level": 100,
+        "first_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ],
+        "second_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ]
+      },
+      {
+        "level": 200,
+        "first_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ],
+        "second_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ]
+      },
+      {
+        "level": 300,
+        "first_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ],
+        "second_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ]
+      },
+      {
+        "level": 400,
+        "first_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ],
+        "second_semester_courses": [
+          {
+            "course_title": "",
+            "no_of_attendance": 0
+          }
+        ]
+      }
+  ],
+  "is_face_enrolled": false,
+  "student_college": "",
+  "student_department": ""
+}
