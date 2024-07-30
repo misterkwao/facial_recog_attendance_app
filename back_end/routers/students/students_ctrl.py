@@ -98,7 +98,7 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
-@router.post("/student/attendance/class/{id}", status_code=200)
+@router.post("/student/attendance/class/", status_code=200)
 async def mark_attendance(id,file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     if current_user.user_role == "student":
      # getting the no of attendance value from student
