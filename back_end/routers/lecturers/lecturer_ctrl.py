@@ -203,7 +203,7 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 
-@router.delete("/lecturer/classes/class/{id}")
+@router.delete("/lecturer/classes/class/")
 async def delete_class(id, current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
     if current_user.user_role == "lecturer":
         try:

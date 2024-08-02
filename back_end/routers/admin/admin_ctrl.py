@@ -118,7 +118,7 @@ async def get_all_class_locations(current_user:schemas.User = Depends(oauth2_Adm
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
-@router.delete("/admin/user-manangement/class/{id}")
+@router.delete("/admin/user-manangement/class/")
 async def delete_class_location(id: str, current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     if current_user.user_role == "admin":
         class_location = class_locations_collection.find_one_and_delete({"_id": ObjectId(id)})
@@ -166,7 +166,7 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
-@router.patch("/admin/user-manangement/lecturer/{id}")
+@router.patch("/admin/user-manangement/lecturer/")
 async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     if current_user.user_role == "admin":
         # This function only updates the allowed courses of a lecturer
@@ -185,7 +185,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 
-@router.delete("/admin/user-manangement/lecturer/{id}")
+@router.delete("/admin/user-manangement/lecturer/")
 async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     if current_user.user_role == "admin":
         lecturer = lecturer_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
@@ -242,7 +242,7 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
         
 
-@router.patch("/admin/user-manangement/student/{id}")
+@router.patch("/admin/user-manangement/student/")
 async def update_student(request:schemas.StudentProfileUpdate,id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     if current_user.user_role == "admin":
         # These are the selected fields that can be changed without affecting data integrity
@@ -266,7 +266,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
 
 
-@router.delete("/admin/user-manangement/student/{id}")
+@router.delete("/admin/user-manangement/student/")
 async def delete_student(id: str,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
     if current_user.user_role == "admin":
         student_auth = student_auth_collection.find_one_and_delete({"_id": ObjectId(id)})
