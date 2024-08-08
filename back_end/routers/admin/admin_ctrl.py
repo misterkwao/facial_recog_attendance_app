@@ -51,7 +51,7 @@ async def delete_admin_account(current_user:schemas.User = Depends(oauth2_Admin.
             admin_auth = admin_auth_collection.find_one_and_delete({"_id": ObjectId(current_user.user_id)})
             if admin_auth and admin_profile:
                 return {
-                            "detail": "Successfully deleted"
+                            "detail": "Account successfully deleted"
                         }
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
