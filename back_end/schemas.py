@@ -91,8 +91,6 @@ class CreateClass(BaseModel):
      location: ClassLocation
      start_time: datetime
      end_time: datetime
-     no_of_attendees: int
-     attendee_names: list
 
 class CreateClassLocation(BaseModel):
      class_name: str

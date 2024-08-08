@@ -186,7 +186,8 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
                 },
                 "start_time": request.start_time,
                 "end_time": request.end_time,
-                "no_of_attendees":request.no_of_attendees,
+                "no_of_attendees": 0,
+                "attendee_names": [],
                 "createdAt": datetime.now()
             })
             if create_class:
