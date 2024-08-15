@@ -9,6 +9,7 @@ from database.class_collection_db import class_collection
 from database.lecturer_auth_profile_db import lecturer_profile_collection
 from database.student_auth_profile_db import student_profile_collection
 from database.class_collection_db import class_locations_collection
+import time
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
@@ -60,8 +61,9 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
     if current_user.user_role == "lecturer":
         try:
             #Getting the number of students per lecturer course
+            # start_time = time.time()
             same_course_count = 0
-            totals = {"Mathematics":150,"Software Eng":200}
+            totals = {}
             lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
             student_profiles = list(student_profile_collection.find({}))
             for lecturer_course in lecturer["allowed_courses"]:
@@ -78,7 +80,7 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
                                     if student_course["course_title"] == lecturer_course["course_title"]:
                                         same_course_count += 1
                     
-                    totals[student_course["course_title"]]=same_course_count
+                    totals[lecturer_course["course_title"]]=same_course_count
 
                 #Calculating performance for class attendance
             statistics = list(class_collection.aggregate([
@@ -147,7 +149,8 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
                     for week_class in week["classes"]:
                             week_class["performance"] = ((week_class["no_of_attendees"]/totals[week_class["course_title"]])*100)
                             week_class["expected_no_attendees"] = totals[week_class["course_title"]]
-
+            
+            # print(f"It took {(time.time() - start_time)}")
             return statistics
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
