@@ -50,7 +50,9 @@ async def get_current_classes(current_user:schemas.User = Depends(oauth2_lecture
                     "current_classes" : classes[0]["classes"]
                 }
             else:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Class not found")
+                return{
+                    "current_classes" : ["no classes"]
+                }
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
