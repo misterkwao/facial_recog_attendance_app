@@ -150,6 +150,8 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
                 "owner": lecturer,
                 "lecturer_name": request.lecturer_name,
                 "allowed_courses":request.allowed_courses,
+                "lecturer_college": request.lecturer_college,
+                "lecturer_department": request.lecturer_department,
                 "createdAt": datetime.now()
             })
             return{

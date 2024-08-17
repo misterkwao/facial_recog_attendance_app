@@ -62,7 +62,7 @@ def create_lecturer_profile_collection():
     db.command("collMod", "lecturer_profile", validator={
             "$jsonSchema": {
             "bsonType": "object",
-            "required": ["lecturer_name", "owner", "allowed_courses"],
+            "required": ["lecturer_name", "owner", "allowed_courses","lecturer_college", "lecturer_department"],
             "properties": {
                 "lecturer_name": {
                     "bsonType": "string",
@@ -105,6 +105,14 @@ def create_lecturer_profile_collection():
                             }
                         }
                     }
+                },
+                "lecturer_college": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                },
+                "lecturer_department": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
                 },
                 "createdAt":{
                     "bsonType": "date",

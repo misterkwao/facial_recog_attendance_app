@@ -48,6 +48,9 @@ class CreateLecturer(BaseModel):
     lecturer_email: str
     password: str
     allowed_courses: Union[list,allowedCourses]
+    lecturer_college: str
+    lecturer_department: str
+
 
 class AdminUpdateLecturer(BaseModel):
      allowed_courses: Union[list,allowedCourses]
