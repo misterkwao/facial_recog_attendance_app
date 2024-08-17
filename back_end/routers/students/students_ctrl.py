@@ -57,8 +57,7 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
                     {"$sort":{"_id": -1}},
                     {"$limit" :1}
                 ]))
-                
-                if ("No classes" not in classes[0]["classes"]) and classes:
+                if classes and ("No classes" not in classes[0]["classes"]):
                     #This means there are classes
                     class_match(student_current_level)
 
