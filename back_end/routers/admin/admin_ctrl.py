@@ -249,16 +249,17 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
     if current_user.user_role == "admin":
         # These are the selected fields that can be changed without affecting data integrity
         try:
-            student_name_update = student_auth_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "student_name": request.student_name} })
+            # student_name_update = student_auth_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "student_name": request.student_name} })
             student_update = student_profile_collection.find_one_and_update({"owner": ObjectId(id)},
                                                         { '$set': { "year_enrolled" : request.year_enrolled,
                                                                     "student_current_level": request.student_current_level,
                                                                     "student_current_semester": request.student_current_semester,
-                                                                    "student_name": request.student_name,
+                                                                    # "student_name": request.student_name,
+                                                                    "is_face_enrolled": request.is_face_enrolled,
                                                                     "updatedAt": datetime.now()
                                                                     } }
                                                                     )
-            if student_update and student_name_update:
+            if student_update:
                 return{
                         "detail":"Successfully updated"
                     }

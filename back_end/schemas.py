@@ -80,7 +80,8 @@ class CreateStudent(BaseModel):
 class StudentProfileUpdate(BaseModel):
      year_enrolled: int
      student_current_level: int
-     student_name: str
+     student_current_semester: int
+     is_face_enrolled: bool
 
 class ClassLocation(BaseModel):
      longitude: float
