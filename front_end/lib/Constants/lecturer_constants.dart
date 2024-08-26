@@ -8,12 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 // import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 // import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -328,22 +326,24 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
           removeTop: true,
           removeBottom: true,
           child: Consumer<LecturerPageProvider>(
-            builder: (context, value, child) => ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: value.lecturerUpcomingClasses.length,
-                itemBuilder: (context, index) {
-                  if (value.lecturerUpcomingClasses[0] == "no classes") {
-                    return Container(
-                      width: width,
-                      child: const Center(
-                        child: Text(
-                          "No upcoming classes available",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    );
-                  } else {
+            builder: (context, value, child) {
+              if (value.lecturerUpcomingClasses[0] == "No classes" ||
+                  value.lecturerUpcomingClasses[0] == "no classes") {
+                return Container(
+                  width: width,
+                  child: const Center(
+                    child: Text(
+                      "No upcoming classes available",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: value.lecturerUpcomingClasses.length,
+                  itemBuilder: (context, index) {
                     return Container(
                       width: width,
                       child: Row(
@@ -388,10 +388,6 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                       ),
                                     ],
                                   ),
-                                  // Text(
-                                  //   (lecturerUpcomingClasses[index]["course_semester_level"])
-                                  //       .toString(),
-                                  // ),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -468,8 +464,10 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                         ],
                       ),
                     );
-                  }
-                }),
+                  },
+                );
+              }
+            },
           ),
         ),
         const SizedBox(height: 5),
@@ -667,7 +665,7 @@ Widget attendeeNames(
                           flattenedList[mainIndex]["attendee_names"].length,
                       itemBuilder: (context, index) {
                         return pw.Text(
-                            "${(index++).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}");
+                            "${(index + 1).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}");
                       },
                     ),
             ],
@@ -676,26 +674,18 @@ Widget attendeeNames(
       ),
     );
 
-    // Get the directory to save the file
-    // final directory = Directory("/storage/emulated/0/Download");
-    // final directory = await getExternalStorageDirectory();
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath =
-        "${directory.path}/${flattenedList[mainIndex]["course_title"]}-attendees.pdf";
-    final file = File(filePath);
-
-    // Automatically open the pdf using the Files app or another app on the device.
-    OpenFile.open(filePath);
-
-    // Save the PDF file
+    var path =
+        "/storage/emulated/0/Download/${flattenedList[mainIndex]["course_title"]}-attendees.pdf";
+    final file = File(path);
     await file.writeAsBytes(await pdf.save());
 
     // Show a alert or dialog to confirm the PDF has been saved
     QuickAlert.show(
-        context: context,
-        type: QuickAlertType.success,
-        title: "Saved",
-        text: "PDF saved to Downloads");
+      context: context,
+      type: QuickAlertType.success,
+      title: "Saved",
+      text: "PDF saved to Downloads",
+    );
   }
 
   return Container(

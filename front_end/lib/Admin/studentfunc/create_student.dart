@@ -390,7 +390,6 @@ class _CreateStudentState extends State<CreateStudent> {
 
                                     setState(() {
                                       isloading = false;
-                                      newStudentCourse = 1;
 
                                       // Remove all courses except first one
                                       studentCourses.removeRange(

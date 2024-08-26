@@ -1,16 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/quickalert.dart';
-import 'package:student_attendance_app/Admin/widgets/student_widgets.dart';
-import 'package:student_attendance_app/Providers/admin_page_provider.dart';
 
+import '../../Admin/widgets/student_widgets.dart';
+import '../../Providers/admin_page_provider.dart';
 import '../../Pages/login.dart';
-import '../../auth/api.dart';
 import '../widgets/admin_widgets.dart';
 
 class UpdateStudent extends StatefulWidget {

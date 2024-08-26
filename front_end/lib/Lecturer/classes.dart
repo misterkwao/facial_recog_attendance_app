@@ -19,8 +19,6 @@ class LectureClasses extends StatefulWidget {
 }
 
 class _LectureClassesState extends State<LectureClasses> {
-  final ScrollController _scrollController = ScrollController();
-
   late StreamSubscription _internetSubscription;
 
   bool hasInternet = true;
