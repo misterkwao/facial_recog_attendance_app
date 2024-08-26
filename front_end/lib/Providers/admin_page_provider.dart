@@ -159,6 +159,20 @@ class AdminPageProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateStudent(
+      Map studentDetials, String id, BuildContext context) async {
+    if (await _checkInternetConnection()) {
+      await updateStudentDetailsToApi(studentDetials, id, context);
+      fetchDetails(context);
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
   //Method to delete a student
   Future<void> deleteStudent(BuildContext context) async {
     if (await _checkInternetConnection()) {
@@ -476,6 +490,39 @@ class AdminPageProvider with ChangeNotifier {
         title: "Error",
         text: "Failed to delete student successfully",
       );
+    }
+  }
+
+  // Update student details
+  Future<dynamic> updateStudentDetailsToApi(
+      Map details, String id, BuildContext context) async {
+    var url = "${baseurl}admin/user-manangement/student";
+    var response = await Dio().patch(
+      url,
+      queryParameters: {
+        "id": id,
+      },
+      data: details,
+      options: Options(
+        responseType: ResponseType.json,
+        headers: {
+          HttpHeaders.authorizationHeader: "bearer $accessToken",
+        },
+        validateStatus: (status) => true,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Pop modal sheet
+      Navigator.of(context).pop();
+
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: "Success",
+          text: "Student details updated successfully");
+    } else {
+      print(response.data);
     }
   }
 }
