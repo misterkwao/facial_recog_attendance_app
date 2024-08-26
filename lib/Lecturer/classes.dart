@@ -5,12 +5,8 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:student_attendance_app/Constants/lecturer_constants.dart';
 
-import '../Admin/lecturerfunc/delete_lecturer.dart';
-import '../Admin/widgets/admin_widgets.dart';
-import '../Admin/lecturerfunc/create_lecturer.dart';
 import '../Constants/lecturer_drawer.dart';
-import '../Lecturer/create_class.dart';
-import '../Lecturer/widgets.dart';
+
 import '../Providers/lecturer_page_provider.dart';
 
 // import '../Auth/lecturerClient.dart';
