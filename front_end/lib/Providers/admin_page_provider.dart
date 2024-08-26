@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_final_fields, use_build_context_synchronously, unrelated_type_equality_checks
+// ignore_for_file: prefer_final_fields, use_build_context_synchronously, unrelated_type_equality_checks, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -73,6 +73,7 @@ class AdminPageProvider with ChangeNotifier {
           notifyListeners();
         }
       } on DioException catch (e) {
+        print(e.message);
         // QuickAlert.show(
         //     context: context,
         //     type: QuickAlertType.error,
@@ -149,6 +150,20 @@ class AdminPageProvider with ChangeNotifier {
   Future<void> createStudent(Map studentDetials, BuildContext context) async {
     if (await _checkInternetConnection()) {
       await createStudentToApi(studentDetials, context);
+      fetchDetails(context);
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  Future<void> updateStudent(
+      Map studentDetials, String id, BuildContext context) async {
+    if (await _checkInternetConnection()) {
+      await updateStudentDetailsToApi(studentDetials, id, context);
       fetchDetails(context);
     } else {
       QuickAlert.show(
@@ -476,6 +491,39 @@ class AdminPageProvider with ChangeNotifier {
         title: "Error",
         text: "Failed to delete student successfully",
       );
+    }
+  }
+
+  // Update student details
+  Future<dynamic> updateStudentDetailsToApi(
+      Map details, String id, BuildContext context) async {
+    var url = "${baseurl}admin/user-manangement/student";
+    var response = await Dio().patch(
+      url,
+      queryParameters: {
+        "id": id,
+      },
+      data: details,
+      options: Options(
+        responseType: ResponseType.json,
+        headers: {
+          HttpHeaders.authorizationHeader: "bearer $accessToken",
+        },
+        validateStatus: (status) => true,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Pop modal sheet
+      Navigator.of(context).pop();
+
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: "Success",
+          text: "Student details updated successfully");
+    } else {
+      print(response.data);
     }
   }
 }

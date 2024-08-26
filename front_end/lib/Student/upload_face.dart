@@ -11,6 +11,7 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:student_attendance_app/Auth/api.dart';
+import 'package:student_attendance_app/Pages/student_page.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
 
 import '../main.dart';
@@ -173,14 +174,31 @@ class _UploadFaceState extends State<UploadFace> {
     );
 
     if (response.statusCode == 200) {
-      // Successfully enrolled the face
-      QuickAlert.show(
-        context: context,
-        type: QuickAlertType.success,
-        title: "Success",
-        text: response.data["detail"],
-      );
-      print("Face enrolled successfully");
+      if (mounted) {
+        // Successfully enrolled the face
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: "Success",
+          text: "Face enrolled successfully",
+        );
+
+        // Delay to allow the alert be seen
+        await Future.delayed(const Duration(seconds: 2));
+
+        // Dispose of the camera controller
+        controller.dispose();
+
+        // Pop the screen and return to student's dashboard
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const StudentPage(),
+          ),
+          (route) => false,
+        );
+
+        print("Face enrolled successfully");
+      }
     } else {
       QuickAlert.show(
         context: context,
@@ -188,6 +206,15 @@ class _UploadFaceState extends State<UploadFace> {
         title: "Error",
         text: response.data["detail"],
       );
+      // Delay to allow the alert be seen
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pop;
+
       print("Failed to enroll face: ${response.data["detail"]}");
     }
   }
@@ -197,9 +224,26 @@ class _UploadFaceState extends State<UploadFace> {
     final File image = File(imageFile.path);
 
     if (_isUserLookingAtCamera) {
-      enrollFace(image);
+      // Add a delay of 2 seconds
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (_isUserLookingAtCamera) {
+        enrollFace(image);
+      } else {
+        // Prompt the user to look at the camera
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.warning,
+          title: "Attention",
+          text: "Please look directly at the camera to capture your image.",
+          onConfirmBtnTap: () {
+            // Start the face detection again
+            Navigator.of(context).pop(); // Close the alert
+            startFaceDetection(); // Retry face detection
+          },
+        );
+      }
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -207,16 +251,21 @@ class _UploadFaceState extends State<UploadFace> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    return SizedBox(
+    return Container(
       height: height,
       width: width,
+      decoration: const BoxDecoration(shape: BoxShape.circle),
       child: controller.value.isInitialized
-          ? Stack(children: [
-              CameraPreview(controller),
-              CustomPaint(
-                painter: FaceMeshPainter(_faces, controller.value.previewSize!),
-              ),
-            ])
+          ? ClipRRect(
+              child: Stack(children: [
+                CameraPreview(controller),
+                if (_faces.isNotEmpty)
+                  CustomPaint(
+                    painter:
+                        FaceMeshPainter(_faces, controller.value.previewSize!),
+                  ),
+              ]),
+            )
           : Container(),
     );
   }
@@ -237,6 +286,10 @@ class FaceMeshPainter extends CustomPainter {
 
     for (Face face in faces) {
       final boundingBox = face.boundingBox;
+
+      //Log bounding box details
+      print("Drawing bounding box at: ${boundingBox.left}, ${boundingBox.top}");
+
       canvas.drawRect(
         Rect.fromLTWH(
           boundingBox.left * size.width / previewSize.width,

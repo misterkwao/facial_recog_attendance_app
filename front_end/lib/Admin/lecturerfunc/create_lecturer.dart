@@ -251,20 +251,38 @@ class _CreatelecturerState extends State<Createlecturer> {
                                       .read<AdminPageProvider>()
                                       .createLecturer(lecturerDetails, context);
 
-                                  // Clear all controllers
-                                  lecturerEmail.clear();
-                                  lecturerName.clear();
-                                  lecturerPassword.clear();
-                                  lecturerCollege.clear();
-                                  lecturerDepartment.clear();
-                                  allowedLecturerCourses.clear();
-
                                   setState(() {
                                     isloading = false;
+
+                                    // Clear all controllers
+                                    lecturerEmail.clear();
+                                    lecturerName.clear();
+                                    lecturerPassword.clear();
+                                    lecturerCollege.clear();
+                                    lecturerDepartment.clear();
+                                    allowedLecturerCourses.clear();
+
+                                    // Reinitialize the controllers
+                                    courseLecturerLevel = [100];
+                                    courseLecturerSemester = [1];
+                                    courseLecturerTitle = [
+                                      TextEditingController()
+                                    ];
+                                    courseLecturerCollege = [
+                                      TextEditingController()
+                                    ];
+                                    courseLecturerDepartment = [
+                                      TextEditingController()
+                                    ];
+
+                                    // Remove all courses except first one
+                                    courses.removeRange(1, courses.length);
+
+                                    // Reset the new student course counter
                                     newLecturerCourse = 1;
-                                    for (int i = 1; i < courses.length; i++) {
-                                      courses.removeAt(i);
-                                    }
+
+                                    // Clear the form
+                                    formKey.currentState?.reset();
                                   });
                                 } on DioException catch (e) {
                                   QuickAlert.show(
@@ -294,35 +312,35 @@ class _CreatelecturerState extends State<Createlecturer> {
   void dispose() {
     // Dispose controllers in courseLecturerTitle, keeping the first one
     if (courseLecturerTitle.length > 1) {
-      for (var i = 1; i < courseLecturerTitle.length; i++) {
+      for (var i = 0; i < courseLecturerTitle.length; i++) {
         courseLecturerTitle[i].dispose();
       }
     }
 
     // Dispose controllers in courseLecturerCollege, keeping the first one
     if (courseLecturerCollege.length > 1) {
-      for (var i = 1; i < courseLecturerCollege.length; i++) {
+      for (var i = 0; i < courseLecturerCollege.length; i++) {
         courseLecturerCollege[i].dispose();
       }
     }
 
     // Dispose controllers in courseLecturerDepartment, keeping the first one
     if (courseLecturerDepartment.length > 1) {
-      for (var i = 1; i < courseLecturerDepartment.length; i++) {
+      for (var i = 0; i < courseLecturerDepartment.length; i++) {
         courseLecturerDepartment[i].dispose();
       }
     }
 
     // Dispose controllers in courseLecturerLevel, keeping the first one
     if (courseLecturerLevel.length > 1) {
-      for (var i = 1; i < courseLecturerLevel.length; i++) {
+      for (var i = 0; i < courseLecturerLevel.length; i++) {
         courseLecturerLevel.removeAt(i);
       }
     }
 
     // Dispose controllers in courseLecturerSemester, keeping the first one
     if (courseLecturerSemester.length > 1) {
-      for (var i = 1; i < courseLecturerSemester.length; i++) {
+      for (var i = 0; i < courseLecturerSemester.length; i++) {
         courseLecturerSemester.removeAt(i);
       }
     }

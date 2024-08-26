@@ -205,9 +205,9 @@ class _CreateStudentState extends State<CreateStudent> {
                 textfield(Icons.numbers_rounded, studentCurrentSemester),
                 const SizedBox(height: 20),
                 const Text("College of Student"),
-                TextButton(
-                    onPressed: () => print(studentCourses),
-                    child: const Text("Print")),
+                // TextButton(
+                //     onPressed: () => print(studentCourses),
+                //     child: const Text("Print")),
                 const SizedBox(height: 10),
                 textfield(Icons.abc_rounded, studentCollege),
                 const SizedBox(height: 20),
@@ -390,7 +390,6 @@ class _CreateStudentState extends State<CreateStudent> {
 
                                     setState(() {
                                       isloading = false;
-                                      newStudentCourse = 1;
 
                                       // Remove all courses except first one
                                       studentCourses.removeRange(

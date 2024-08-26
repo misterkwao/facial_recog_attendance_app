@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
+// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables, avoid_print
 
 import 'dart:io';
 
@@ -68,6 +68,7 @@ class StudentsPageProvider with ChangeNotifier {
           notifyListeners();
         }
       } on DioException catch (e) {
+        print(e.message);
         // QuickAlert.show(
         //     context: context,
         //     type: QuickAlertType.error,

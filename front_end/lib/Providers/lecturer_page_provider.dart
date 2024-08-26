@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks
+// ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -79,6 +79,7 @@ class LecturerPageProvider with ChangeNotifier {
           notifyListeners();
         }
       } on DioException catch (e) {
+        print(e.message);
         // QuickAlert.show(
         //     context: context,
         //     type: QuickAlertType.error,
