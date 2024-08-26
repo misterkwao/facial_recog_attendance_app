@@ -34,6 +34,14 @@ def create_admin_auth_collection():
                     "minLength":8,
                     "description": "must be a string and is required"
                 },
+                "hashed_reset_pin":{
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                },
+                "reset_expire_time":{
+                    "bsonType": "date",
+                    "description": "must be a string and is required"
+                },
                 "createdAt":{
                     "bsonType": "date",
                     "description": "must be a date and is required"

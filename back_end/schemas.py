@@ -100,3 +100,12 @@ class CreateClassLocation(BaseModel):
      class_name: str
      college_location: str
      location: ClassLocation
+
+class forgetPwd(BaseModel):
+     email: str
+
+class VerifyCode(BaseModel):
+     code: int
+
+class ResetPassword(BaseModel):
+     new_password: str
