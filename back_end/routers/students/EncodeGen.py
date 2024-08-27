@@ -3,7 +3,7 @@ import joblib
 from PIL import Image, ExifTags
 from io import BytesIO
 
-def face_encode(image,student_name,student_college,student_year_enrolled):
+def face_encode(image,student_name,student_department,student_year_enrolled):
 
    # Function to correct image orientation based on EXIF data
     def correct_image_orientation(image):
@@ -73,7 +73,7 @@ def face_encode(image,student_name,student_college,student_year_enrolled):
 
     # loading existing joblib file to append new encoding
     try:
-        file = open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'rb')
+        file = open(f"Encodings/{student_department}_{student_year_enrolled}.joblib", 'rb')
         facialencodingsWithNames = joblib.load(file)
         encodings, student_names = facialencodingsWithNames
         file.close()
@@ -87,14 +87,14 @@ def face_encode(image,student_name,student_college,student_year_enrolled):
         # saving new details
         facialencodingsWithNames = [encodings, student_names]
         # print(facialencodingsWithNames)
-        file = open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'wb')
+        file = open(f"Encodings/{student_department}_{student_year_enrolled}.joblib", 'wb')
         joblib.dump(facialencodingsWithNames, file)
         file.close()
         return True #This means the file was Updated successfully
     except:
         facialencodingsWithNames = [[new_encoding], [new_student_name]]
         # print(facialencodingsWithNames)
-        file = open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'wb')
+        file = open(f"Encodings/{student_department}_{student_year_enrolled}.joblib", 'wb')
         joblib.dump(facialencodingsWithNames, file)
         file.close()
         return True #This means the file was successfully saved

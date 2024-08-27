@@ -85,7 +85,7 @@ async def student_enroll_face(file: UploadFile, current_user:schemas.User = Depe
             profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
 
             image_bytes= await file.read()
-            if EncodeGen.face_encode(image_bytes,current_user.user_name,profile["student_college"],profile["year_enrolled"]):
+            if EncodeGen.face_encode(image_bytes,current_user.user_name,profile["student_department"],profile["year_enrolled"]):
                 student_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
                 return {
                     "detail": "Face enrolled successfully",
@@ -124,7 +124,7 @@ async def mark_attendance(id,file: UploadFile,response: Response,current_user:sc
 
             # Face recognition
             image_bytes= await file.read()
-            student = recognition.student_face_recognition(image_bytes,profile["student_college"],profile["year_enrolled"])
+            student = recognition.student_face_recognition(image_bytes,profile["student_department"],profile["year_enrolled"])
             #  Updating class and student attendance
             if profile["student_name"] == student:
                class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}, 

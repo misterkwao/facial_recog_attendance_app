@@ -4,10 +4,10 @@ import joblib
 from io import BytesIO
 from PIL import Image, ExifTags
 
-def student_face_recognition(stu_image,student_college,student_year_enrolled):
+def student_face_recognition(stu_image,student_department,student_year_enrolled):
     # Importing the encoding file
     # print("Loading encoding file...")
-    file =open(f"Encodings/{student_college}_{student_year_enrolled}.joblib", 'rb')
+    file =open(f"Encodings/{student_department}_{student_year_enrolled}.joblib", 'rb')
     facialencodingsWithNames = joblib.load(file)
     encodings, student_names = facialencodingsWithNames
     file.close()
