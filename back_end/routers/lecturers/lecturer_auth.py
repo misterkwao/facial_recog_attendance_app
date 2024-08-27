@@ -55,7 +55,7 @@ async def lecturer_forgot_pwd(request:schemas.forgetPwd):
             print(f"An unexpected error occurred: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred. Please try again later.")
 
-    data = lecturer_auth_collection.find_one({"student_email":request.email})
+    data = lecturer_auth_collection.find_one({"lecturer_email":request.email})
     if not data:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email does not exist")
     else:

@@ -85,7 +85,7 @@ async def admin_forgot_pwd(request:schemas.forgetPwd):
             print(f"An unexpected error occurred: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred. Please try again later.")
 
-    data = admin_auth_collection.find_one({"student_email":request.email})
+    data = admin_auth_collection.find_one({"email":request.email})
     if not data:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email does not exist")
     else:
