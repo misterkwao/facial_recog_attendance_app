@@ -97,7 +97,7 @@ class _StudentPageState extends State<StudentPage> {
       await Provider.of<StudentsPageProvider>(context, listen: false)
           .fetchDetails(context);
 
-      var list = await Provider.of<StudentsPageProvider>(context, listen: false)
+      var list = Provider.of<StudentsPageProvider>(context, listen: false)
           .studentCourses;
 
       print(list);
