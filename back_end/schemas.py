@@ -47,6 +47,7 @@ class CreateLecturer(BaseModel):
     lecturer_name: str
     lecturer_email: str
     password: str
+    is_face_enrolled: bool
     allowed_courses: Union[list,allowedCourses]
     lecturer_college: str
     lecturer_department: str

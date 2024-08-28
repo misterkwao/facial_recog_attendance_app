@@ -149,6 +149,7 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
             lecturer_profile_collection.insert({
                 "owner": lecturer,
                 "lecturer_name": request.lecturer_name,
+                "is_face_enrolled": request.is_face_enrolled,
                 "allowed_courses":request.allowed_courses,
                 "lecturer_college": request.lecturer_college,
                 "lecturer_department": request.lecturer_department,
@@ -176,7 +177,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         # if you want to added new courses, just add the new course to the already existing courses and send the json array of objects
         # if you want to delete a course, remove the course from the existing courses and send the json array of objects
         try:
-            lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': { "allowed_courses" : request.allowed_courses, "updatedAt": datetime.now()} })
+            lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': { "allowed_courses" : request.allowed_courses, "is_face_enrolled": request.is_face_enrolled,"updatedAt": datetime.now()} })
             if lecturer_profile:
                 return{
                     "detail":"Successfully updated"

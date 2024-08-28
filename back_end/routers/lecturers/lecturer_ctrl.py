@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+import math
+from fastapi import APIRouter, Depends, Response, UploadFile, status, HTTPException
+from routers.lecturers import EncodeGen, recognition
 import schemas
 from typing import Annotated
 import pydantic
@@ -29,6 +31,50 @@ async def get_profile(current_user:schemas.User = Depends(oauth2_lecturer.get_cu
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Something went wrong")
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+
+@router.post('/lecturer/enroll-face')
+async def lecturer_enroll_face(file: UploadFile, current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+    if current_user.user_role == "lecturer":
+        try:
+            profile = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
+
+            image_bytes= await file.read()
+            if EncodeGen.face_encode(image_bytes,current_user.user_name,profile["lecturer_department"]):
+                lecturer_profile_collection.find_one_and_update({"owner": ObjectId(current_user.user_id)},{ '$set': { "is_face_enrolled" : True, "updatedAt": datetime.now()} })
+                return {
+                    "detail": "Face enrolled successfully",
+                }
+            
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+
+@router.post("/lecturer/attendance/class", status_code=200)
+async def mark_attendance(id,file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+    if current_user.user_role == "lecturer":                 
+        try:
+            profile = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
+            curr_class = class_collection.find_one({"_id": ObjectId(id)})
+            attendance_value = curr_class["no_of_attendees"]
+            # Face recognition
+            image_bytes= await file.read()
+            lecturer = recognition.lecturer_face_recognition(image_bytes,profile["lecturer_department"])
+            #  Updating class and lecturer attendance
+            if profile["lecturer_name"] == lecturer:
+               class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "no_of_attendees" : (attendance_value+1), "updatedAt": datetime.now()}, 
+                                                                           '$push':{"attendee_names": current_user.user_name}})
+               return {"detail": "Attendance marked successfully"}
+            else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return {
+                    "detail": "Recognition failed"
+                }
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+   
 
 @router.get('/lecturer/classes/current-classes')
 async def get_current_classes(current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):

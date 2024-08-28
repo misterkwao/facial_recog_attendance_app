@@ -76,6 +76,7 @@ async def admin_forgot_pwd(request:schemas.forgetPwd):
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
                 smtp_server.login(sender, password)
                 smtp_server.sendmail(sender, recipients, msg.as_string())
+                   
 
         except smtplib.SMTPException as e:
             print(f"SMTP error occurred: {e}")
