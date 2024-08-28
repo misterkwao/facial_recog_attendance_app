@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -673,18 +675,31 @@ Widget attendeeNames(
         },
       ),
     );
+    // Get platfrom specific directory
+    Directory? directory;
+    if (Platform.isAndroid) {
+      directory = await getExternalStorageDirectory();
+    } else if (Platform.isIOS) {
+      directory = await getApplicationDocumentsDirectory();
+    }
 
-    var path =
-        "/storage/emulated/0/Download/${flattenedList[mainIndex]["course_title"]}-attendees.pdf";
+    String path =
+        "${directory?.path}/${flattenedList[mainIndex]["course_title"]}-attendees.pdf";
+
     final file = File(path);
     await file.writeAsBytes(await pdf.save());
+
+    // Open tehe PDF file
+    await OpenFile.open(path);
 
     // Show a alert or dialog to confirm the PDF has been saved
     QuickAlert.show(
       context: context,
       type: QuickAlertType.success,
       title: "Saved",
-      text: "PDF saved to Downloads",
+      text: Platform.isAndroid
+          ? "PDF saved to Downloads"
+          : "PDF saved to Documents",
     );
   }
 

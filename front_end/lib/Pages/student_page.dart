@@ -97,17 +97,6 @@ class _StudentPageState extends State<StudentPage> {
       await Provider.of<StudentsPageProvider>(context, listen: false)
           .fetchDetails(context);
 
-      var list = Provider.of<StudentsPageProvider>(context, listen: false)
-          .studentCourses;
-
-      print(list);
-
-      print("Face not enrolled");
-      print(Provider.of<StudentsPageProvider>(context, listen: false)
-          .studentProfile["is_face_enrolled"]);
-      print(Provider.of<StudentsPageProvider>(context, listen: false)
-          .studentProfile);
-
       if (context
               .read<StudentsPageProvider>()
               .studentProfile["is_face_enrolled"] ==
@@ -189,10 +178,28 @@ class _StudentPageState extends State<StudentPage> {
                           color: Colors.black,
                           onRefresh: () async {
                             Future.delayed(const Duration(seconds: 2));
-                            return await Provider.of<StudentsPageProvider>(
-                                    context,
+                            await Provider.of<StudentsPageProvider>(context,
                                     listen: false)
                                 .fetchDetails(context);
+
+                            // check if is_face_enrolled is false
+                            if (Provider.of<StudentsPageProvider>(context,
+                                        listen: false)
+                                    .studentProfile["is_face_enrolled"] ==
+                                false) {
+                              QuickAlert.show(
+                                context: context,
+                                type: QuickAlertType.info,
+                                title: "Urgent!",
+                                barrierDismissible: false,
+                                text:
+                                    "Please you need to upload your face to the database to be able to mark attendance for classes.",
+                                onConfirmBtnTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => const UploadFace(),
+                                )),
+                              );
+                            }
                           },
                           child: SingleChildScrollView(
                             child: Column(

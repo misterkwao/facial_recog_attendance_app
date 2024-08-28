@@ -3,38 +3,11 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:quickalert/quickalert.dart';
 
 import '../Auth/api.dart';
 
 class DioClient {
   var dioclient = Dio();
-
-  Future<dynamic> postLogin(
-      String api, dynamic object, BuildContext context) async {
-    dioclient.options.contentType = Headers.formUrlEncodedContentType;
-    var url = baseurl + api;
-    var response = await dioclient.post(
-      url,
-      data: object,
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-        validateStatus: (status) => true,
-      ),
-    );
-    if (response.statusCode == 200) {
-      accessToken = response.data["access_token"];
-      return response.data;
-    } else {
-      QuickAlert.show(
-        context: context,
-        type: QuickAlertType.error,
-        title: "Ooops!",
-        text: response.data["detail"],
-      );
-    }
-  }
 
   Future<dynamic> postCreateAdmin(String api, dynamic object) async {
     var url = baseurl + api;

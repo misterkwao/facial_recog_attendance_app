@@ -28,6 +28,7 @@ class _UploadFaceState extends State<UploadFace> {
   late FaceDetector _faceDetector;
   bool _isUserLookingAtCamera = false;
   bool _isDetecting = false;
+  bool _isPictureTaken = false; // Flag to prevent multiple enrollments
   List<Face> _faces = [];
 
   @override
@@ -140,19 +141,10 @@ class _UploadFaceState extends State<UploadFace> {
       metadata: planeData,
     );
 
-    // final inputImageData = InputImageData(
-    //   size: imageSize,
-    //   imageRotation: imageRotation,
-    //   inputImageFormat: inputImageFormat,
-    //   planeData: planeData,
-    // );
-
-    // InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
-
     return await _faceDetector.processImage(inputImage);
   }
 
-  void enrollFace(image) async {
+  Future<dynamic> enrollFace(image) async {
     // Get student name
     final name =
         context.read<StudentsPageProvider>().studentProfile["student_name"];
@@ -170,79 +162,74 @@ class _UploadFaceState extends State<UploadFace> {
           'Accept': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
+        validateStatus: (status) => true,
       ),
     );
 
     if (response.statusCode == 200) {
-      if (mounted) {
-        // Successfully enrolled the face
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.success,
-          title: "Success",
-          text: "Face enrolled successfully",
-        );
+      // Dispose of the camera controller
+      controller.dispose();
 
-        // Delay to allow the alert be seen
-        await Future.delayed(const Duration(seconds: 2));
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const StudentPage(),
+        ),
+        (route) => false,
+      );
 
-        // Dispose of the camera controller
-        controller.dispose();
-
-        // Pop the screen and return to student's dashboard
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const StudentPage(),
-          ),
-          (route) => false,
-        );
-
-        print("Face enrolled successfully");
-      }
+      // Successfully enrolled the face
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: "Success",
+        text: "Face enrolled successfully",
+      );
     } else {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const StudentPage(),
+        ),
+        (route) => false,
+      );
+
       QuickAlert.show(
         context: context,
         type: QuickAlertType.error,
         title: "Error",
         text: response.data["detail"],
       );
-      // Delay to allow the alert be seen
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Dispose of the camera controller
-      controller.dispose();
-
-      // Pop the screen and return to student's dashboard
-      Navigator.of(context).pop;
-
-      print("Failed to enroll face: ${response.data["detail"]}");
     }
   }
 
   void takePicture() async {
+    if (_isPictureTaken) return; // Prevent multiple pictures
+
+    _isPictureTaken = true;
+
     final XFile imageFile = await controller.takePicture();
     final File image = File(imageFile.path);
 
     if (_isUserLookingAtCamera) {
-      // Add a delay of 2 seconds
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (_isUserLookingAtCamera) {
-        enrollFace(image);
-      } else {
-        // Prompt the user to look at the camera
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.warning,
-          title: "Attention",
-          text: "Please look directly at the camera to capture your image.",
-          onConfirmBtnTap: () {
-            // Start the face detection again
-            Navigator.of(context).pop(); // Close the alert
-            startFaceDetection(); // Retry face detection
-          },
-        );
-      }
+      await enrollFace(image);
+    } else {
+      // Prompt the user to look at the camera
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: "Attention",
+        text: "Please look directly at the camera to capture your image.",
+        onConfirmBtnTap: () {
+          // Start the face detection again
+          Navigator.of(context).pop(); // Close the alert
+          _isPictureTaken = false; // Allow another attempt
+          startFaceDetection(); // Retry face detection
+        },
+      );
     }
   }
 
@@ -251,20 +238,33 @@ class _UploadFaceState extends State<UploadFace> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    return Container(
-      height: height,
-      width: width,
-      decoration: const BoxDecoration(shape: BoxShape.circle),
-      child: controller.value.isInitialized
-          ? ClipRRect(
-              child: Stack(children: [
-                CameraPreview(controller),
-                if (_faces.isNotEmpty)
-                  CustomPaint(
-                    painter:
-                        FaceMeshPainter(_faces, controller.value.previewSize!),
+    return Scaffold(
+      body: controller.value.isInitialized
+          ? Center(
+              child: Container(
+                height: height * 0.65,
+                width: width * 0.78,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 3,
+                    )),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: Stack(children: [
+                      CameraPreview(controller),
+                      if (_faces.isNotEmpty)
+                        CustomPaint(
+                          painter: FaceMeshPainter(
+                              _faces, controller.value.previewSize!),
+                        ),
+                    ]),
                   ),
-              ]),
+                ),
+              ),
             )
           : Container(),
     );

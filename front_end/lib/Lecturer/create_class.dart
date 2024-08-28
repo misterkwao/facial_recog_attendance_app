@@ -253,7 +253,7 @@ class _CreateClassState extends State<CreateClass> {
                             showTitleActions: true,
                             locale: LocaleType.en,
                             minTime: DateTime.now(),
-                            maxTime: DateTime(2024, 08, 23, 10, 15),
+                            maxTime: DateTime(2024, 12, 31, 00, 00),
                             onChanged: (time) {
                               print(time.toUtc().toIso8601String());
                             },
@@ -290,7 +290,7 @@ class _CreateClassState extends State<CreateClass> {
                             showTitleActions: true,
                             locale: LocaleType.en,
                             minTime: DateTime.now(),
-                            maxTime: DateTime(2024, 08, 23, 10, 15),
+                            maxTime: DateTime(2024, 12, 31, 00, 00),
                             onChanged: (time) {
                               print(time.toUtc().toIso8601String());
                             },

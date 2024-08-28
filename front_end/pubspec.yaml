@@ -55,12 +55,15 @@ dependencies:
   path_provider: ^2.1.4
   pdf: ^3.11.1
   printing: ^5.13.2
+  pin_code_fields: ^8.0.1
+  permission_handler: ^11.3.1
   # google_fonts: ^6.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  open_file: ^3.5.0+1
   
 
 dev_dependencies:
@@ -99,6 +102,9 @@ flutter:
     - assets/images/Warning.gif
     - assets/images/Classroom.png
     - assets/images/facial-recognition-icon.png
+    - assets/images/pincode.gif
+    - assets/images/privatedata.gif
+    - assets/images/resetpasssword.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

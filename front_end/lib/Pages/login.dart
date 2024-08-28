@@ -1,5 +1,4 @@
 // ignore_for_file: sized_box_for_whitespace, use_build_context_synchronously, avoid_print
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +6,10 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Pages/forgot_password.dart';
 import 'package:student_attendance_app/Providers/admin_page_provider.dart';
 import 'package:student_attendance_app/Providers/lecturer_page_provider.dart';
-
-import '../Auth/api.dart';
-import '../Auth/base_client.dart';
-import '../Pages/student_page.dart';
-import 'admin_page.dart';
-import 'lecturer_page.dart';
+import 'package:student_attendance_app/Providers/students_page_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,93 +18,28 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-// void StudentAuth() async {
-//   var
-// }
-
-var authcredential = {
-  "username": usernameController.text,
-  "password": passwordController.text
-};
-
 bool isloading = false;
-
-// Role taken to check through database
-String loginrole = "Student";
 
 // Form key
 final formKey = GlobalKey<FormState>();
 
-// Controllers for input in logging in
-final TextEditingController usernameController = TextEditingController();
-final TextEditingController passwordController = TextEditingController();
-
 // Change password visibility
 bool isVisible = true;
 
-// Get admin profile
-Future<dynamic> adminprofile(String api) async {
-  var url = baseurl + api;
-  var response = await Dio().get(url,
-      options: Options(
-        contentType: Headers.jsonContentType,
-        responseType: ResponseType.json,
-        headers: {HttpHeaders.authorizationHeader: "bearer $accessToken"},
-        validateStatus: (status) => true,
-      ));
-  if (response.statusCode == 200) {
-    return response;
-  } else {
-    // throw Exception(response.data.toString());
-    // throw exception
-  }
-}
-
-// Get student profile
-Future<dynamic> studentProfile(String api) async {
-  var url = baseurl + api;
-  var response = await Dio().get(url,
-      options: Options(
-        contentType: Headers.jsonContentType,
-        responseType: ResponseType.json,
-        headers: {HttpHeaders.authorizationHeader: "bearer $accessToken"},
-        validateStatus: (status) => true,
-      ));
-  if (response.statusCode == 200) {
-    return response;
-  } else {
-    // throw Exception(response.data.toString());
-    // throw exception
-  }
-}
-
-//Get list of upcoming classes after logging in
-Future<dynamic> allLecturerUpcomingClasses(String api) async {
-  var response = await Dio().get(
-    baseurl + api,
-    options: Options(
-      responseType: ResponseType.json,
-      headers: {
-        HttpHeaders.authorizationHeader: "Bearer $accessToken",
-      },
-      validateStatus: (status) => true,
-    ),
-  );
-  if (response.statusCode == 200) {
-    return response.data["current_classes"];
-  } else {
-    return response.data;
-  }
-}
-
 class _LoginPageState extends State<LoginPage> {
+  String email = "";
+  String password = "";
+
+  // Role taken to check through database
+  String loginrole = "Student";
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final lecturerPageProvider = Provider.of<LecturerPageProvider>(context);
-    final adminPageProvider = Provider.of<AdminPageProvider>(context);
+    // final lecturerPageProvider = Provider.of<LecturerPageProvider>(context);
+    // final adminPageProvider = Provider.of<AdminPageProvider>(context);
 
     Widget loginButton(
         BuildContext context, String role, String label, double width) {
@@ -123,6 +53,11 @@ class _LoginPageState extends State<LoginPage> {
                 isloading = true;
               });
 
+              dynamic details = {
+                "username": email,
+                "password": password,
+              };
+
               // Get an instance of the shared preferences
               final SharedPreferences localStorage =
                   await SharedPreferences.getInstance();
@@ -130,27 +65,18 @@ class _LoginPageState extends State<LoginPage> {
               //Check role to sign person in
               if (role == "Student") {
                 try {
-                  var response = await DioClient()
-                      .postLogin("student_auth/login", authcredential, context);
+                  var response = await context
+                      .read<StudentsPageProvider>()
+                      .loginStudent(context, details);
+
+                  setState(() {
+                    isloading = false;
+                  });
 
                   // Save the access token on the user's device and page logged in
                   localStorage.setString(
                       "access_token", response["access_token"]);
                   localStorage.setString("page", "student");
-
-                  // Set access token on the user's device and page
-                  accessToken = response["access_token"];
-
-                  // Log user in
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const StudentPage(),
-                  ));
-                  usernameController.clear();
-                  passwordController.clear();
-
-                  setState(() {
-                    isloading = false;
-                  });
                 } on DioException catch (e) {
                   setState(() {
                     isloading = false;
@@ -164,32 +90,18 @@ class _LoginPageState extends State<LoginPage> {
               } else if (role == "Lecturer") {
                 try {
                   // Check details and log lecturer in
-                  var response = await DioClient().postLogin(
-                      "lecturer_auth/login", authcredential, context);
+                  var response = await context
+                      .read<LecturerPageProvider>()
+                      .loginLecturer(context, details);
+
+                  setState(() {
+                    isloading = false;
+                  });
 
                   // Save the access token on the user's device and page logged in
                   localStorage.setString(
                       "access_token", response["access_token"]);
                   localStorage.setString("page", "lecturer");
-
-                  // Set access token on the user's device and page
-                  accessToken = response["access_token"];
-
-                  //Get class locations after signing in and save in lecturer list for class
-                  await lecturerPageProvider.fetchDetails(context);
-
-                  print(
-                      "classes : ${lecturerPageProvider.lecturerClassLocations}");
-
-                  // Log user in
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const LecturerPage(),
-                  ));
-                  usernameController.clear();
-                  passwordController.clear();
-                  setState(() {
-                    isloading = false;
-                  });
                 } on DioException catch (e) {
                   setState(() {
                     isloading = false;
@@ -202,31 +114,18 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } else {
                 try {
-                  var response = await DioClient()
-                      .postLogin("admin_auth/login", authcredential, context);
-                  print(response);
+                  var response = await context
+                      .read<AdminPageProvider>()
+                      .loginAdmin(context, details);
+
+                  setState(() {
+                    isloading = false;
+                  });
 
                   // Save the access token on the user's device and page logged in
                   localStorage.setString(
                       "access_token", response["access_token"]);
                   localStorage.setString("page", "admin");
-
-                  // Set access token on the user's device and page
-                  accessToken = response["access_token"];
-
-                  //Fetch admin profile, students , lecturers and class locations
-                  await adminPageProvider.fetchDetails(context);
-
-                  // Log admin user in
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const AdminPage(),
-                  ));
-
-                  usernameController.clear();
-                  passwordController.clear();
-                  setState(() {
-                    isloading = false;
-                  });
                 } on DioException catch (e) {
                   setState(() {
                     isloading = false;
@@ -344,7 +243,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       cursorColor: Colors.black,
-                      controller: usernameController,
+                      onChanged: (value) {
+                        setState(() {
+                          email = value;
+                        });
+                      },
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -369,14 +272,21 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Password"),
-                        Text(
-                          "Forgot password?",
-                          style:
-                              TextStyle(color: Color.fromRGBO(83, 178, 246, 1)),
+                        const Text("Password"),
+                        InkWell(
+                          onTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const ForgotPasswordPage(),
+                          )),
+                          child: const Text(
+                            "Forgot password?",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ],
                     ),
@@ -384,7 +294,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       obscureText: isVisible,
                       cursorColor: Colors.black,
-                      controller: passwordController,
+                      onChanged: (value) {
+                        setState(() {
+                          password = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -476,6 +390,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth < 700) {
           return detailScreen(screenWidth);
