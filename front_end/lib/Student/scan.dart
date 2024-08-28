@@ -4,13 +4,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
 
 import '../Auth/api.dart';
+import '../Pages/student_page.dart';
 import '../main.dart';
 
 class ScanFace extends StatefulWidget {
@@ -23,10 +26,22 @@ class ScanFace extends StatefulWidget {
 
 class _ScanFaceState extends State<ScanFace> {
   late CameraController controller;
+  late FaceDetector _faceDetector;
+  bool _isUserLookingAtCamera = false;
+  bool _isDetecting = false;
+  bool _isPictureTaken = false;
+  List<Face> _faces = [];
 
   @override
   void initState() {
     super.initState();
+    _faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
+        performanceMode: FaceDetectorMode.accurate,
+        enableClassification: true,
+      ),
+    );
+
     controller = CameraController(
       cameras[1],
       ResolutionPreset.high,
@@ -36,9 +51,8 @@ class _ScanFaceState extends State<ScanFace> {
     );
 
     controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
+      startFaceDetection();
       // controller.setZoomLevel(1.4);
       setState(() {});
     }).catchError((Object e) {
@@ -55,11 +69,90 @@ class _ScanFaceState extends State<ScanFace> {
         }
       }
     });
-
-    takePicture();
   }
 
-  void markCourseAttendance(image) async {
+  @override
+  void dispose() {
+    _faceDetector.close();
+    controller.dispose();
+    super.dispose();
+  }
+
+  void startFaceDetection() {
+    controller.startImageStream((CameraImage image) async {
+      if (_isDetecting) return;
+      _isDetecting = true;
+
+      try {
+        final faces = await detectFaces(image);
+        setState(() {
+          _faces = faces;
+        });
+        if (faces.isNotEmpty) {
+          final face = faces.first;
+          if (face.headEulerAngleY!.abs() < 10 &&
+              face.headEulerAngleZ!.abs() < 10) {
+            setState(() {
+              _isUserLookingAtCamera = true;
+            });
+            takePicture(); // Trigger picture taking when the user is looking at the camera
+          } else {
+            setState(() {
+              _isUserLookingAtCamera = false;
+            });
+          }
+        }
+      } finally {
+        _isDetecting = false;
+      }
+    });
+  }
+
+  Future<List<Face>> detectFaces(CameraImage image) async {
+    final WriteBuffer allBytes = WriteBuffer();
+    for (Plane plane in image.planes) {
+      allBytes.putUint8List(plane.bytes);
+    }
+    final bytes = allBytes.done().buffer.asUint8List();
+
+    final Size imageSize =
+        Size(image.width.toDouble(), image.height.toDouble());
+
+    // Get image rotation
+    final InputImageRotation imageRotation =
+        InputImageRotationValue.fromRawValue(
+                controller.description.sensorOrientation) ??
+            InputImageRotation.rotation0deg;
+
+    final InputImageFormat inputImageFormat =
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
+
+    final planeData = InputImageMetadata(
+      size: imageSize,
+      rotation: imageRotation,
+      format: inputImageFormat,
+      bytesPerRow: image.planes[0].bytesPerRow,
+    );
+
+    final inputImage = InputImage.fromBytes(
+      bytes: bytes,
+      metadata: planeData,
+    );
+
+    // final inputImageData = InputImageData(
+    //   size: imageSize,
+    //   imageRotation: imageRotation,
+    //   inputImageFormat: inputImageFormat,
+    //   planeData: planeData,
+    // );
+
+    // InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
+
+    return await _faceDetector.processImage(inputImage);
+  }
+
+  Future<dynamic> markCourseAttendance(image) async {
     // Get student name
     final name =
         context.read<StudentsPageProvider>().studentProfile["student_name"];
@@ -82,6 +175,17 @@ class _ScanFaceState extends State<ScanFace> {
     );
 
     if (response.statusCode == 200) {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const StudentPage(),
+        ),
+        (route) => false,
+      );
+
       // Successfully enrolled the face
       QuickAlert.show(
         context: context,
@@ -90,7 +194,20 @@ class _ScanFaceState extends State<ScanFace> {
         text: response.data["detail"],
       );
       print("Class attendance successfully marked");
+
+      return response.data;
     } else {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const StudentPage(),
+        ),
+        (route) => false,
+      );
+
       QuickAlert.show(
         context: context,
         type: QuickAlertType.error,
@@ -101,53 +218,116 @@ class _ScanFaceState extends State<ScanFace> {
     }
   }
 
-  void takePicture() {
-    Timer(const Duration(seconds: 5), () async {
-      await controller.takePicture().then((value) {
-        if (mounted) {
-          final File image = File(value.path);
-          markCourseAttendance(image);
-        }
-      });
-    });
+  void takePicture() async {
+    if (_isPictureTaken) return; // Prevent multiple pictures
+
+    _isPictureTaken = true;
+
+    final XFile imageFile = await controller.takePicture();
+    final File image = File(imageFile.path);
+
+    if (_isUserLookingAtCamera) {
+      await markCourseAttendance(image);
+    } else {
+      // Prompt the user to look at the camera
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: "Attention",
+        text: "Please look directly at the camera to capture your image.",
+        onConfirmBtnTap: () {
+          // Start the face detection again
+          Navigator.of(context).pop(); // Close the alert
+          _isPictureTaken = false; // Allow another attempt
+          startFaceDetection(); // Retry face detection
+        },
+      );
+    }
   }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   final CameraController? cameraController = controller;
-
-  //   // App state changed before we got the chance to initialize.
-  //   if (cameraController == null || !cameraController.value.isInitialized) {
-  //     return;
-  //   }
-
-  //   if (state == AppLifecycleState.inactive) {
-  //     cameraController.dispose();
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     _initializeCameraController(cameraController.description);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   // appBar: AppBar(
-    //   //   title: const Text('Scan Face'),
-    //   //   centerTitle: true,
-    //   //   backgroundColor: Colors.white,
-    //   // ),
-    //   body: controller.value.isInitialized
-    //       ? CameraPreview(controller)
-    //       : Container(),
-    // );
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
+
     return controller.value.isInitialized
-        ? CameraPreview(controller)
+        ? Center(
+            child: Container(
+              height: height * 0.65,
+              width: width * 0.78,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 3,
+                  )),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: AspectRatio(
+                  aspectRatio: controller.value.aspectRatio,
+                  child: Stack(
+                    children: [
+                      CameraPreview(controller),
+                      if (_faces.isNotEmpty)
+                        CustomPaint(
+                          painter: FaceMeshPainter(
+                              _faces, controller.value.previewSize!),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
         : Container();
   }
+}
+
+class FaceMeshPainter extends CustomPainter {
+  final List<Face> faces;
+  final Size previewSize;
+
+  FaceMeshPainter(this.faces, this.previewSize);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    for (Face face in faces) {
+      final boundingBox = face.boundingBox;
+
+      //Log bounding box details
+      print("Drawing bounding box at: ${boundingBox.left}, ${boundingBox.top}");
+
+      canvas.drawRect(
+        Rect.fromLTWH(
+          boundingBox.left * size.width / previewSize.width,
+          boundingBox.top * size.height / previewSize.height,
+          boundingBox.width * size.width / previewSize.width,
+          boundingBox.height * size.height / previewSize.height,
+        ),
+        paint,
+      );
+
+      // Draw face landmarks
+      for (FaceLandmark? landmark in face.landmarks.values) {
+        if (landmark != null) {
+          canvas.drawCircle(
+            Offset(
+              landmark.position.x * size.width / previewSize.width,
+              landmark.position.y * size.height / previewSize.height,
+            ),
+            2.0,
+            Paint()..color = Colors.blue,
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

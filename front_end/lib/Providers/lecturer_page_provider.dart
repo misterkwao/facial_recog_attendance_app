@@ -8,10 +8,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Pages/lecturer_page.dart';
+import 'package:student_attendance_app/Pages/otp_page.dart';
 
 import '../Auth/api.dart';
 import '../Constants/lecturer_constants.dart';
 import '../Pages/login.dart';
+import '../Pages/reset_password.dart';
 
 class LecturerPageProvider with ChangeNotifier {
   List _lecturerClassLocations = [];
@@ -19,17 +22,71 @@ class LecturerPageProvider with ChangeNotifier {
   List _lecturerUpcomingClasses = [];
   List _lecturerClassStatistics = [];
   Map _lecturerProfile = {};
+  String _resetId = '';
 
   List get lecturerClassLocations => _lecturerClassLocations;
   List get lecturerCourses => _lecturerCourses;
   List get lecturerUpcomingClasses => _lecturerUpcomingClasses;
   List get lecturerClassStatistics => _lecturerClassStatistics;
   Map get lecturerProfile => _lecturerProfile;
+  String get resetId => _resetId;
 
   // Function to check internet connectivity
   Future<bool> _checkInternetConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
+  }
+
+  // Login lecturer
+  Future<dynamic> loginLecturer(BuildContext context, Map details) async {
+    // Simulate login
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Check if internet is available
+    if (await _checkInternetConnection()) {
+      try {
+        Dio().options.contentType = Headers.formUrlEncodedContentType;
+        var response = await Dio().post(
+          "${baseurl}lecturer_auth/login",
+          data: details,
+          options: Options(
+            contentType: Headers.formUrlEncodedContentType,
+            validateStatus: (status) => true,
+          ),
+        );
+        if (response.statusCode == 200) {
+          accessToken = response.data["access_token"];
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const LecturerPage(),
+            ),
+            (route) => false,
+          );
+          return response.data;
+        } else {
+          print(response);
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Invalid credentials.",
+          );
+        }
+      } on DioException {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Failed to connect to server. Please try again later.");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
   }
 
   // Fetch necessary information to be able to display page
@@ -302,6 +359,148 @@ class LecturerPageProvider with ChangeNotifier {
           type: QuickAlertType.error,
           title: "Ooops!",
           text: "Failed to delete class.");
+    }
+  }
+
+  // Forgot password
+  Future<dynamic> forgotPasswordEmailCheck(
+      BuildContext context, Map details) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().post(
+        "${baseurl}lecturer_auth/forgot-password",
+        data: details,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        // Get reset id and save it
+        _resetId = response.data["reset_id"];
+        notifyListeners();
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const OtpPage(),
+          ),
+        );
+
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: "Success",
+            text: "An email has been sent to your registered email address.");
+      } else {
+        print(response);
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Email does not exist in the lecturer's database");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  // Verify the sent OTP
+  Future<dynamic> verifyOTP(BuildContext context, Map detail) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().post(
+        "${baseurl}lecturer_auth/verify-code",
+        queryParameters: {"reset_id": _resetId},
+        data: detail,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ResetPasswordPage(),
+          ),
+        );
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: "Success",
+            text: "OTP succesfully verified.");
+      } else {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Invalid OTP");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  // Verify the sent OTP
+  Future<dynamic> sendNewPassword(BuildContext context, Map detail) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().patch(
+        "${baseurl}lecturer_auth/reset-password",
+        queryParameters: {"reset_id": _resetId},
+        data: detail,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+          (route) => false,
+        );
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: "Success",
+            text: "Password successfully changed.");
+      } else {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Oops",
+            text: "An error occurred");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
     }
   }
 }

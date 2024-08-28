@@ -121,7 +121,6 @@ class _StudentLaunchState extends State<StudentLaunch> {
                     backgroundColor: Colors.white,
                     floatingActionButton: ElevatedButton(
                       onPressed: () {
-                        print("Student courses: ${studentCourses.length}");
                         modalSheet(
                             context, 0.7, width, height, const CreateStudent());
                       },
