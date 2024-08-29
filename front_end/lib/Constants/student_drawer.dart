@@ -29,8 +29,9 @@ class _StudentDrawerState extends State<StudentDrawer> {
           children: [
             const DrawerHeader(
                 child: Icon(
-              Icons.favorite,
-              color: Colors.black,
+              Icons.security_outlined,
+              color: Color.fromARGB(168, 78, 199, 255),
+              size: 60,
             )),
             dashList(context, 1, const StudentPage(), "D A S H B O A R D",
                 Icons.dashboard_rounded),
@@ -83,7 +84,8 @@ class _StudentDrawerState extends State<StudentDrawer> {
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,
-                        fontSize: 20),
+                        fontSize: 20,
+                        fontFamily: 'Montserrat'),
                   ),
                 ),
               ),
@@ -147,7 +149,8 @@ class _StudentDrawerState extends State<StudentDrawer> {
             tilename,
             style: TextStyle(
                 color: selectedpage == pagenumber ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat'),
           ),
         ),
       ),

@@ -148,6 +148,17 @@ flutter:
         - asset: assets/fonts/Prompt-ExtraBold.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Regular.ttf
+  #         style: italic
+    - family: Montserrat Bold
+      fonts:
+        - asset: assets/fonts/Montserrat-Bold.ttf
+
+    - family: Montserrat SemiBoldItalic
+      fonts:
+        - asset: assets/fonts/Montserrat-SemiBoldItalic.ttf
 
   
   #

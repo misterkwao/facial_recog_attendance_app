@@ -145,15 +145,16 @@ class _LoginPageState extends State<LoginPage> {
             width: width,
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(25),
             ),
             child: Text(
               label,
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Montserrat Bold'),
             ),
           ),
         ),
@@ -177,13 +178,15 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
                   loginrole == name
                       ? const BoxShadow(
-                          color: Colors.black, spreadRadius: 1, blurRadius: 10)
+                          color: Color.fromARGB(255, 113, 164, 252),
+                          spreadRadius: 1,
+                          blurRadius: 10)
                       : const BoxShadow(color: Colors.white)
                 ]),
                 child: ClipOval(
                   child: LottieBuilder.asset(
                     imagePath,
-                    height: height * 0.06,
+                    height: height * 0.05,
                   ),
                 )),
           ]),
@@ -196,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
         alignment: Alignment.center,
         height: screenHeight,
         width: width,
-        padding: EdgeInsets.symmetric(horizontal: width * 0.10),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.07),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,18 +210,24 @@ class _LoginPageState extends State<LoginPage> {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "WELCOME",
+                    "Welcome back",
                     style: TextStyle(
-                      fontFamily: "Prompt",
-                      fontSize: 40,
-                      fontWeight: FontWeight.w900,
+                      fontFamily: 'Montserrat',
+                      fontSize: 35,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black,
                       // color: Color.fromRGBO(83, 178, 246, 1),
                     ),
                   ),
                 ),
               ),
-              Text("Let's sign you in"),
+              Text("Let's sign you in",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  )),
               BounceInDown(
                 duration: const Duration(milliseconds: 1500),
                 child: Align(
@@ -229,8 +238,8 @@ class _LoginPageState extends State<LoginPage> {
                       return const CircularProgressIndicator(
                           color: Color.fromRGBO(83, 178, 246, 1));
                     },
-                    height: screenHeight * 0.25,
-                    width: screenWidth * 0.5,
+                    height: screenHeight * 0.2,
+                    width: screenWidth * 0.4,
                     repeat: true,
                     fit: BoxFit.contain,
                   ),
@@ -239,7 +248,10 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               BounceInDown(
                   duration: const Duration(seconds: 1),
-                  child: const Text("Email address")),
+                  child: const Text(
+                    "Email address",
+                    style: TextStyle(fontFamily: 'Montserrat'),
+                  )),
               const SizedBox(height: 10),
               Form(
                 key: formKey,
@@ -257,15 +269,33 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 255, 194, 194),
+                                  width: 2),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 255, 194, 194),
+                                  width: 2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none),
-                            filled: true,
-                            fillColor: Colors.grey[300],
-                            suffixIcon: const Icon(Icons.person)),
+                                borderSide: const BorderSide(
+                                    color: Color.fromARGB(255, 216, 216, 216),
+                                    width: 2)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                    color: Color.fromARGB(187, 164, 196, 251),
+                                    width: 2)),
+                            suffixIcon: const Icon(Icons.person,
+                                color: Color.fromARGB(159, 158, 158, 158))),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return "Enter a username";
+                            return "Enter an email";
                           } else if (!RegExp(r'^(?![_.])').hasMatch(value)) {
                             return "Cannot begin with _ or .";
                           } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+$')
@@ -278,6 +308,7 @@ class _LoginPageState extends State<LoginPage> {
                             return null;
                           }
                         },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -286,7 +317,10 @@ class _LoginPageState extends State<LoginPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Password"),
+                          const Text(
+                            "Password",
+                            style: TextStyle(fontFamily: 'Montserrat'),
+                          ),
                           InkWell(
                             onTap: () =>
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -296,7 +330,7 @@ class _LoginPageState extends State<LoginPage> {
                               "Forgot password?",
                               style: TextStyle(
                                   color: Colors.blue,
-                                  fontWeight: FontWeight.w900),
+                                  fontFamily: 'Montserrat Bold'),
                             ),
                           ),
                         ],
@@ -314,29 +348,51 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 255, 194, 194),
+                                width: 2),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 255, 194, 194),
+                                width: 2),
+                          ),
+                          enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none),
-                          filled: true,
-                          fillColor: Colors.grey[300],
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 216, 216, 216),
+                                  width: 2)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(187, 164, 196, 251),
+                                  width: 2)),
                           suffixIcon: GestureDetector(
                             onTap: () => setState(() {
                               isVisible = !isVisible;
                             }),
                             child: isVisible
-                                ? const Icon(Icons.visibility)
-                                : const Icon(Icons.visibility_off),
+                                ? const Icon(
+                                    Icons.visibility,
+                                    color: Color.fromARGB(159, 158, 158, 158),
+                                  )
+                                : const Icon(Icons.visibility_off,
+                                    color: Color.fromARGB(159, 158, 158, 158)),
                           ),
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter a password";
-                          } else if (!RegExp(r'^(?=.{6,}$)').hasMatch(value)) {
-                            return "Cannot be less than 6 characters";
+                          } else if (!RegExp(r'^(?=.{8,}$)').hasMatch(value)) {
+                            return "Cannot be less than 8 characters";
                           } else {
                             return null;
                           }
                         },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.05),
@@ -346,9 +402,10 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.topLeft,
                           child: Text(
                             "Who are you signing in as?",
+                            style: TextStyle(fontFamily: 'Montserrat'),
                           )),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 25),
                     BounceInUp(
                       duration: const Duration(milliseconds: 1500),
                       child: Align(
@@ -370,12 +427,14 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 25),
                     isloading
                         ? const Align(
                             alignment: Alignment.center,
-                            child: CircularProgressIndicator(
-                              color: Color.fromRGBO(83, 178, 246, 1),
+                            child: const CircularProgressIndicator(
+                              color: Color.fromARGB(195, 68, 137, 255),
+                              // backgroundColor: Colors.white12,
+                              strokeWidth: 5.5,
                             ),
                           )
                         : BounceInUp(
@@ -396,11 +455,12 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         "© 2024  ",
                         style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         "This software is a product of Aries Technologies. All rights reserved.",
-                        style: TextStyle(fontSize: 14),
+                        style:
+                            TextStyle(fontSize: 22, fontFamily: 'Montserrat'),
                       )
                     ],
                   ),
@@ -426,7 +486,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Stack(children: [
                   Container(
-                    width: screenWidth * 0.50,
+                    width: screenWidth * 0.40,
                     height: screenHeight,
                     child: FittedBox(
                         fit: BoxFit.fill,
@@ -434,11 +494,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Container(
                     height: screenHeight,
-                    width: screenWidth * 0.5,
+                    width: screenWidth * 0.4,
                     decoration: const BoxDecoration(color: Colors.black38),
                   )
                 ]),
-                detailScreen(screenWidth * 0.50),
+                detailScreen(screenWidth * 0.40),
               ],
             ),
           );

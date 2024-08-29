@@ -19,10 +19,10 @@ Widget profile(double width, double height) {
           Text(
             "Hi, ${value.studentProfile["student_name"]}",
             style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontSize: 25,
-            ),
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 25,
+                fontFamily: 'Montserrat'),
           ),
           const SizedBox(height: 20),
           Container(
@@ -49,26 +49,33 @@ Widget profile(double width, double height) {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                          "Level ${(value.studentProfile["student_current_level"]).toString()}")
+                        "Level ${(value.studentProfile["student_current_level"]).toString()}",
+                        style:
+                            TextStyle(fontFamily: 'Montserrat', fontSize: 15),
+                      )
                     ]),
                     const SizedBox(height: 15),
                     Row(children: [
                       const Icon(
-                        Icons.bar_chart_outlined,
+                        Icons.assessment_outlined,
                         color: Colors.red,
                       ),
                       const SizedBox(width: 10),
                       Text(
-                          "Semester ${(value.studentProfile["student_current_semester"]).toString()}")
+                          "Semester ${(value.studentProfile["student_current_semester"]).toString()}",
+                          style:
+                              TextStyle(fontFamily: 'Montserrat', fontSize: 15))
                     ]),
                     const SizedBox(height: 15),
                     Row(children: [
                       const Icon(
-                        Icons.book_outlined,
+                        Icons.class_outlined,
                         color: Colors.green,
                       ),
                       const SizedBox(width: 10),
-                      Text(value.studentProfile["student_college"])
+                      Text(value.studentProfile["student_college"],
+                          style:
+                              TextStyle(fontFamily: 'Montserrat', fontSize: 15))
                     ]),
                     const SizedBox(height: 15),
                     Row(children: [
@@ -77,7 +84,9 @@ Widget profile(double width, double height) {
                         color: Colors.orange,
                       ),
                       const SizedBox(width: 10),
-                      Text(value.studentProfile["student_department"])
+                      Text(value.studentProfile["student_department"],
+                          style:
+                              TextStyle(fontFamily: 'Montserrat', fontSize: 15))
                     ]),
                   ],
                 ),
@@ -100,10 +109,10 @@ Widget allCourses(BuildContext context) {
         const Text(
           "All Courses",
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 10),
         MediaQuery.removePadding(
@@ -131,17 +140,19 @@ Widget allCourses(BuildContext context) {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       border:
                           Border.all(color: Colors.grey[300] ?? Colors.black)),
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.view_list_sharp,
-                        color: Colors.blue,
+                        Icons.view_agenda_outlined,
+                        color: Color.fromARGB(168, 3, 168, 244),
                       ),
                       const SizedBox(width: 15),
-                      Text("Level: ${value.studentCourses[index]["level"]}")
+                      Text("Level: ${value.studentCourses[index]["level"]}",
+                          style:
+                              TextStyle(fontFamily: 'Montserrat', fontSize: 15))
                     ],
                   ),
                 ),
@@ -166,19 +177,23 @@ Widget semesterMenu(double width, int levelIndex) {
           Text(
             "Level ${(value.studentCourses[levelIndex]["level"]).toString()}",
             style: const TextStyle(
-                fontWeight: FontWeight.w900, color: Colors.black, fontSize: 25),
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+                fontSize: 25,
+                fontFamily: 'Montserrat'),
           ),
           const SizedBox(height: 25),
           const Row(
             children: [
-              Icon(Icons.bar_chart_outlined, color: Colors.red),
+              Icon(Icons.assessment_outlined, color: Colors.red),
               SizedBox(width: 15),
               Text(
                 "Semester 1",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.w900),
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Montserrat'),
               ),
             ],
           ),
@@ -205,7 +220,9 @@ Widget semesterMenu(double width, int levelIndex) {
                       const SizedBox(
                           height: 50,
                           child: VerticalDivider(
-                              color: Colors.blue, thickness: 5)),
+                            color: Colors.blue,
+                            thickness: 5,
+                          )),
                       const SizedBox(width: 15),
                       Expanded(
                         child: Column(
@@ -213,13 +230,16 @@ Widget semesterMenu(double width, int levelIndex) {
                           children: [
                             Text(
                               "Course Title: ${value.studentCourses[levelIndex]["first_semester_courses"][index]["course_title"]}",
+                              style: TextStyle(
+                                  fontFamily: 'Montserrat', fontSize: 15),
                               softWrap: true,
                               overflow: TextOverflow.visible,
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "No of attendances: ${(value.studentCourses[levelIndex]["first_semester_courses"][index]["no_of_attendance"]).toString()}",
-                            ),
+                                "No of attendances: ${(value.studentCourses[levelIndex]["first_semester_courses"][index]["no_of_attendance"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15)),
                           ],
                         ),
                       ),
@@ -230,14 +250,15 @@ Widget semesterMenu(double width, int levelIndex) {
           const SizedBox(height: 25),
           const Row(
             children: [
-              Icon(Icons.bar_chart_outlined, color: Colors.red),
+              Icon(Icons.assessment_outlined, color: Colors.red),
               SizedBox(width: 15),
               Text(
                 "Semester 2",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.w900),
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Montserrat'),
               )
             ],
           ),
@@ -272,13 +293,16 @@ Widget semesterMenu(double width, int levelIndex) {
                           children: [
                             Text(
                               "Course Title: ${value.studentCourses[levelIndex]["second_semester_courses"][index]["course_title"]}",
+                              style: TextStyle(
+                                  fontFamily: 'Montserrat', fontSize: 15),
                               softWrap: true,
                               overflow: TextOverflow.visible,
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "No of attendances: ${(value.studentCourses[levelIndex]["second_semester_courses"][index]["no_of_attendance"]).toString()}",
-                            ),
+                                "No of attendances: ${(value.studentCourses[levelIndex]["second_semester_courses"][index]["no_of_attendance"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15)),
                           ],
                         ),
                       ),
@@ -333,12 +357,12 @@ Widget courses(double height, double width, BuildContext context) {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Courses Registered",
+          "Current Registered Courses ",
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 10),
         MediaQuery.removePadding(
@@ -371,9 +395,12 @@ Widget courses(double height, double width, BuildContext context) {
 Widget courseListTile(String course) {
   return Row(
     children: [
-      const Icon(Icons.stop_circle_rounded),
+      const Icon(
+        Icons.bookmark,
+        color: Color.fromARGB(168, 3, 168, 244),
+      ),
       const SizedBox(width: 10),
-      Text(course),
+      Text(course, style: TextStyle(fontFamily: 'Montserrat', fontSize: 15)),
     ],
   );
 }
@@ -417,10 +444,10 @@ Widget attendances(double width, int gridcount, BuildContext context) {
         const Text(
           "Attendances",
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 10),
         Column(
@@ -470,15 +497,15 @@ Widget attendanceAxis(
     RadialAxis(
       minimum: 0,
       maximum: maxatten,
-      radiusFactor: 1,
+      radiusFactor: 0.8,
       pointers: [
         RangePointer(
-          animationDuration: 2000,
+          animationDuration: 500,
           enableAnimation: true,
           animationType: AnimationType.easeInCirc,
           cornerStyle: CornerStyle.bothCurve,
           value: attendvalue,
-          color: Colors.red,
+          color: const Color.fromARGB(255, 131, 209, 255),
         )
       ],
       showTicks: false,

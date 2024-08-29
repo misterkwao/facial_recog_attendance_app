@@ -61,11 +61,12 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
           const Text(
             "Upcoming Classses",
             style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-            ),
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                fontFamily: 'Montserrat'),
           ),
+          const SizedBox(height: 10),
           MediaQuery.removePadding(
             context: context,
             removeTop: true,
@@ -225,16 +226,28 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
                                   Expanded(
                                       child: Column(
                                     children: [
-                                      Text(value.upcomingClasses[index]
-                                          ["class_name"]),
-                                      Text(value.upcomingClasses[index]
-                                          ["course_title"]),
                                       Text(
-                                        "Start: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["start_time"]))}",
-                                      ),
+                                          value.upcomingClasses[index]
+                                              ["class_name"],
+                                          style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 13)),
                                       Text(
-                                        "End: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["end_time"]))}",
-                                      ),
+                                          value.upcomingClasses[index]
+                                              ["course_title"],
+                                          style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 13)),
+                                      Text(
+                                          "Start: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["start_time"]))}",
+                                          style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 13)),
+                                      Text(
+                                          "End: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["end_time"]))}",
+                                          style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 13)),
                                     ],
                                   )),
                                   Image.asset(
