@@ -15,7 +15,6 @@ import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:quickalert/quickalert.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../Lecturer/delete_upcoming_class.dart';
 import '../Providers/lecturer_page_provider.dart';
