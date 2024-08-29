@@ -201,23 +201,24 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // const Align(
-              //   alignment: Alignment.center,
-              //   child: FittedBox(
-              //     fit: BoxFit.scaleDown,
-              //     child: Text(
-              //       "WELCOME",
-              //       style: TextStyle(
-              //         fontFamily: "Prompt",
-              //         fontSize: 50,
-              //         fontWeight: FontWeight.w900,
-              //         color: Colors.black,
-              //         // color: Color.fromRGBO(83, 178, 246, 1),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
+              const SizedBox(height: 30),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "WELCOME",
+                    style: TextStyle(
+                      fontFamily: "Prompt",
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                      // color: Color.fromRGBO(83, 178, 246, 1),
+                    ),
+                  ),
+                ),
+              ),
+              Text("Let's sign you in"),
               BounceInDown(
                 duration: const Duration(milliseconds: 1500),
                 child: Align(
@@ -228,8 +229,8 @@ class _LoginPageState extends State<LoginPage> {
                       return const CircularProgressIndicator(
                           color: Color.fromRGBO(83, 178, 246, 1));
                     },
-                    height: screenHeight * 0.35,
-                    width: screenWidth * 0.7,
+                    height: screenHeight * 0.25,
+                    width: screenWidth * 0.5,
                     repeat: true,
                     fit: BoxFit.contain,
                   ),
