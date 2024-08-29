@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
+import '../Admin/widgets/admin_widgets.dart';
 import '../Providers/students_page_provider.dart';
 import 'mark_attendance.dart';
 
@@ -111,9 +112,52 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
                                       ["start_time"])) &&
                                   now.isBefore(DateTime.parse(value
                                       .upcomingClasses[index]["end_time"]))) {
+                                // Show bottom sheet to let user know you are checking location
+                                showModalBottomSheet(
+                                  barrierColor: Colors.black26,
+                                  backgroundColor: Colors.white,
+                                  // showDragHandle: true,
+                                  sheetAnimationStyle:
+                                      AnimationStyle(curve: Curves.easeIn),
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      height: 410,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Center(
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            modalDrag(width),
+                                            Image.asset(
+                                              "assets/images/map.gif",
+                                              height: 150,
+                                            ),
+                                            const Text(
+                                                "Making sure you are in class")
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+
                                 // Check location of student
                                 if (await isWithinLocationRadius(
                                     classLatitude, classLongitude)) {
+                                  // Pop modal bottom sheet
+                                  Navigator.pop(context);
+
+                                  // Wait for the pop animation to complete
+                                  await Future.delayed(
+                                      const Duration(milliseconds: 200));
+
                                   QuickAlert.show(
                                     context: context,
                                     type: QuickAlertType.confirm,
@@ -133,6 +177,13 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
                                     ),
                                   );
                                 } else {
+                                  // Pop modal bottom sheet
+                                  Navigator.pop(context);
+
+                                  // Wait for the pop animation to complete
+                                  await Future.delayed(
+                                      const Duration(milliseconds: 200));
+
                                   QuickAlert.show(
                                       context: context,
                                       type: QuickAlertType.error,

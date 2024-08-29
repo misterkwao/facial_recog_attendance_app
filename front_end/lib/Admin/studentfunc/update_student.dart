@@ -19,8 +19,8 @@ class UpdateStudent extends StatefulWidget {
 class _UpdateStudentState extends State<UpdateStudent> {
   final formKey = GlobalKey<FormState>();
 
-  Widget editText(
-      TextEditingController controller, IconData icon, bool enable) {
+  Widget editText(TextEditingController controller, IconData icon, bool enable,
+      String? text) {
     return TextFormField(
       controller: controller,
       cursorColor: Colors.black,
@@ -33,6 +33,9 @@ class _UpdateStudentState extends State<UpdateStudent> {
         fillColor: Colors.grey[300],
         suffixIcon: Icon(icon),
       ),
+      onChanged: (value) => setState(() {
+        text = value;
+      }),
       validator: (value) {
         if (value!.isEmpty) {
           return "Field cannot be empty";
@@ -50,15 +53,15 @@ class _UpdateStudentState extends State<UpdateStudent> {
 
     final TextEditingController studentName = TextEditingController(
         text: (students[selectedStudentIndex]["student_name"]));
-    final TextEditingController yearEnrolled = TextEditingController(
+    TextEditingController yearEnrolled = TextEditingController(
         text: (students[selectedStudentIndex]["year_enrolled"]).toString());
-    final TextEditingController currentLevel = TextEditingController(
+    TextEditingController currentLevel = TextEditingController(
         text: (students[selectedStudentIndex]["student_current_level"])
             .toString());
-    final TextEditingController currentSemester = TextEditingController(
+    TextEditingController currentSemester = TextEditingController(
         text: (students[selectedStudentIndex]["student_current_semester"])
             .toString());
-    final TextEditingController isFaceEnrolled = TextEditingController(
+    TextEditingController isFaceEnrolled = TextEditingController(
         text: (students[selectedStudentIndex]["is_face_enrolled"]).toString());
 
     return Column(
@@ -82,23 +85,27 @@ class _UpdateStudentState extends State<UpdateStudent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Student name"),
-                editText(studentName, Icons.person_3_rounded, false),
+                editText(studentName, Icons.person_3_rounded, false, null),
                 const SizedBox(height: 20),
                 const Text("Year enrolled"),
                 const SizedBox(height: 10),
-                editText(yearEnrolled, Icons.numbers_rounded, true),
+                editText(yearEnrolled, Icons.numbers_rounded, true,
+                    yearEnrolled.text),
                 const SizedBox(height: 20),
                 const Text("Current level"),
                 const SizedBox(height: 10),
-                editText(currentLevel, Icons.numbers_rounded, true),
+                editText(currentLevel, Icons.numbers_rounded, true,
+                    currentLevel.text),
                 const SizedBox(height: 20),
                 const Text("Current semester"),
                 const SizedBox(height: 10),
-                editText(currentSemester, Icons.numbers_rounded, true),
+                editText(currentSemester, Icons.numbers_rounded, true,
+                    currentSemester.text),
                 const SizedBox(height: 20),
                 const Text("Face enrolled"),
                 const SizedBox(height: 10),
-                editText(isFaceEnrolled, Icons.numbers_rounded, true),
+                editText(isFaceEnrolled, Icons.numbers_rounded, true,
+                    isFaceEnrolled.text),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

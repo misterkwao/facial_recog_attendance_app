@@ -460,8 +460,8 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                       // Check location of student
                                       if (await isWithinLocationRadius(
                                           classLatitude, classLongitude)) {
-                                        // Pop modal bottom sheet
 
+                                        // Pop modal bottom sheet
                                         Navigator.pop(context);
 
                                         // Wait for the pop animation to complete

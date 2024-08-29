@@ -399,7 +399,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "This software is a product of Kwao Technologies. All rights reserved.",
+                        "This software is a product of Aries Technologies. All rights reserved.",
                         style: TextStyle(fontSize: 14),
                       )
                     ],
