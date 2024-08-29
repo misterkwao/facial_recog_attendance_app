@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
+import 'package:student_attendance_app/Student/upcoming_classes.dart';
 import 'package:student_attendance_app/Student/upload_face.dart';
 
 import '../Constants/student_constants.dart';
@@ -214,7 +215,7 @@ class _StudentPageState extends State<StudentPage> {
                                 const SizedBox(height: 25),
                                 attendances(width, 3, context),
                                 const SizedBox(height: 25),
-                                upcomingClasses(height, width, context),
+                                const StudentUpcomingClass(),
                                 const SizedBox(height: 25),
                               ],
                             ),
@@ -245,7 +246,7 @@ class _StudentPageState extends State<StudentPage> {
                                   const SizedBox(height: 25),
                                   attendances(width, 4, context),
                                   const SizedBox(height: 25),
-                                  upcomingClasses(height, width, context),
+                                  const StudentUpcomingClass(),
                                   const SizedBox(height: 25),
                                 ],
                               ),
@@ -278,7 +279,7 @@ class _StudentPageState extends State<StudentPage> {
                                   const SizedBox(height: 25),
                                   attendances(width, 5, context),
                                   const SizedBox(height: 25),
-                                  upcomingClasses(height, width, context),
+                                  const StudentUpcomingClass(),
                                 ],
                               ),
                             ),

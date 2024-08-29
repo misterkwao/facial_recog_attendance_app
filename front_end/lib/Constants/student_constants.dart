@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -524,181 +526,185 @@ Widget attendanceAxis(
   ]);
 }
 
-Widget upcomingClasses(double height, double width, BuildContext context) {
-  // Get current date and time
-  DateTime now = DateTime.now();
+// Widget upcomingClasses(double height, double width, BuildContext context) {
+//   // Get current date and time
+//   DateTime now = DateTime.now();
 
-  // Function to check if student is within a 10 meter radius of the location
-  Future<bool> isWithinLocationRadius(double latitude, double longitude) async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+//   double distance = 0;
 
-    print(position);
+//   // Function to check if student is within a 10 meter radius of the location
+//   Future<bool> isWithinLocationRadius(double latitude, double longitude) async {
+//     LocationSettings locationSettings = const LocationSettings(
+//         accuracy: LocationAccuracy.best, distanceFilter: 0);
+//     StreamSubscription<Position> positionStream =
+//         Geolocator.getPositionStream(locationSettings: locationSettings)
+//             .listen((Position? position) {
+//       // print(
+//       //     '${position?.latitude.toString()}, ${position?.longitude.toString()}');
+//       distance = Geolocator.distanceBetween(
+//         position!.latitude,
+//         position!.longitude,
+//         latitude,
+//         longitude,
+//       );
 
-    double distance = Geolocator.distanceBetween(
-      position.latitude,
-      position.longitude,
-      latitude,
-      longitude,
-    );
+//       // Print the distance between the
+//       print(distance);
+//     });
+//     return distance <= 10.0;
+//   }
 
-    // Print the distance between the
-    print(distance);
+//   return SizedBox(
+//     width: width,
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Text(
+//           "Upcoming Classses",
+//           style: TextStyle(
+//             color: Colors.black,
+//             fontWeight: FontWeight.w900,
+//             fontSize: 16,
+//           ),
+//         ),
+//         MediaQuery.removePadding(
+//           context: context,
+//           removeTop: true,
+//           removeBottom: true,
+//           child: Consumer<StudentsPageProvider>(
+//             builder: (context, value, child) {
+//               if (value.upcomingClasses.runtimeType == String) {
+//                 return Container(
+//                   alignment: Alignment.center,
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+//                   decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(20),
+//                     border: Border.all(color: Colors.grey[300] ?? Colors.black),
+//                   ),
+//                   child: const Text(
+//                     "No Upcoming Classes",
+//                     style: TextStyle(color: Colors.black),
+//                   ),
+//                 );
+//               } else {
+//                 return ListView.builder(
+//                   shrinkWrap: true,
+//                   physics: const PageScrollPhysics(),
+//                   itemCount: value.upcomingClasses.length,
+//                   itemBuilder: (context, index) {
+//                     // Get the longitude and latitude where class is being held
+//                     final double classLatitude =
+//                         value.upcomingClasses[index]["location"]["latitude"];
+//                     final double classLongitude =
+//                         value.upcomingClasses[index]["location"]["longitude"];
 
-    return distance <= 10.0;
-  }
+//                     return Column(
+//                       children: [
+//                         InkWell(
+//                           onTap: () async {
+//                             // Print the latitude and longitude of the class
+//                             print(
+//                                 "Latitude: $classLatitude, Longitude: $classLongitude");
 
-  return SizedBox(
-    width: width,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Upcoming Classses",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
-        ),
-        MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          removeBottom: true,
-          child: Consumer<StudentsPageProvider>(
-            builder: (context, value, child) {
-              if (value.upcomingClasses.runtimeType == String) {
-                return Container(
-                  alignment: Alignment.center,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.grey[300] ?? Colors.black),
-                  ),
-                  child: const Text(
-                    "No Upcoming Classes",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                );
-              } else {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const PageScrollPhysics(),
-                  itemCount: value.upcomingClasses.length,
-                  itemBuilder: (context, index) {
-                    // Get the longitude and latitude where class is being held
-                    final double classLatitude =
-                        value.upcomingClasses[index]["location"]["latitude"];
-                    final double classLongitude =
-                        value.upcomingClasses[index]["location"]["longitude"];
+//                             // Check if current date and time is within specified range and route user
+//                             if (now.isAfter(DateTime.parse(value
+//                                     .upcomingClasses[index]["start_time"])) &&
+//                                 now.isBefore(DateTime.parse(value
+//                                     .upcomingClasses[index]["end_time"]))) {
+//                               // Check location of student
+//                               if (await isWithinLocationRadius(
+//                                   classLatitude, classLongitude)) {
+//                                 QuickAlert.show(
+//                                   context: context,
+//                                   type: QuickAlertType.confirm,
+//                                   title: "Attendance",
+//                                   text:
+//                                       "Mark attendance for ${value.upcomingClasses[index]["course_title"]}",
 
-                    return Column(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            // Print the latitude and longitude of the class
-                            print(
-                                "Latitude: $classLatitude, Longitude: $classLongitude");
-
-                            // Check if current date and time is within specified range and route user
-                            if (now.isAfter(DateTime.parse(value
-                                    .upcomingClasses[index]["start_time"])) &&
-                                now.isBefore(DateTime.parse(value
-                                    .upcomingClasses[index]["end_time"]))) {
-                              // Check location of student
-                              if (await isWithinLocationRadius(
-                                  classLatitude, classLongitude)) {
-                                QuickAlert.show(
-                                  context: context,
-                                  type: QuickAlertType.confirm,
-                                  title: "Attendance",
-                                  text:
-                                      "Mark attendance for ${value.upcomingClasses[index]["course_title"]}",
-
-                                  // Navigate to mark attendance page
-                                  onConfirmBtnTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MarkAttendance(
-                                        classId: value.upcomingClasses[index]
-                                            ["_id"],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                QuickAlert.show(
-                                    context: context,
-                                    type: QuickAlertType.error,
-                                    title: "Sorry",
-                                    text:
-                                        "You are not in class and thus can't mark attendance.");
-                              }
-                            } else if (now.isBefore(DateTime.parse(
-                                value.upcomingClasses[index]["start_time"]))) {
-                              QuickAlert.show(
-                                  context: context,
-                                  type: QuickAlertType.error,
-                                  title: "Sorry",
-                                  text: "The class has not started yet.");
-                            } else if (now.isAfter(DateTime.parse(
-                                value.upcomingClasses[index]["end_time"]))) {
-                              QuickAlert.show(
-                                  context: context,
-                                  type: QuickAlertType.error,
-                                  title: "Sorry",
-                                  text:
-                                      "The time has passed and you missed the class.");
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                  color: Colors.grey[300] ?? Colors.black),
-                            ),
-                            child: Row(
-                              children: [
-                                const SizedBox(
-                                    height: 50,
-                                    child: VerticalDivider(
-                                        color: Colors.blue, thickness: 5)),
-                                Expanded(
-                                    child: Column(
-                                  children: [
-                                    Text(value.upcomingClasses[index]
-                                        ["class_name"]),
-                                    Text(value.upcomingClasses[index]
-                                        ["course_title"]),
-                                    Text(
-                                      "Start: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["start_time"]))}",
-                                    ),
-                                    Text(
-                                      "End: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["end_time"]))}",
-                                    ),
-                                  ],
-                                )),
-                                Image.asset(
-                                  "assets/images/facial-recognition-icon.png",
-                                  height: 40,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  },
-                );
-              }
-            },
-          ),
-        )
-      ],
-    ),
-  );
-}
+//                                   // Navigate to mark attendance page
+//                                   onConfirmBtnTap: () => Navigator.push(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                       builder: (context) => MarkAttendance(
+//                                         classId: value.upcomingClasses[index]
+//                                             ["_id"],
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 );
+//                               } else {
+//                                 QuickAlert.show(
+//                                     context: context,
+//                                     type: QuickAlertType.error,
+//                                     title: "Sorry",
+//                                     text:
+//                                         "You are not in class and thus can't mark attendance.");
+//                               }
+//                             } else if (now.isBefore(DateTime.parse(
+//                                 value.upcomingClasses[index]["start_time"]))) {
+//                               QuickAlert.show(
+//                                   context: context,
+//                                   type: QuickAlertType.error,
+//                                   title: "Sorry",
+//                                   text: "The class has not started yet.");
+//                             } else if (now.isAfter(DateTime.parse(
+//                                 value.upcomingClasses[index]["end_time"]))) {
+//                               QuickAlert.show(
+//                                   context: context,
+//                                   type: QuickAlertType.error,
+//                                   title: "Sorry",
+//                                   text:
+//                                       "The time has passed and you missed the class.");
+//                             }
+//                           },
+//                           child: Container(
+//                             padding: const EdgeInsets.symmetric(
+//                                 horizontal: 15, vertical: 5),
+//                             decoration: BoxDecoration(
+//                               borderRadius: BorderRadius.circular(20),
+//                               border: Border.all(
+//                                   color: Colors.grey[300] ?? Colors.black),
+//                             ),
+//                             child: Row(
+//                               children: [
+//                                 const SizedBox(
+//                                     height: 50,
+//                                     child: VerticalDivider(
+//                                         color: Colors.blue, thickness: 5)),
+//                                 Expanded(
+//                                     child: Column(
+//                                   children: [
+//                                     Text(value.upcomingClasses[index]
+//                                         ["class_name"]),
+//                                     Text(value.upcomingClasses[index]
+//                                         ["course_title"]),
+//                                     Text(
+//                                       "Start: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["start_time"]))}",
+//                                     ),
+//                                     Text(
+//                                       "End: ${DateFormat('HH:mm     dd/MM/yyyy').format(DateTime.parse(value.upcomingClasses[index]["end_time"]))}",
+//                                     ),
+//                                   ],
+//                                 )),
+//                                 Image.asset(
+//                                   "assets/images/facial-recognition-icon.png",
+//                                   height: 40,
+//                                 )
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+//                         const SizedBox(height: 10),
+//                       ],
+//                     );
+//                   },
+//                 );
+//               }
+//             },
+//           ),
+//         )
+//       ],
+//     ),
+//   );
+// }
