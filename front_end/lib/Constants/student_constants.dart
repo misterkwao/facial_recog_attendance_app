@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -129,21 +130,23 @@ Widget allCourses(BuildContext context) {
                 modalSheet(context, 0.8, width, height,
                     semesterMenu(width, chosenLevel));
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border:
-                        Border.all(color: Colors.grey[300] ?? Colors.black)),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.view_list_sharp,
-                      color: Colors.blue,
-                    ),
-                    const SizedBox(width: 15),
-                    Text("Level: ${value.studentCourses[index]["level"]}")
-                  ],
+              child: FadeIn(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.grey[300] ?? Colors.black)),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.view_list_sharp,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 15),
+                      Text("Level: ${value.studentCourses[index]["level"]}")
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -561,6 +564,7 @@ Widget upcomingClasses(double height, double width, BuildContext context) {
             fontSize: 16,
           ),
         ),
+        const SizedBox(height: 10),
         MediaQuery.removePadding(
           context: context,
           removeTop: true,
@@ -597,6 +601,7 @@ Widget upcomingClasses(double height, double width, BuildContext context) {
                       children: [
                         InkWell(
                           onTap: () async {
+                            BuildContext? modalContext;
                             // Print the latitude and longitude of the class
                             print(
                                 "Latitude: $classLatitude, Longitude: $classLongitude");
@@ -606,9 +611,48 @@ Widget upcomingClasses(double height, double width, BuildContext context) {
                                     .upcomingClasses[index]["start_time"])) &&
                                 now.isBefore(DateTime.parse(value
                                     .upcomingClasses[index]["end_time"]))) {
+                              // Show bottom sheet to let user know you are checking location
+                              showModalBottomSheet(
+                                barrierColor: Colors.black26,
+                                backgroundColor: Colors.white,
+                                // showDragHandle: true,
+                                sheetAnimationStyle:
+                                    AnimationStyle(curve: Curves.easeIn),
+                                context: context,
+                                builder: (context) {
+                                  modalContext = context;
+                                  return Container(
+                                    height: 410,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          modalDrag(width),
+                                          Image.asset("assets/images/map.gif"),
+                                          const Text(
+                                              "Making sure you are in class")
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                               // Check location of student
                               if (await isWithinLocationRadius(
                                   classLatitude, classLongitude)) {
+                                // Pop modal bottom sheet
+                                if (modalContext != null) {
+                                  Navigator.pop(modalContext!);
+                                }
+
+                                // Wait for the pop animation to complete
+                                await Future.delayed(
+                                    const Duration(milliseconds: 200));
+
                                 QuickAlert.show(
                                   context: context,
                                   type: QuickAlertType.confirm,
@@ -628,6 +672,11 @@ Widget upcomingClasses(double height, double width, BuildContext context) {
                                   ),
                                 );
                               } else {
+                                // Pop modal bottom sheet
+                                if (modalContext != null) {
+                                  Navigator.pop(modalContext!);
+                                }
+
                                 QuickAlert.show(
                                     context: context,
                                     type: QuickAlertType.error,

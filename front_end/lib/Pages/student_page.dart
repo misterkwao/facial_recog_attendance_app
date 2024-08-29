@@ -233,21 +233,48 @@ class _StudentPageState extends State<StudentPage> {
                           child: Container(
                             margin: const EdgeInsets.symmetric(horizontal: 20)
                                 .copyWith(bottom: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  profile(width, height),
-                                  const SizedBox(height: 25),
-                                  allCourses(context),
-                                  const SizedBox(height: 25),
-                                  courses(height, width, context),
-                                  const SizedBox(height: 25),
-                                  attendances(width, 4, context),
-                                  const SizedBox(height: 25),
-                                  upcomingClasses(height, width, context),
-                                  const SizedBox(height: 25),
-                                ],
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                Future.delayed(const Duration(seconds: 2));
+                                await Provider.of<StudentsPageProvider>(context,
+                                        listen: false)
+                                    .fetchDetails(context);
+
+                                // check if is_face_enrolled is false
+                                if (Provider.of<StudentsPageProvider>(context,
+                                            listen: false)
+                                        .studentProfile["is_face_enrolled"] ==
+                                    false) {
+                                  QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.info,
+                                    title: "Urgent!",
+                                    barrierDismissible: false,
+                                    text:
+                                        "Please you need to upload your face to the database to be able to mark attendance for classes.",
+                                    onConfirmBtnTap: () => Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => const UploadFace(),
+                                    )),
+                                  );
+                                }
+                              },
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    profile(width, height),
+                                    const SizedBox(height: 25),
+                                    allCourses(context),
+                                    const SizedBox(height: 25),
+                                    courses(height, width, context),
+                                    const SizedBox(height: 25),
+                                    attendances(width, 4, context),
+                                    const SizedBox(height: 25),
+                                    upcomingClasses(height, width, context),
+                                    const SizedBox(height: 25),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -265,21 +292,48 @@ class _StudentPageState extends State<StudentPage> {
                           child: Container(
                             margin: const EdgeInsets.symmetric(horizontal: 20)
                                 .copyWith(bottom: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 25),
-                                  profile(width, height),
-                                  const SizedBox(height: 25),
-                                  allCourses(context),
-                                  const SizedBox(height: 25),
-                                  courses(height, width, context),
-                                  const SizedBox(height: 25),
-                                  attendances(width, 5, context),
-                                  const SizedBox(height: 25),
-                                  upcomingClasses(height, width, context),
-                                ],
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                Future.delayed(const Duration(seconds: 2));
+                                await Provider.of<StudentsPageProvider>(context,
+                                        listen: false)
+                                    .fetchDetails(context);
+
+                                // check if is_face_enrolled is false
+                                if (Provider.of<StudentsPageProvider>(context,
+                                            listen: false)
+                                        .studentProfile["is_face_enrolled"] ==
+                                    false) {
+                                  QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.info,
+                                    title: "Urgent!",
+                                    barrierDismissible: false,
+                                    text:
+                                        "Please you need to upload your face to the database to be able to mark attendance for classes.",
+                                    onConfirmBtnTap: () => Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => const UploadFace(),
+                                    )),
+                                  );
+                                }
+                              },
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 25),
+                                    profile(width, height),
+                                    const SizedBox(height: 25),
+                                    allCourses(context),
+                                    const SizedBox(height: 25),
+                                    courses(height, width, context),
+                                    const SizedBox(height: 25),
+                                    attendances(width, 5, context),
+                                    const SizedBox(height: 25),
+                                    upcomingClasses(height, width, context),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
