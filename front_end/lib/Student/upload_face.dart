@@ -10,8 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_attendance_app/Auth/api.dart';
+import 'package:student_attendance_app/Pages/lecturer_page.dart';
 import 'package:student_attendance_app/Pages/student_page.dart';
+import 'package:student_attendance_app/Providers/lecturer_page_provider.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
 
 import '../main.dart';
@@ -34,6 +37,7 @@ class _UploadFaceState extends State<UploadFace> {
   @override
   void initState() {
     super.initState();
+
     _faceDetector = FaceDetector(
       options: FaceDetectorOptions(
         performanceMode: FaceDetectorMode.accurate,
@@ -144,7 +148,8 @@ class _UploadFaceState extends State<UploadFace> {
     return await _faceDetector.processImage(inputImage);
   }
 
-  Future<dynamic> enrollFace(image) async {
+  // Enroll student's face
+  Future<dynamic> enrollStudentFace(image) async {
     // Get student name
     final name =
         context.read<StudentsPageProvider>().studentProfile["student_name"];
@@ -206,6 +211,69 @@ class _UploadFaceState extends State<UploadFace> {
     }
   }
 
+  // Enroll lecturers face
+  Future<dynamic> enrollLecturerFace(image) async {
+    // Get lecturer's name
+    final name =
+        context.read<LecturerPageProvider>().lecturerProfile["lecturer_name"];
+
+    FormData data = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path, filename: "$name.jpg")
+    });
+
+    final response = await Dio().post(
+      "${baseurl}lecturer/enroll-face",
+      data: data,
+      options: Options(
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        validateStatus: (status) => true,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LecturerPage(),
+        ),
+        (route) => false,
+      );
+
+      // Successfully enrolled the face
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: "Success",
+        text: "Face enrolled successfully",
+      );
+    } else {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LecturerPage(),
+        ),
+        (route) => false,
+      );
+
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: response.data["detail"],
+      );
+    }
+  }
+
   void takePicture() async {
     if (_isPictureTaken) return; // Prevent multiple pictures
 
@@ -214,8 +282,18 @@ class _UploadFaceState extends State<UploadFace> {
     final XFile imageFile = await controller.takePicture();
     final File image = File(imageFile.path);
 
+    // Get an instance of the shared preferences
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    String? user = localStorage.getString("page");
+
     if (_isUserLookingAtCamera) {
-      await enrollFace(image);
+      if (user == "lecturer") {
+        await enrollLecturerFace(image);
+      } else if (user == "student") {
+        await enrollStudentFace(image);
+      }
     } else {
       // Prompt the user to look at the camera
       QuickAlert.show(

@@ -10,6 +10,9 @@ import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Pages/lecturer_page.dart';
+import 'package:student_attendance_app/Providers/lecturer_page_provider.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
 
 import '../Auth/api.dart';
@@ -152,7 +155,8 @@ class _ScanFaceState extends State<ScanFace> {
     return await _faceDetector.processImage(inputImage);
   }
 
-  Future<dynamic> markCourseAttendance(image) async {
+  // Mark course attendance for student
+  Future<dynamic> markStudentCourseAttendance(image) async {
     // Get student name
     final name =
         context.read<StudentsPageProvider>().studentProfile["student_name"];
@@ -218,6 +222,73 @@ class _ScanFaceState extends State<ScanFace> {
     }
   }
 
+  // Mark lecturer course attendance
+  Future<dynamic> markLecturerCourseAttendance(image) async {
+    // Get student name
+    final name =
+        context.read<LecturerPageProvider>().lecturerProfile["lecturer_name"];
+
+    FormData data = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path, filename: "$name.jpg")
+    });
+
+    final response = await Dio().post(
+      "${baseurl}lecturer/attendance/class",
+      queryParameters: {"id": widget.classId},
+      data: data,
+      options: Options(
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LecturerPage(),
+        ),
+        (route) => false,
+      );
+
+      // Successfully enrolled the face
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: "Success",
+        text: response.data["detail"],
+      );
+      print("Class attendance successfully marked");
+
+      return response.data;
+    } else {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LecturerPage(),
+        ),
+        (route) => false,
+      );
+
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: response.data["detail"],
+      );
+      print("Failed to mark attendance: ${response.data["detail"]}");
+    }
+  }
+
   void takePicture() async {
     if (_isPictureTaken) return; // Prevent multiple pictures
 
@@ -226,8 +297,18 @@ class _ScanFaceState extends State<ScanFace> {
     final XFile imageFile = await controller.takePicture();
     final File image = File(imageFile.path);
 
+    // Get an instance of the shared preferences
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    String? user = localStorage.getString("page");
+
     if (_isUserLookingAtCamera) {
-      await markCourseAttendance(image);
+      if (user == "lecturer") {
+        await markLecturerCourseAttendance(image);
+      } else if (user == "student") {
+        await markStudentCourseAttendance(image);
+      }
     } else {
       // Prompt the user to look at the camera
       QuickAlert.show(

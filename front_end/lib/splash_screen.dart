@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Auth/api.dart';
@@ -37,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     getValidationData().then((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(Duration.zero, _navigateBasedOnToken);
+        Future.delayed(const Duration(seconds: 5), _navigateBasedOnToken);
       });
     });
   }
@@ -70,9 +71,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(child: CircularProgressIndicator()),
+      body: Center(child: LottieBuilder.asset("assets/images/splash.json")),
     );
   }
 }

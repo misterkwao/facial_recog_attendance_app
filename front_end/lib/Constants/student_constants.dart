@@ -1,20 +1,16 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
-import 'dart:async';
-
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:quickalert/quickalert.dart';
+
 import 'package:student_attendance_app/Admin/widgets/admin_widgets.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-import '../Student/mark_attendance.dart';
 
 Widget profile(double width, double height) {
-  return SizedBox(
+  return Container(
     width: width,
     child: Consumer<StudentsPageProvider>(
       builder: (context, value, child) => Column(
@@ -131,21 +127,23 @@ Widget allCourses(BuildContext context) {
                 modalSheet(context, 0.8, width, height,
                     semesterMenu(width, chosenLevel));
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border:
-                        Border.all(color: Colors.grey[300] ?? Colors.black)),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.view_list_sharp,
-                      color: Colors.blue,
-                    ),
-                    const SizedBox(width: 15),
-                    Text("Level: ${value.studentCourses[index]["level"]}")
-                  ],
+              child: FadeIn(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.grey[300] ?? Colors.black)),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.view_list_sharp,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 15),
+                      Text("Level: ${value.studentCourses[index]["level"]}")
+                    ],
+                  ),
                 ),
               ),
             ),

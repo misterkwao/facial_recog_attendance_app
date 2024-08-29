@@ -1,5 +1,6 @@
 // ignore_for_file: sized_box_for_whitespace, use_build_context_synchronously, avoid_print
 
+import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -200,152 +201,172 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 70),
+              const SizedBox(height: 30),
               const Align(
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "W E L C O M E !",
+                    "WELCOME",
                     style: TextStyle(
-                      fontFamily: "Kanit",
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: "Prompt",
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
                       color: Colors.black,
                       // color: Color.fromRGBO(83, 178, 246, 1),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.center,
-                child: Lottie.asset(
-                  "assets/images/loginlottie.json",
-                  errorBuilder: (context, error, stackTrace) {
-                    return const CircularProgressIndicator(
-                        color: Color.fromRGBO(83, 178, 246, 1));
-                  },
-                  height: screenHeight * 0.15,
-                  width: screenWidth * 0.3,
-                  repeat: true,
-                  fit: BoxFit.contain,
+              Text("Let's sign you in"),
+              BounceInDown(
+                duration: const Duration(milliseconds: 1500),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Lottie.asset(
+                    "assets/images/login.json",
+                    errorBuilder: (context, error, stackTrace) {
+                      return const CircularProgressIndicator(
+                          color: Color.fromRGBO(83, 178, 246, 1));
+                    },
+                    height: screenHeight * 0.25,
+                    width: screenWidth * 0.5,
+                    repeat: true,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
-              const Text("Email address"),
+              const SizedBox(height: 20),
+              BounceInDown(
+                  duration: const Duration(seconds: 1),
+                  child: const Text("Email address")),
               const SizedBox(height: 10),
               Form(
                 key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: Colors.black,
-                      onChanged: (value) {
-                        setState(() {
-                          email = value;
-                        });
-                      },
-                      decoration: InputDecoration(
+                    BounceInDown(
+                      duration: const Duration(milliseconds: 1500),
+                      child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        cursorColor: Colors.black,
+                        onChanged: (value) {
+                          setState(() {
+                            email = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide.none),
+                            filled: true,
+                            fillColor: Colors.grey[300],
+                            suffixIcon: const Icon(Icons.person)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Enter a username";
+                          } else if (!RegExp(r'^(?![_.])').hasMatch(value)) {
+                            return "Cannot begin with _ or .";
+                          } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+$')
+                              .hasMatch(value)) {
+                            return "Can contain only _ and . as special characters";
+                          } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+(?<![._])$')
+                              .hasMatch(value)) {
+                            return "Cannot end with _ or .";
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    BounceInDown(
+                      duration: const Duration(milliseconds: 1500),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Password"),
+                          InkWell(
+                            onTap: () =>
+                                Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const ForgotPasswordPage(),
+                            )),
+                            child: const Text(
+                              "Forgot password?",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    BounceInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: TextFormField(
+                        obscureText: isVisible,
+                        cursorColor: Colors.black,
+                        onChanged: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none),
                           filled: true,
                           fillColor: Colors.grey[300],
-                          suffixIcon: const Icon(Icons.person)),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Enter a username";
-                        } else if (!RegExp(r'^(?![_.])').hasMatch(value)) {
-                          return "Cannot begin with _ or .";
-                        } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+$')
-                            .hasMatch(value)) {
-                          return "Can contain only _ and . as special characters";
-                        } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+(?<![._])$')
-                            .hasMatch(value)) {
-                          return "Cannot end with _ or .";
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Password"),
-                        InkWell(
-                          onTap: () =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const ForgotPasswordPage(),
-                          )),
-                          child: const Text(
-                            "Forgot password?",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                          suffixIcon: GestureDetector(
+                            onTap: () => setState(() {
+                              isVisible = !isVisible;
+                            }),
+                            child: isVisible
+                                ? const Icon(Icons.visibility)
+                                : const Icon(Icons.visibility_off),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      obscureText: isVisible,
-                      cursorColor: Colors.black,
-                      onChanged: (value) {
-                        setState(() {
-                          password = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none),
-                        filled: true,
-                        fillColor: Colors.grey[300],
-                        suffixIcon: GestureDetector(
-                          onTap: () => setState(() {
-                            isVisible = !isVisible;
-                          }),
-                          child: isVisible
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Enter a password";
+                          } else if (!RegExp(r'^(?=.{6,}$)').hasMatch(value)) {
+                            return "Cannot be less than 6 characters";
+                          } else {
+                            return null;
+                          }
+                        },
                       ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Enter a password";
-                        } else if (!RegExp(r'^(?=.{6,}$)').hasMatch(value)) {
-                          return "Cannot be less than 6 characters";
-                        } else {
-                          return null;
-                        }
-                      },
                     ),
                     SizedBox(height: screenHeight * 0.05),
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Who are you signing in as?",
-                        )),
+                    BounceInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: const Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "Who are you signing in as?",
+                          )),
+                    ),
                     const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.center,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          children: [
-                            roleSelect(screenHeight, screenWidth,
-                                "assets/images/admin.json", "Admin"),
-                            SizedBox(width: screenWidth * 0.1),
-                            roleSelect(screenHeight, screenWidth,
-                                "assets/images/student.json", "Student"),
-                            SizedBox(width: screenWidth * 0.1),
-                            roleSelect(screenHeight, screenWidth,
-                                "assets/images/lecturer.json", "Lecturer")
-                          ],
+                    BounceInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            children: [
+                              roleSelect(screenHeight, screenWidth,
+                                  "assets/images/admin.json", "Admin"),
+                              SizedBox(width: screenWidth * 0.1),
+                              roleSelect(screenHeight, screenWidth,
+                                  "assets/images/student.json", "Student"),
+                              SizedBox(width: screenWidth * 0.1),
+                              roleSelect(screenHeight, screenWidth,
+                                  "assets/images/lecturer.json", "Lecturer")
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -357,7 +378,10 @@ class _LoginPageState extends State<LoginPage> {
                               color: Color.fromRGBO(83, 178, 246, 1),
                             ),
                           )
-                        : loginButton(context, loginrole, "Login", screenWidth),
+                        : BounceInUp(
+                            duration: const Duration(milliseconds: 1500),
+                            child: loginButton(
+                                context, loginrole, "Login", screenWidth)),
                     const SizedBox(height: 30),
                   ],
                 ),

@@ -3,24 +3,24 @@
 
 import 'dart:io';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-// import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-// import 'package:printing/printing.dart';
+
 import 'package:quickalert/quickalert.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../Lecturer/delete_upcoming_class.dart';
 import '../Providers/lecturer_page_provider.dart';
 import '../Admin/widgets/admin_widgets.dart';
 import '../Lecturer/create_class.dart';
+import '../Student/mark_attendance.dart';
 
 Widget lecturerProfile(double width, double height) {
   return Container(
@@ -38,52 +38,55 @@ Widget lecturerProfile(double width, double height) {
             ),
           ),
           const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey[300] ?? Colors.black),
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: LottieBuilder.asset(
-                    "assets/images/lecturer.json",
-                    height: 100,
+          JelloIn(
+            duration: Duration(milliseconds: 1500),
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey[300] ?? Colors.black),
+              ),
+              child: Stack(
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: LottieBuilder.asset(
+                      "assets/images/lecturer.json",
+                      height: 100,
+                    ),
                   ),
-                ),
-                Column(
-                  children: [
-                    const Row(children: [
-                      Icon(
-                        Icons.person_3_outlined,
-                        color: Colors.red,
-                      ),
-                      SizedBox(width: 10),
-                      Text("Lecturer")
-                    ]),
-                    const SizedBox(height: 15),
-                    Row(children: [
-                      const Icon(
-                        Icons.book_outlined,
-                        color: Colors.green,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(value.lecturerProfile["lecturer_college"])
-                    ]),
-                    const SizedBox(height: 15),
-                    Row(children: [
-                      const Icon(
-                        Icons.school_outlined,
-                        color: Colors.orange,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(value.lecturerProfile["lecturer_department"])
-                    ]),
-                  ],
-                ),
-              ],
+                  Column(
+                    children: [
+                      const Row(children: [
+                        Icon(
+                          Icons.person_3_outlined,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 10),
+                        Text("Lecturer")
+                      ]),
+                      const SizedBox(height: 15),
+                      Row(children: [
+                        const Icon(
+                          Icons.book_outlined,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(value.lecturerProfile["lecturer_college"])
+                      ]),
+                      const SizedBox(height: 15),
+                      Row(children: [
+                        const Icon(
+                          Icons.school_outlined,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(value.lecturerProfile["lecturer_department"])
+                      ]),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -112,122 +115,51 @@ Widget lecturerCourses(double height, double width, BuildContext context) {
             context: context,
             removeTop: true,
             removeBottom: true,
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const ScrollPhysics(),
-              itemCount: value.lecturerCourses.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border:
-                          Border.all(color: Colors.grey[300] ?? Colors.black)),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                          height: 50,
-                          child: VerticalDivider(
-                              color: Colors.blue, thickness: 5)),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(value.lecturerCourses[index]["course_title"]),
-                            Text(
-                                "Level: ${(value.lecturerCourses[index]["level"]).toString()}"),
-                            Text(
-                                "Semester: ${(value.lecturerCourses[index]["semester"]).toString()}")
-                          ],
+            child: SlideInLeft(
+              duration: Duration(milliseconds: 1500),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const ScrollPhysics(),
+                itemCount: value.lecturerCourses.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: Colors.grey[300] ?? Colors.black)),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                            height: 50,
+                            child: VerticalDivider(
+                                color: Colors.blue, thickness: 5)),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                  value.lecturerCourses[index]["course_title"]),
+                              Text(
+                                  "Level: ${(value.lecturerCourses[index]["level"]).toString()}"),
+                              Text(
+                                  "Semester: ${(value.lecturerCourses[index]["semester"]).toString()}")
+                            ],
+                          ),
                         ),
-                      ),
-                      const Icon(Icons.bookmark_outline,
-                          color: Colors.blue, size: 20)
-                    ],
-                  ),
-                );
-              },
+                        const Icon(Icons.bookmark_outline,
+                            color: Colors.blue, size: 20)
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
     ),
   );
-}
-
-Widget lecturerGauge(double width, String week, double firstattend,
-    double secondattend, double thirdattend) {
-  return Container(
-    width: width,
-    // margin: const EdgeInsets.symmetric(horizontal: 10),
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-    decoration: BoxDecoration(
-        color: Colors.black, borderRadius: BorderRadius.circular(20)),
-    child: FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Column(
-        children: [
-          Text(
-            week,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Intro to JAVA",
-            style: TextStyle(color: Colors.white),
-          ),
-          lecturerCourseAttendance(firstattend),
-          const SizedBox(height: 20),
-          const Text(
-            "Computer Networks",
-            style: TextStyle(color: Colors.white),
-          ),
-          lecturerCourseAttendance(secondattend),
-          const SizedBox(height: 20),
-          const Text(
-            "E-commerce",
-            style: TextStyle(color: Colors.white),
-          ),
-          lecturerCourseAttendance(thirdattend)
-        ],
-      ),
-    ),
-  );
-}
-
-Widget lecturerCourseAttendance(double attendance) {
-  return SfLinearGauge(
-    animateAxis: true,
-    animateRange: true,
-    animationDuration: 5000,
-    axisLabelStyle: const TextStyle(color: Colors.white),
-    minimum: 0,
-    maximum: 500,
-    barPointers: [
-      LinearBarPointer(
-        value: attendance,
-        color: Colors.blueAccent,
-      )
-    ],
-  );
-}
-
-Widget carousel(double width) {
-  return CarouselSlider(
-      options: CarouselOptions(
-        height: 300,
-        autoPlay: true,
-        autoPlayInterval: const Duration(seconds: 30),
-        enlargeCenterPage: true,
-        viewportFraction: 1,
-        aspectRatio: 16 / 9,
-      ),
-      items: [
-        lecturerGauge(width, "Week 5", 146, 367, 437),
-        lecturerGauge(width, "Week 6", 457, 287, 239),
-        lecturerGauge(width, "Week 7", 361, 203, 424),
-      ]);
 }
 
 Widget lecClassLocations(double width, BuildContext context) {
@@ -269,33 +201,36 @@ Widget lecClassLocations(double width, BuildContext context) {
         ),
         const Divider(),
         const SizedBox(height: 20),
-        MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          removeBottom: true,
-          child: Consumer<LecturerPageProvider>(
-            builder: (context, value, child) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: value.lecturerClassLocations.length,
-              itemBuilder: (context, index) => Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      value.lecturerClassLocations[index]["class_name"],
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: "Kanit",
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      value.lecturerClassLocations[index]["college_location"],
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
+        SlideInLeft(
+          duration: Duration(milliseconds: 1500),
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            removeBottom: true,
+            child: Consumer<LecturerPageProvider>(
+              builder: (context, value, child) => ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: value.lecturerClassLocations.length,
+                itemBuilder: (context, index) => Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        value.lecturerClassLocations[index]["class_name"],
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: "Kanit",
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        value.lecturerClassLocations[index]["college_location"],
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -323,153 +258,295 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
           ),
         ),
         const SizedBox(height: 10),
-        MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          removeBottom: true,
-          child: Consumer<LecturerPageProvider>(
-            builder: (context, value, child) {
-              if (value.lecturerUpcomingClasses[0] == "No classes" ||
-                  value.lecturerUpcomingClasses[0] == "no classes") {
-                return Container(
-                  width: width,
-                  child: const Center(
-                    child: Text(
-                      "No upcoming classes available",
-                      style: TextStyle(color: Colors.black),
+        SlideInRight(
+          duration: Duration(milliseconds: 1500),
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            removeBottom: true,
+            child: Consumer<LecturerPageProvider>(
+              builder: (context, value, child) {
+                if (value.lecturerUpcomingClasses[0] == "No classes" ||
+                    value.lecturerUpcomingClasses[0] == "no classes") {
+                  return Container(
+                    width: width,
+                    child: const Center(
+                      child: Text(
+                        "No upcoming classes available",
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
-                  ),
-                );
-              } else {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: value.lecturerUpcomingClasses.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: width,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              width: width,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                    color: Colors.grey[300] ?? Colors.black),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.stop_circle_rounded),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            value.lecturerUpcomingClasses[index]
-                                                ["course_title"],
-                                            style: const TextStyle(
+                  );
+                } else {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: value.lecturerUpcomingClasses.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: width,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                      color: Colors.grey[300] ?? Colors.black),
+                                ),
+                                padding: const EdgeInsets.all(20),
+                                margin: const EdgeInsets.only(top: 10),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                                Icons.stop_circle_rounded),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              value.lecturerUpcomingClasses[
+                                                  index]["course_title"],
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          (value.lecturerUpcomingClasses[index]
+                                                  ["course_level"])
+                                              .toString(),
+                                          style: const TextStyle(
                                               fontSize: 16,
+                                              fontFamily: "Kanit",
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          "Location:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          value.lecturerUpcomingClasses[index]
+                                              ["class_name"],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          "Start:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          DateFormat('HH:mm     dd/MM/yyyy')
+                                              .format(DateTime.parse(
+                                                  value.lecturerUpcomingClasses[
+                                                      index]["start_time"])),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          "End:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          DateFormat('HH:mm     dd/MM/yyyy')
+                                              .format(DateTime.parse(
+                                                  value.lecturerUpcomingClasses[
+                                                      index]["end_time"])),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton(
+                              color: Colors.white,
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  onTap: () async {
+                                    // Get current date and time
+                                    DateTime now = DateTime.now();
+
+                                    // Function to check if student is within a 10 meter radius of the location
+                                    Future<bool> isWithinLocationRadius(
+                                        double latitude,
+                                        double longitude) async {
+                                      Position position =
+                                          await Geolocator.getCurrentPosition(
+                                              desiredAccuracy:
+                                                  LocationAccuracy.high);
+
+                                      print(position);
+
+                                      double distance =
+                                          Geolocator.distanceBetween(
+                                        position.latitude,
+                                        position.longitude,
+                                        latitude,
+                                        longitude,
+                                      );
+
+                                      // Print the distance between the
+                                      print(distance);
+
+                                      return distance <= 10.0;
+                                    }
+
+                                    // Get the longitude and latitude where class is being held
+                                    final double classLatitude =
+                                        value.lecturerUpcomingClasses[index]
+                                            ["location"]["latitude"];
+                                    final double classLongitude =
+                                        value.lecturerUpcomingClasses[index]
+                                            ["location"]["longitude"];
+
+                                    // Check if current date and time is within specified range and route user
+                                    if (now.isAfter(DateTime.parse(value.lecturerUpcomingClasses[index]["start_time"])) &&
+                                        now.isBefore(DateTime.parse(
+                                            value.lecturerUpcomingClasses[index]
+                                                ["end_time"]))) {
+                                      // Show bottom sheet to let user know you are checking location
+                                      showModalBottomSheet(
+                                        barrierColor: Colors.black26,
+                                        backgroundColor: Colors.white,
+                                        // showDragHandle: true,
+                                        sheetAnimationStyle: AnimationStyle(
+                                            curve: Curves.easeIn),
+                                        context: context,
+                                        builder: (context) {
+                                          return Container(
+                                            height: 410,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: Center(
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(height: 10),
+                                                  modalDrag(width),
+                                                  Image.asset(
+                                                      "assets/images/map.gif"),
+                                                  const Text(
+                                                      "Making sure you are in class")
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                      // Check location of student
+                                      if (await isWithinLocationRadius(
+                                          classLatitude, classLongitude)) {
+                                        // Pop modal bottom sheet
+
+                                        Navigator.pop(context);
+
+                                        // Wait for the pop animation to complete
+                                        await Future.delayed(
+                                            const Duration(milliseconds: 200));
+
+                                        QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.confirm,
+                                          title: "Attendance",
+                                          text:
+                                              "Mark attendance for ${value.lecturerUpcomingClasses[index]["course_title"]}",
+
+                                          // Navigate to mark attendance page
+                                          onConfirmBtnTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MarkAttendance(
+                                                classId: value
+                                                        .lecturerUpcomingClasses[
+                                                    index]["_id"],
+                                              ),
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      Text(
-                                        (value.lecturerUpcomingClasses[index]
-                                                ["course_level"])
-                                            .toString(),
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Kanit",
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        "Location:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
+                                        );
+                                      } else {
+                                        // Pop modal bottom sheet
+
+                                        Navigator.pop(context);
+
+                                        QuickAlert.show(
+                                            context: context,
+                                            type: QuickAlertType.error,
+                                            title: "Sorry",
+                                            text:
+                                                "You are not in class and thus can't mark attendance.");
+                                      }
+                                    } else if (now.isBefore(DateTime.parse(
                                         value.lecturerUpcomingClasses[index]
-                                            ["class_name"],
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        "Start:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        DateFormat('HH:mm     dd/MM/yyyy')
-                                            .format(DateTime.parse(
-                                                value.lecturerUpcomingClasses[
-                                                    index]["start_time"])),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        "End:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        DateFormat('HH:mm     dd/MM/yyyy')
-                                            .format(DateTime.parse(
-                                                value.lecturerUpcomingClasses[
-                                                    index]["end_time"])),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          PopupMenuButton(
-                            color: Colors.white,
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                onTap: () {
-                                  selectedUpcomingClass = index;
-                                  modalSheet(context, 0.4, width, height,
-                                      const DeleteUpcomingClass());
-                                },
-                                child: const Text(
-                                  "Delete class",
-                                  style: TextStyle(color: Colors.black),
+                                            ["start_time"]))) {
+                                      QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.error,
+                                          title: "Sorry",
+                                          text:
+                                              "The class has not started yet.");
+                                    } else if (now.isAfter(DateTime.parse(
+                                        value.lecturerUpcomingClasses[index]
+                                            ["end_time"]))) {
+                                      QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.error,
+                                          title: "Sorry",
+                                          text:
+                                              "The time has passed and you missed the class.");
+                                    }
+                                  },
+                                  child: const Text("Mark Attendance"),
                                 ),
-                              )
-                            ],
-                            child: const Icon(
-                              Icons.more_vert_rounded,
-                              color: Colors.black,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                );
-              }
-            },
+                                PopupMenuItem(
+                                  onTap: () {
+                                    selectedUpcomingClass = index;
+                                    modalSheet(context, 0.4, width, height,
+                                        const DeleteUpcomingClass());
+                                  },
+                                  child: const Text(
+                                    "Delete class",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
+                              child: const Icon(
+                                Icons.more_vert_rounded,
+                                color: Colors.black,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ),
         const SizedBox(height: 5),
@@ -662,14 +739,29 @@ Widget attendeeNames(
               pw.SizedBox(height: 20),
               (flattenedList[mainIndex]["attendee_names"]).isEmpty
                   ? pw.Text("No student attended the class")
-                  : pw.ListView.builder(
-                      itemCount:
-                          flattenedList[mainIndex]["attendee_names"].length,
-                      itemBuilder: (context, index) {
-                        return pw.Text(
-                            "${(index + 1).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}");
-                      },
-                    ),
+                  : pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: List.generate(
+                        flattenedList[mainIndex]["attendee_names"].length,
+                        (index) {
+                          return pw.Padding(
+                            padding: pw.EdgeInsets.only(bottom: 10),
+                            child: pw.Text(
+                              "${(index + 1).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}",
+                              style: pw.TextStyle(fontSize: 16),
+                            ),
+                          );
+                        },
+                      ))
+              // pw.ListView.builder(
+              //     itemCount:
+              //         flattenedList[mainIndex]["attendee_names"].length,
+              //     itemBuilder: (context, index) {
+              //       return pw.Text(
+              //           "${(index + 1).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}",
+              //           style: pw.TextStyle(fontSize: 16));
+              //     },
+              //   ),
             ],
           );
         },
@@ -777,4 +869,50 @@ Widget attendeeNames(
       ],
     ),
   );
+}
+
+final List<Map<String, dynamic>> data = [
+  {
+    "year": 2024,
+    "months": [
+      {
+        "month": 8,
+        "weeks": [
+          {
+            "week": 34,
+            "classes": [
+              {
+                "class_name": "Introduction to Compilers",
+                "start_time": "2024-08-20T09:33:00",
+                "performance": 0.0,
+              },
+              {
+                "class_name": "Introduction to Compilers",
+                "start_time": "2024-08-21T08:30:00",
+                "performance": 50.0,
+              },
+            ],
+          },
+          {
+            "week": 35,
+            "classes": [
+              {
+                "class_name": "Introduction to Compilers",
+                "start_time": "2024-08-27T17:36:00",
+                "performance": 50.0,
+              },
+            ],
+          }
+        ],
+      },
+    ],
+  },
+];
+
+class ClassData {
+  final String name;
+  final DateTime date;
+  final double performance;
+
+  ClassData(this.date, this.performance, this.name);
 }
