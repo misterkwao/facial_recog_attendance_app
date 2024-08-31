@@ -59,11 +59,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 const SizedBox(height: 50),
                 const Text(
                   "Forgot Password ?",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                    "Don't worry, enter the email address associated with the account. You will receive a one-time-password to be able to reset your password."),
+                  "Don't worry, enter the email address associated with the account. You will receive a one-time-password to be able to reset your password.",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Colors.black,
+                    // color: Color.fromRGBO(83, 178, 246, 1),
+                  ),
+                ),
                 const SizedBox(height: 50),
                 Form(
                   key: thisformKey,
@@ -72,13 +83,30 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       TextFormField(
                         cursorColor: Colors.black,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                            errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none),
-                          filled: true,
-                          fillColor: Colors.grey[300],
-                          suffixIcon: const Icon(Icons.email_rounded),
-                        ),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 255, 194, 194),
+                                  width: 2),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 255, 194, 194),
+                                  width: 2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                    color: Color.fromARGB(255, 216, 216, 216),
+                                    width: 2)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                    color: Color.fromARGB(187, 164, 196, 251),
+                                    width: 2)),
+                            suffixIcon: const Icon(Icons.person,
+                                color: Color.fromARGB(159, 158, 158, 158))),
                         onChanged: (value) {
                           setState(() {
                             emailForgot = value;
@@ -87,9 +115,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Field cannot be empty";
+                          } else if (!RegExp(r'^(?![_.])').hasMatch(value)) {
+                            return "Cannot begin with _ or .";
+                          } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+$')
+                              .hasMatch(value)) {
+                            return "Can contain only _ and . as special characters";
+                          } else if (!RegExp(r'^[a-z A-Z 0-9 ._@]+(?<![._])$')
+                              .hasMatch(value)) {
+                            return "Cannot end with _ or .";
+                          } else {
+                            return null;
                           }
-                          return null;
                         },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                       const SizedBox(height: 20),
                       Row(
@@ -106,7 +144,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     },
                                   ),
                                 ),
-                                const Text("Admin"),
+                                const Text(
+                                  "Admin",
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -122,7 +165,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     },
                                   ),
                                 ),
-                                const Text("Student"),
+                                const Text(
+                                  "Student",
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -138,7 +186,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     },
                                   ),
                                 ),
-                                const Text("Lecturer"),
+                                Expanded(
+                                  child: const Text(
+                                    "Lecturer",
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -228,15 +283,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.blueAccent,
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: const Text(
                                   "Send",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Montserrat Bold'),
                                 ),
                               ),
                             ),

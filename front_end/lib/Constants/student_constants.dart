@@ -84,9 +84,11 @@ Widget profile(double width, double height) {
                         color: Colors.orange,
                       ),
                       const SizedBox(width: 10),
-                      Text(value.studentProfile["student_department"],
-                          style:
-                              TextStyle(fontFamily: 'Montserrat', fontSize: 15))
+                      Expanded(
+                        child: Text(value.studentProfile["student_department"],
+                            style: TextStyle(
+                                fontFamily: 'Montserrat', fontSize: 15)),
+                      )
                     ]),
                   ],
                 ),

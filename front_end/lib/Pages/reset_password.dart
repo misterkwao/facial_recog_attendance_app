@@ -48,7 +48,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             const SizedBox(height: 20),
             const Text(
               "Reset Password",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                // color: Color.fromRGBO(83, 178, 246, 1),
+              ),
             ),
             const SizedBox(height: 30),
             Form(
@@ -58,6 +64,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 children: [
                   const Text(
                     "Enter your new password",
+                    style: TextStyle(fontFamily: 'Montserrat'),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
@@ -85,10 +92,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       }
                       return null;
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                   const SizedBox(height: 20),
                   const Text(
                     "Re-enter password",
+                    style: TextStyle(fontFamily: 'Montserrat'),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
@@ -117,6 +126,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       }
                       return null;
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                   const SizedBox(height: 30),
                   isloading
@@ -185,15 +195,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             width: width,
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blueAccent,
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             child: const Text(
                               "Reset",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Montserrat Bold'),
                             ),
                           ),
                         ),

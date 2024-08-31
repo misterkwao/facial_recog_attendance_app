@@ -32,10 +32,10 @@ Widget lecturerProfile(double width, double height) {
           Text(
             "Hi, ${value.lecturerProfile["lecturer_name"]}",
             style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontSize: 25,
-            ),
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 25,
+                fontFamily: 'Montserrat'),
           ),
           const SizedBox(height: 20),
           JelloIn(
@@ -63,7 +63,13 @@ Widget lecturerProfile(double width, double height) {
                           color: Colors.red,
                         ),
                         SizedBox(width: 10),
-                        Text("Lecturer")
+                        Expanded(
+                          child: Text(
+                            "Lecturer",
+                            style: TextStyle(
+                                fontFamily: 'Montserrat', fontSize: 15),
+                          ),
+                        )
                       ]),
                       const SizedBox(height: 15),
                       Row(children: [
@@ -72,7 +78,13 @@ Widget lecturerProfile(double width, double height) {
                           color: Colors.green,
                         ),
                         const SizedBox(width: 10),
-                        Text(value.lecturerProfile["lecturer_college"])
+                        Expanded(
+                          child: Text(
+                            value.lecturerProfile["lecturer_college"],
+                            style: TextStyle(
+                                fontFamily: 'Montserrat', fontSize: 15),
+                          ),
+                        )
                       ]),
                       const SizedBox(height: 15),
                       Row(children: [
@@ -81,7 +93,13 @@ Widget lecturerProfile(double width, double height) {
                           color: Colors.orange,
                         ),
                         const SizedBox(width: 10),
-                        Text(value.lecturerProfile["lecturer_department"])
+                        Expanded(
+                          child: Text(
+                            value.lecturerProfile["lecturer_department"],
+                            style: TextStyle(
+                                fontFamily: 'Montserrat', fontSize: 15),
+                          ),
+                        )
                       ]),
                     ],
                   ),
@@ -105,10 +123,10 @@ Widget lecturerCourses(double height, double width, BuildContext context) {
           const Text(
             "Courses Taught",
             style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-            ),
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                fontFamily: 'Montserrat'),
           ),
           const SizedBox(height: 10),
           MediaQuery.removePadding(
@@ -138,12 +156,17 @@ Widget lecturerCourses(double height, double width, BuildContext context) {
                         Expanded(
                           child: Column(
                             children: [
+                              Text(value.lecturerCourses[index]["course_title"],
+                                  style: TextStyle(
+                                      fontFamily: 'Montserrat', fontSize: 15)),
                               Text(
-                                  value.lecturerCourses[index]["course_title"]),
+                                  "Level: ${(value.lecturerCourses[index]["level"]).toString()}",
+                                  style: TextStyle(
+                                      fontFamily: 'Montserrat', fontSize: 15)),
                               Text(
-                                  "Level: ${(value.lecturerCourses[index]["level"]).toString()}"),
-                              Text(
-                                  "Semester: ${(value.lecturerCourses[index]["semester"]).toString()}")
+                                  "Semester: ${(value.lecturerCourses[index]["semester"]).toString()}",
+                                  style: TextStyle(
+                                      fontFamily: 'Montserrat', fontSize: 15))
                             ],
                           ),
                         ),
@@ -176,27 +199,29 @@ Widget lecClassLocations(double width, BuildContext context) {
         const Text(
           "Class Location List",
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 20),
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Name",
-              style: TextStyle(color: Colors.white),
-            ),
+            Text("Name",
+                style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 15,
+                    color: Colors.white)),
             // Text(
             //   "Email",
             //   style: TextStyle(color: Colors.white),
             // ),
-            Text(
-              "College",
-              style: TextStyle(color: Colors.white),
-            )
+            Text("College",
+                style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 15,
+                    color: Colors.white))
           ],
         ),
         const Divider(),
@@ -252,10 +277,10 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
         const Text(
           "Upcoming classes",
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 10),
         SlideInRight(
@@ -303,20 +328,25 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                                Icons.stop_circle_rounded),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              value.lecturerUpcomingClasses[
-                                                  index]["course_title"],
-                                              style: const TextStyle(
-                                                fontSize: 16,
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                  Icons.stop_circle_rounded),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: Text(
+                                                    value.lecturerUpcomingClasses[
+                                                        index]["course_title"],
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'Montserrat',
+                                                        fontSize: 15)),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
+                                        const SizedBox(width: 10),
                                         Text(
                                           (value.lecturerUpcomingClasses[index]
                                                   ["course_level"])
@@ -332,49 +362,61 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text(
-                                          "Location:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                        Expanded(
+                                          child: const Text("Location:",
+                                              style: TextStyle(
+                                                  fontFamily: 'Montserrat-Bold',
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold)),
                                         ),
                                         Text(
-                                          value.lecturerUpcomingClasses[index]
-                                              ["class_name"],
-                                        ),
+                                            value.lecturerUpcomingClasses[index]
+                                                ["class_name"],
+                                            style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 15)),
                                       ],
                                     ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text(
-                                          "Start:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                        Expanded(
+                                          child: const Text("Start:",
+                                              style: TextStyle(
+                                                  fontFamily: 'Montserrat-Bold',
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold)),
                                         ),
                                         Text(
-                                          DateFormat('HH:mm     dd/MM/yyyy')
-                                              .format(DateTime.parse(
-                                                  value.lecturerUpcomingClasses[
-                                                      index]["start_time"])),
-                                        ),
+                                            DateFormat('HH:mm     dd/MM/yyyy')
+                                                .format(DateTime.parse(value
+                                                        .lecturerUpcomingClasses[
+                                                    index]["start_time"])),
+                                            style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 15)),
                                       ],
                                     ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text(
-                                          "End:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                        Expanded(
+                                          child: const Text("End:",
+                                              style: TextStyle(
+                                                  fontFamily: 'Montserrat-Bold',
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold)),
                                         ),
                                         Text(
-                                          DateFormat('HH:mm     dd/MM/yyyy')
-                                              .format(DateTime.parse(
-                                                  value.lecturerUpcomingClasses[
-                                                      index]["end_time"])),
-                                        ),
+                                            DateFormat('HH:mm     dd/MM/yyyy')
+                                                .format(DateTime.parse(value
+                                                        .lecturerUpcomingClasses[
+                                                    index]["end_time"])),
+                                            style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 15)),
                                       ],
                                     ),
                                   ],
@@ -460,7 +502,6 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                       // Check location of student
                                       if (await isWithinLocationRadius(
                                           classLatitude, classLongitude)) {
-
                                         // Pop modal bottom sheet
                                         Navigator.pop(context);
 
@@ -555,15 +596,17 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
           children: [
             ElevatedButton(
                 style: const ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        Color.fromRGBO(83, 178, 246, 1))),
+                    backgroundColor: WidgetStatePropertyAll(Colors.blueAccent)),
                 onPressed: () {
                   modalSheet(context, 0.7, width, height, const CreateClass());
                 },
                 child: const Text(
                   "Create class",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Montserrat Bold'),
                 )),
           ],
         ),
@@ -617,10 +660,11 @@ Widget lecClassStatistics(double width, double height) {
             children: [
               Text(
                 currentMonthInWords,
-                style: const TextStyle(
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
                     fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black),
+                    fontFamily: 'Montserrat'),
               ),
               const SizedBox(height: 10),
               ListView.builder(
@@ -664,9 +708,11 @@ Widget lecClassStatistics(double width, double height) {
                                   Expanded(
                                     child: Text(
                                       flattenedList[index]["class_name"],
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 16),
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          fontFamily: 'Montserrat'),
                                     ),
                                   ),
                                   Text(
@@ -674,23 +720,40 @@ Widget lecClassStatistics(double width, double height) {
                                       DateTime.parse(
                                           flattenedList[index]["start_time"]),
                                     ),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16),
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                        fontFamily: 'Montserrat'),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                  "Course title: ${flattenedList[index]["course_title"]}"),
+                                "Course title: ${flattenedList[index]["course_title"]}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15),
+                              ),
                               Text(
-                                  "Level taught: ${(flattenedList[index]["course_level"]).toString()}"),
+                                "Level taught: ${(flattenedList[index]["course_level"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15),
+                              ),
                               Text(
-                                  "Expected attendances: ${(flattenedList[index]["expected_no_attendees"]).toString()}"),
+                                "Expected attendances: ${(flattenedList[index]["expected_no_attendees"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15),
+                              ),
                               Text(
-                                  "No of attendances: ${(flattenedList[index]["no_of_attendees"]).toString()}"),
+                                "No of attendances: ${(flattenedList[index]["no_of_attendees"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15),
+                              ),
                               Text(
-                                  "Performance: ${(flattenedList[index]["performance"]).toString()}")
+                                "Performance: ${(flattenedList[index]["performance"]).toString()}",
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat', fontSize: 15),
+                              )
                             ],
                           ))
                         ],
@@ -802,44 +865,60 @@ Widget attendeeNames(
       children: [
         const SizedBox(height: 10),
         modalDrag(width),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const Expanded(
-              child: Text(
-                "Attendee Names",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
-              ),
-            ),
-            const SizedBox(width: 15),
             ElevatedButton(
                 style: const ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        Color.fromRGBO(83, 178, 246, 1))),
+                    backgroundColor: WidgetStatePropertyAll(Colors.blueAccent)),
                 onPressed: () async {
                   await saveAsPDF(context);
                 },
                 child: const Text(
                   "Download as PDF",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Montserrat Bold'),
                 )),
           ],
+        ),
+        const SizedBox(height: 20),
+        Text(
+          "Attendee Names",
+          style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 25,
+              fontFamily: 'Montserrat'),
         ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              flattenedList[mainIndex]["course_title"],
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            Expanded(
+              child: Text(
+                flattenedList[mainIndex]["course_title"],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontFamily: 'Montserrat'),
+              ),
             ),
+            const SizedBox(width: 10),
             Text(
               DateFormat("d MMMM, yyyy").format(
                 DateTime.parse(flattenedList[mainIndex]["start_time"]),
               ),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  fontFamily: 'Montserrat'),
             ),
           ],
         ),
@@ -863,7 +942,7 @@ Widget attendeeNames(
                 itemBuilder: (context, index) {
                   return Text(
                     "${(index + 1).toString()}. ${flattenedList[mainIndex]["attendee_names"][index]}",
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
                   );
                 }),
       ],

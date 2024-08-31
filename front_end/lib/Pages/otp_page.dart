@@ -52,6 +52,7 @@ class _OtpPageState extends State<OtpPage> {
         }
         return null;
       },
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       autoDismissKeyboard: true,
       onCompleted: (value) async {
         setState(() {
@@ -126,11 +127,22 @@ class _OtpPageState extends State<OtpPage> {
             const SizedBox(height: 40),
             const Text(
               "Verification code",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                // color: Color.fromRGBO(83, 178, 246, 1),
+              ),
             ),
             const SizedBox(height: 20),
             const Text(
-                "Please check your email, we have sent you a verification code."),
+              "Please check your email, we have sent you a verification code.",
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+              ),
+            ),
             const SizedBox(height: 50),
             Form(
               key: thisformKey,
@@ -199,15 +211,16 @@ class _OtpPageState extends State<OtpPage> {
                             width: width,
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blueAccent,
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             child: const Text(
                               "Send",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Montserrat Bold'),
                             ),
                           ),
                         ),
