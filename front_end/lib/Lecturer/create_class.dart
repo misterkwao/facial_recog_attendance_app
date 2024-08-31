@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
@@ -43,13 +44,15 @@ Widget textfield(IconData icon, TextEditingController controller) {
 
 final formKey = GlobalKey<FormState>();
 
-int courseLevel = 100;
-int courseSemester = 1;
+// int courseLevel = 100;
+// int courseSemester = 1;
 
 class _CreateClassState extends State<CreateClass> {
   TextEditingController startDate = TextEditingController();
   TextEditingController endDate = TextEditingController();
   TextEditingController courseTitle = TextEditingController();
+  TextEditingController courseLevel = TextEditingController();
+  TextEditingController courseSemester = TextEditingController();
 
   String startTime = "";
   String endTime = "";
@@ -97,11 +100,12 @@ class _CreateClassState extends State<CreateClass> {
 
   Widget classListPicker() {
     return Consumer<LecturerPageProvider>(
-      builder: (context, value, child) => DropdownButton<String>(
+      builder: (context, value, child) => DropdownButtonFormField<String>(
         isExpanded: true,
         alignment: Alignment.centerRight,
         elevation: 2,
         value: selectedClass,
+        decoration: InputDecoration(labelText: "--Select a class location--"),
         onChanged: (value) {
           setState(() {
             selectedClass = value;
@@ -120,6 +124,39 @@ class _CreateClassState extends State<CreateClass> {
             }),
             value: item["class_name"],
             child: Text(item["class_name"]!),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  String? selectedCourse;
+  bool courseSelected = false;
+
+  Widget courseListPicker() {
+    return Consumer<LecturerPageProvider>(
+      builder: (context, value, child) => DropdownButtonFormField<String>(
+        decoration: InputDecoration(labelText: "--Select a course--"),
+        isExpanded: true,
+        alignment: Alignment.centerRight,
+        elevation: 2,
+        value: selectedCourse,
+        onChanged: (value) {
+          setState(() {
+            selectedCourse = value;
+            courseSelected = true;
+          });
+        },
+        items: value.lecturerCourses.map((item) {
+          return DropdownMenuItem<String>(
+            alignment: Alignment.center,
+            onTap: () => setState(() {
+              courseTitle.text = item["course_title"];
+              courseLevel.text = (item["level"]).toString();
+              courseSemester.text = (item["semester"]).toString();
+            }),
+            value: item["course_title"],
+            child: Text(item["course_title"]!),
           );
         }).toList(),
       ),
@@ -150,7 +187,8 @@ class _CreateClassState extends State<CreateClass> {
               children: [
                 const Text("Course Title"),
                 const SizedBox(height: 10),
-                textfield(Icons.abc, courseTitle),
+                courseListPicker(),
+                // textfield(Icons.abc, courseTitle),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,36 +199,18 @@ class _CreateClassState extends State<CreateClass> {
                           children: [
                             const Text("Course Level"),
                             const SizedBox(height: 10),
-                            DropdownButton(
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 100,
-                                  child: Text("100"),
-                                ),
-                                DropdownMenuItem(
-                                  value: 200,
-                                  child: Text("200"),
-                                ),
-                                DropdownMenuItem(
-                                  value: 300,
-                                  child: Text("300"),
-                                ),
-                                DropdownMenuItem(
-                                  value: 400,
-                                  child: Text("400"),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20),
-                              elevation: 1,
-                              // padding: const EdgeInsets.symmetric(horizontal: 15),
-                              isExpanded: true,
-
-                              value: courseLevel,
-                              onChanged: (value) {
-                                setState(() {
-                                  courseLevel = value!;
-                                });
-                              },
+                            TextFormField(
+                              enabled: false,
+                              controller: courseLevel,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none),
+                                filled: true,
+                                fillColor: Colors.grey[300],
+                                suffixIcon:
+                                    const Icon(Icons.date_range_rounded),
+                              ),
                             ),
                           ],
                         ),
@@ -203,28 +223,18 @@ class _CreateClassState extends State<CreateClass> {
                           children: [
                             const Text("Course Semester"),
                             const SizedBox(height: 10),
-                            DropdownButton(
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 1,
-                                  child: Text("1st"),
-                                ),
-                                DropdownMenuItem(
-                                  value: 2,
-                                  child: Text("2nd"),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20),
-                              elevation: 1,
-                              // padding: const EdgeInsets.symmetric(horizontal: 15),
-                              isExpanded: true,
-
-                              value: courseSemester,
-                              onChanged: (value) {
-                                setState(() {
-                                  courseSemester = value!;
-                                });
-                              },
+                            TextFormField(
+                              enabled: false,
+                              controller: courseSemester,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none),
+                                filled: true,
+                                fillColor: Colors.grey[300],
+                                suffixIcon:
+                                    const Icon(Icons.date_range_rounded),
+                              ),
                             ),
                           ],
                         ),
@@ -344,8 +354,9 @@ class _CreateClassState extends State<CreateClass> {
                               if (classSelected) {
                                 final details = {
                                   "course_title": courseTitle.text,
-                                  "course_level": courseLevel,
-                                  "course_semester_level": courseSemester,
+                                  "course_level": int.parse(courseLevel.text),
+                                  "course_semester_level":
+                                      int.parse(courseSemester.text),
                                   "class_name": selectedClass,
                                   "location": classMapping,
                                   "start_time": startTime,
@@ -380,10 +391,10 @@ class _CreateClassState extends State<CreateClass> {
                                     text:
                                         "Please select a class location where the class will take place.");
                               }
-                              setState(() {
-                                courseSemester = 1;
-                                courseLevel = 100;
-                              });
+                              // setState(() {
+                              //   courseSemester = 1;
+                              //   courseLevel = 100;
+                              // });
                             },
                             child: const Text("Create Class"),
                           ),

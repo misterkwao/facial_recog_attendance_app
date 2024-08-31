@@ -42,6 +42,7 @@ class _UpdateStudentState extends State<UpdateStudent> {
         }
         return null;
       },
+      autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
 

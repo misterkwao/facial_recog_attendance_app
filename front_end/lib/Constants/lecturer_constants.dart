@@ -598,6 +598,7 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                 style: const ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(Colors.blueAccent)),
                 onPressed: () {
+                  print(context.read<LecturerPageProvider>().lecturerCourses);
                   modalSheet(context, 0.7, width, height, const CreateClass());
                 },
                 child: const Text(

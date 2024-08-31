@@ -20,9 +20,17 @@ Widget userTally() {
               children: [
                 const Text(
                   "Total Students",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Montserrat'),
                 ),
-                Text((value.allStudents.length).toString())
+                Text(
+                  (value.allStudents.length).toString(),
+                  style:
+                      TextStyle(color: Colors.black, fontFamily: 'Montserrat'),
+                )
               ],
             ),
           ),
@@ -39,9 +47,16 @@ Widget userTally() {
             children: [
               const Text(
                 "Total Lecturers",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Montserrat'),
               ),
-              Text((value.allLecturers.length).toString())
+              Text(
+                (value.allLecturers.length).toString(),
+                style: TextStyle(color: Colors.black, fontFamily: 'Montserrat'),
+              )
             ],
           ),
         )),
@@ -73,10 +88,10 @@ Widget adminProfile(BuildContext context) {
       child: Text(
         "Hi, ${value.adminProfile["username"]}",
         style: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w900,
-          fontSize: 25,
-        ),
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            fontSize: 25,
+            fontFamily: 'Montserrat'),
       ),
     ),
   );
