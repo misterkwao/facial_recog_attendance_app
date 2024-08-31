@@ -85,10 +85,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "Field cannot be empty";
-                      } else {
-                        if (secondPass != initPass) {
-                          return "Passwords do not match";
-                        }
                       }
                       return null;
                     },

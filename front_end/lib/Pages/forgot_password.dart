@@ -136,6 +136,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             child: Row(
                               children: [
                                 Radio<User>(
+                                  activeColor: Colors.blueAccent,
                                   value: User.admin,
                                   groupValue: _character,
                                   onChanged: (value) => setState(
@@ -147,6 +148,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 const Text(
                                   "Admin",
                                   style: TextStyle(
+                                    fontSize: 10,
                                     fontFamily: 'Montserrat',
                                   ),
                                 ),
@@ -157,6 +159,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             child: Row(
                               children: [
                                 Radio<User>(
+                                  activeColor: Colors.blueAccent,
                                   value: User.student,
                                   groupValue: _character,
                                   onChanged: (value) => setState(
@@ -168,6 +171,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 const Text(
                                   "Student",
                                   style: TextStyle(
+                                    fontSize: 10,
                                     fontFamily: 'Montserrat',
                                   ),
                                 ),
@@ -178,6 +182,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             child: Row(
                               children: [
                                 Radio<User>(
+                                  activeColor: Colors.blueAccent,
                                   value: User.lecturer,
                                   groupValue: _character,
                                   onChanged: (value) => setState(
@@ -190,6 +195,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   child: const Text(
                                     "Lecturer",
                                     style: TextStyle(
+                                      fontSize: 10,
                                       fontFamily: 'Montserrat',
                                     ),
                                   ),

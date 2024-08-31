@@ -386,11 +386,9 @@ class _LoginPageState extends State<LoginPage> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter a password";
-                          }
-                          // else if (!RegExp(r'^(?=.{8,}$)').hasMatch(value)) {
-                          //   return "Cannot be less than 8 characters";
-                          // }
-                          else {
+                          } else if (!RegExp(r'^(?=.{8,}$)').hasMatch(value)) {
+                            return "Cannot be less than 8 characters";
+                          } else {
                             return null;
                           }
                         },
