@@ -73,7 +73,7 @@ Widget options(
           color: backcolor,
           boxShadow: const [
             BoxShadow(
-                color: Colors.black,
+                color: Colors.blueAccent,
                 spreadRadius: 2,
                 offset: Offset(1, 2),
                 blurStyle: BlurStyle.inner,
@@ -81,8 +81,11 @@ Widget options(
           ]),
       child: Text(
         func,
-        style: TextStyle(
-            color: textcolor, fontSize: 20, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Montserrat Bold'),
       ),
     ),
   );

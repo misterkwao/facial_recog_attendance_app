@@ -104,12 +104,15 @@ class _StudentLaunchState extends State<StudentLaunch> {
                             context, 0.7, width, height, const CreateStudent());
                       },
                       style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromRGBO(83, 178, 246, 1))),
+                          backgroundColor:
+                              WidgetStatePropertyAll(Colors.blueAccent)),
                       child: const Text(
                         "Create Student",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Montserrat Bold'),
                       ),
                     ),
                     floatingActionButtonLocation:
@@ -125,12 +128,15 @@ class _StudentLaunchState extends State<StudentLaunch> {
                             context, 0.7, width, height, const CreateStudent());
                       },
                       style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromRGBO(83, 178, 246, 1))),
+                          backgroundColor:
+                              WidgetStatePropertyAll(Colors.blueAccent)),
                       child: const Text(
                         "Create Student",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Montserrat Bold'),
                       ),
                     ),
                     floatingActionButtonLocation:

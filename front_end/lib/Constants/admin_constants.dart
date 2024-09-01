@@ -28,8 +28,10 @@ Widget userTally() {
                 ),
                 Text(
                   (value.allStudents.length).toString(),
-                  style:
-                      TextStyle(color: Colors.black, fontFamily: 'Montserrat'),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'Montserrat',
+                      fontSize: 15),
                 )
               ],
             ),
@@ -55,7 +57,10 @@ Widget userTally() {
               ),
               Text(
                 (value.allLecturers.length).toString(),
-                style: TextStyle(color: Colors.black, fontFamily: 'Montserrat'),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Montserrat',
+                    fontSize: 15),
               )
             ],
           ),
@@ -71,11 +76,14 @@ Widget createClassLoc(BuildContext context, double newheight, double newwidth) {
         modalSheet(context, 0.7, newwidth, newheight, const CreateClassLoc());
       },
       style: const ButtonStyle(
-          backgroundColor:
-              WidgetStatePropertyAll(Color.fromRGBO(83, 178, 246, 1))),
+          backgroundColor: WidgetStatePropertyAll(Colors.blueAccent)),
       child: const Text(
         "Create Class Location",
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Montserrat Bold'),
       ));
 }
 

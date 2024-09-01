@@ -181,18 +181,22 @@ class _AdminPageState extends State<AdminPage> {
               } else {
                 return Scaffold(
                   backgroundColor: Colors.white,
-                  body: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset("assets/images/Warning.gif", height: 200),
-                          const Text(
-                            'No internet connection. Please check your connection and try again.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                  body: GestureDetector(
+                    onTap: () => _checkInternetConnection(),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset("assets/images/Warning.gif",
+                                height: 200),
+                            const Text(
+                              'No internet connection. Please check your connection and try again.',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

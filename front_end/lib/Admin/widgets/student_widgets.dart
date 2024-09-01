@@ -50,11 +50,11 @@ Widget studentList(double height, double width, BuildContext context) {
           children: [
             const Text(
               "Student List",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 25,
+                  fontFamily: 'Montserrat'),
             ),
             const SizedBox(height: 10),
             MediaQuery.removePadding(
@@ -90,6 +90,8 @@ Widget studentList(double height, double width, BuildContext context) {
                               child: Text(
                                 students[index]["student_name"],
                                 style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
@@ -100,7 +102,11 @@ Widget studentList(double height, double width, BuildContext context) {
                             child: Container(
                               child: Text(
                                 students[index]["student_department"],
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
@@ -109,7 +115,11 @@ Widget studentList(double height, double width, BuildContext context) {
                               Text(
                                 (students[index]["student_current_level"])
                                     .toString(),
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
                               ),
                               PopupMenuButton(
                                 color: Colors.white,

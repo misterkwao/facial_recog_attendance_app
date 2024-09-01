@@ -103,12 +103,15 @@ class _LecturerLaunchState extends State<LecturerLaunch> {
                             const Createlecturer());
                       },
                       style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromRGBO(83, 178, 246, 1))),
+                          backgroundColor:
+                              WidgetStatePropertyAll(Colors.blueAccent)),
                       child: const Text(
                         "Create Lecturer",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Montserrat Bold'),
                       ),
                     ),
                     floatingActionButtonLocation:
@@ -124,12 +127,15 @@ class _LecturerLaunchState extends State<LecturerLaunch> {
                             const Createlecturer());
                       },
                       style: const ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Color.fromRGBO(83, 178, 246, 1))),
+                          backgroundColor:
+                              WidgetStatePropertyAll(Colors.blueAccent)),
                       child: const Text(
                         "Create Lecturer",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Montserrat Bold'),
                       ),
                     ),
                     floatingActionButtonLocation:

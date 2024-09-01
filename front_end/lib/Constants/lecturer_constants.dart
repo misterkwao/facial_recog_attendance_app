@@ -32,10 +32,11 @@ Widget lecturerProfile(double width, double height) {
           Text(
             "Hi, ${value.lecturerProfile["lecturer_name"]}",
             style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w900,
-                fontSize: 25,
-                fontFamily: 'Montserrat'),
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontSize: 25,
+              fontFamily: 'Montserrat',
+            ),
           ),
           const SizedBox(height: 20),
           JelloIn(
@@ -650,6 +651,8 @@ Widget lecClassStatistics(double width, double height) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: RefreshIndicator(
+        strokeWidth: 5,
+        color: Colors.black,
         onRefresh: () async {
           Future.delayed(const Duration(seconds: 2));
           return await Provider.of<LecturerPageProvider>(context, listen: false)

@@ -32,10 +32,10 @@ class _AllClassLocationsState extends State<AllClassLocations> {
           const Text(
             "Class Locations",
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Montserrat'),
           ),
           const SizedBox(height: 10),
           MediaQuery.removePadding(
@@ -70,6 +70,8 @@ class _AllClassLocationsState extends State<AllClassLocations> {
                             child: Text(
                               classLocation["class_name"],
                               style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 15,
                                 color: Colors.black,
                               ),
                             ),
@@ -83,8 +85,11 @@ class _AllClassLocationsState extends State<AllClassLocations> {
                                   child: Container(
                                     child: Text(
                                       classLocation["college_location"],
-                                      style:
-                                          const TextStyle(color: Colors.black),
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
                                 ),

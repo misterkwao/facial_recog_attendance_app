@@ -47,11 +47,11 @@ Widget lecturerList(double height, double width, BuildContext newcontext) {
           children: [
             const Text(
               "Lecturer List",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 25,
+                  fontFamily: 'Montserrat'),
             ),
             const SizedBox(height: 10),
             MediaQuery.removePadding(
@@ -83,7 +83,11 @@ Widget lecturerList(double height, double width, BuildContext newcontext) {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               value.allLecturers[index]["lecturer_name"],
-                              style: const TextStyle(color: Colors.black),
+                              style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ),
@@ -93,11 +97,19 @@ Widget lecturerList(double height, double width, BuildContext newcontext) {
                                   1
                               ? Text(
                                   "${((value.allLecturers[index]["allowed_courses"]).length).toString()} course",
-                                  style: const TextStyle(color: Colors.black),
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
                                 )
                               : Text(
                                   "${((value.allLecturers[index]["allowed_courses"]).length).toString()} courses",
-                                  style: const TextStyle(color: Colors.black),
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
                                 ),
                         ),
                         const SizedBox(width: 15),
