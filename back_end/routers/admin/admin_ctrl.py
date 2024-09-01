@@ -153,6 +153,7 @@ async def create_lecturer(request:schemas.CreateLecturer,current_user:schemas.Us
                 "allowed_courses":request.allowed_courses,
                 "lecturer_college": request.lecturer_college,
                 "lecturer_department": request.lecturer_department,
+                "notifications": [],
                 "createdAt": datetime.now()
             })
             return{
@@ -242,6 +243,7 @@ async def create_student(request:schemas.CreateStudent,current_user:schemas.User
                 "student_college": request.student_college,
                 "student_department": request.student_department,
                 "allowed_courses": request.allowed_courses,
+                "notifications": [],
                 "createdAt": datetime.now()
             })
             if student_auth and student_profile:
