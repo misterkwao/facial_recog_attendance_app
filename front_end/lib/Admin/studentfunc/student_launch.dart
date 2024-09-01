@@ -116,7 +116,7 @@ class _StudentLaunchState extends State<StudentLaunch> {
                       ),
                     ),
                     floatingActionButtonLocation:
-                        FloatingActionButtonLocation.endFloat,
+                        FloatingActionButtonLocation.centerFloat,
                     body: studentList(height, width, context),
                   );
                 } else if (constraints.maxWidth < 1500) {

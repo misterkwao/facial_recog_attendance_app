@@ -19,12 +19,12 @@ class UpdateStudent extends StatefulWidget {
 class _UpdateStudentState extends State<UpdateStudent> {
   final formKey = GlobalKey<FormState>();
 
-  Widget editText(TextEditingController controller, IconData icon, bool enable,
-      String? text) {
+  Widget editText(IconData icon, bool enable, String? text) {
     return TextFormField(
-      controller: controller,
+      // controller: controller,
       cursorColor: Colors.black,
       enabled: enable,
+      initialValue: text,
       decoration: InputDecoration(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -52,18 +52,28 @@ class _UpdateStudentState extends State<UpdateStudent> {
     List students = Provider.of<AdminPageProvider>(context).allStudents;
     String ownerId = students[selectedStudentIndex]["owner"];
 
-    final TextEditingController studentName = TextEditingController(
-        text: (students[selectedStudentIndex]["student_name"]));
-    TextEditingController yearEnrolled = TextEditingController(
-        text: (students[selectedStudentIndex]["year_enrolled"]).toString());
-    TextEditingController currentLevel = TextEditingController(
-        text: (students[selectedStudentIndex]["student_current_level"])
-            .toString());
-    TextEditingController currentSemester = TextEditingController(
-        text: (students[selectedStudentIndex]["student_current_semester"])
-            .toString());
-    TextEditingController isFaceEnrolled = TextEditingController(
-        text: (students[selectedStudentIndex]["is_face_enrolled"]).toString());
+    final String name = students[selectedStudentIndex]["student_name"];
+    String yearEnrolled =
+        (students[selectedStudentIndex]["year_enrolled"]).toString();
+    String currentLevel =
+        (students[selectedStudentIndex]["student_current_level"]).toString();
+    String currentSemester =
+        (students[selectedStudentIndex]["student_current_semester"]).toString();
+    String isFaceEnrolled =
+        (students[selectedStudentIndex]["is_face_enrolled"]).toString();
+
+    // final TextEditingController studentName = TextEditingController(
+    //     text: (students[selectedStudentIndex]["student_name"]));
+    // TextEditingController yearEnrolled = TextEditingController(
+    //     text: (students[selectedStudentIndex]["year_enrolled"]).toString());
+    // TextEditingController currentLevel = TextEditingController(
+    //     text: (students[selectedStudentIndex]["student_current_level"])
+    //         .toString());
+    // TextEditingController currentSemester = TextEditingController(
+    //     text: (students[selectedStudentIndex]["student_current_semester"])
+    //         .toString());
+    // TextEditingController isFaceEnrolled = TextEditingController(
+    //     text: (students[selectedStudentIndex]["is_face_enrolled"]).toString());
 
     return Column(
       children: [
@@ -86,27 +96,23 @@ class _UpdateStudentState extends State<UpdateStudent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Student name"),
-                editText(studentName, Icons.person_3_rounded, false, null),
+                editText(Icons.person_3_rounded, false, name),
                 const SizedBox(height: 20),
                 const Text("Year enrolled"),
                 const SizedBox(height: 10),
-                editText(yearEnrolled, Icons.numbers_rounded, true,
-                    yearEnrolled.text),
+                editText(Icons.numbers_rounded, true, yearEnrolled),
                 const SizedBox(height: 20),
                 const Text("Current level"),
                 const SizedBox(height: 10),
-                editText(currentLevel, Icons.numbers_rounded, true,
-                    currentLevel.text),
+                editText(Icons.numbers_rounded, true, currentLevel),
                 const SizedBox(height: 20),
                 const Text("Current semester"),
                 const SizedBox(height: 10),
-                editText(currentSemester, Icons.numbers_rounded, true,
-                    currentSemester.text),
+                editText(Icons.numbers_rounded, true, currentSemester),
                 const SizedBox(height: 20),
                 const Text("Face enrolled"),
                 const SizedBox(height: 10),
-                editText(isFaceEnrolled, Icons.numbers_rounded, true,
-                    isFaceEnrolled.text),
+                editText(Icons.numbers_rounded, true, isFaceEnrolled),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -139,11 +145,10 @@ class _UpdateStudentState extends State<UpdateStudent> {
                                 });
 
                                 Map details = {
-                                  "year_enrolled": yearEnrolled.text,
-                                  "student_current_level": currentLevel.text,
-                                  "student_current_semester":
-                                      currentSemester.text,
-                                  "is_face_enrolled": isFaceEnrolled.text
+                                  "year_enrolled": yearEnrolled,
+                                  "student_current_level": currentLevel,
+                                  "student_current_semester": currentSemester,
+                                  "is_face_enrolled": isFaceEnrolled
                                 };
 
                                 try {
