@@ -19,8 +19,8 @@ router = APIRouter(
     tags=["Student Controls"]
 )
 
-@router.get('/student')
-async def student_profile(current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+@router.get('/student',status_code=200)
+async def student_profile(response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     if current_user.user_role == "student":     
         student_classes = []
         # querying against the actual courses
@@ -71,6 +71,7 @@ async def student_profile(current_user:schemas.User = Depends(oauth2_student.get
                         "upcoming_classes": "No Upcoming Classes"
                     }
             else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
                 return "Student does not exist"
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
@@ -157,4 +158,49 @@ async def mark_attendance(id,file: UploadFile,response: Response,current_user:sc
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+
+
+@router.post("/student/attendance/assessment", status_code=200)
+async def mark_assessment_attendance(id,file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+    if current_user.user_role == "student":                         
+        try:
+            profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
+            # Face recognition
+            image_bytes= await file.read()
+            student = recognition.student_face_recognition(image_bytes,profile["student_department"],profile["year_enrolled"])
+            #  Updating class and student attendance
+            if profile["student_name"] == student:
+               class_collection.find_one_and_update({"_id": ObjectId(id)},{'$push':{"test_attendee_names": current_user.user_name}})
+               return {
+                        "detail": "Attendance marked successfully"
+                      }
+            else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return {
+                    "detail": "Recognition failed"
+                }
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
+@router.patch("/student/update-notification", status_code=200)
+async def notification_update(id,response: Response,request:schemas.UpdateNotification,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+    if current_user.user_role == "student":
+        try:
+            result = student_profile_collection.update_one({"owner": ObjectId(current_user.user_id),"notifications._id":ObjectId(id)},
+                                                                     {"$set":{"notifications.$[elem].details.is_read": True}},
+                                                                     array_filters = [{
+                                                                            "elem._id": ObjectId(id)
+                                                                        }]
+                                                                     )
+            # Check if the update was successful
+            if result.modified_count > 0:
+                return "Update successful"
+            else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return "Update failed"
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")

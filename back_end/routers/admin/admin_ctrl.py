@@ -177,7 +177,22 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         # if you want to added new courses, just add the new course to the already existing courses and send the json array of objects
         # if you want to delete a course, remove the course from the existing courses and send the json array of objects
         try:
-            lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': { "allowed_courses" : request.allowed_courses, "is_face_enrolled": request.is_face_enrolled,"updatedAt": datetime.now()} })
+            lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': 
+                                                                                                        { "allowed_courses" : request.allowed_courses, 
+                                                                                                         "is_face_enrolled": request.is_face_enrolled,
+                                                                                                         "updatedAt": datetime.now()},
+                                                                                                         "$push": {
+                                                                                                            "notifications":{
+                                                                                                                "_id": ObjectId(),
+                                                                                                                "title":"Profile Updated!",
+                                                                                                                "details":{
+                                                                                                                    "description":f"Hi{current_user.user_name} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                                                                    "is_read": False
+                                                                                                                },
+                                                                                                                "createdAt":datetime.now()
+                                                                                                            }
+                                                                                                            }
+                                                                                                         })
             if lecturer_profile:
                 return{
                     "detail":"Successfully updated"
@@ -258,7 +273,19 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
                                                                     # "student_name": request.student_name,
                                                                     "is_face_enrolled": request.is_face_enrolled,
                                                                     "updatedAt": datetime.now()
-                                                                    } }
+                                                                    },
+                                                            "$push": {
+                                                                "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":"Profile Updated!",
+                                                                    "details":{
+                                                                        "description":f"Hi{current_user.user_name} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                                }
+                                                        },
                                                                     )
             if student_update:
                 return{

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, Response, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 import schemas
 from typing import Annotated
@@ -8,7 +8,7 @@ import random
 import pydantic
 from bson.objectid import ObjectId
 from security import hashing, jwt_auth
-from database.student_auth_profile_db import student_auth_collection
+from database.student_auth_profile_db import student_auth_collection,student_profile_collection
 
 import smtplib
 from email.mime.text import MIMEText
@@ -67,7 +67,7 @@ async def student_forgot_pwd(request:schemas.forgetPwd):
             current_time = datetime.now()
             # Add 10 minutes to the current time
             new_time = current_time + timedelta(minutes=10)
-            state = student_auth_collection.find_one_and_update({"_id": ObjectId(data["_id"])},{ '$set': { "hashed_reset_pin" : hashing.Hash.get_pwd_hashed(str(random_number)),"reset_expire_time":new_time,"updatedAt": datetime.now()}})
+            state = student_auth_collection.find_one_and_update({"_id": ObjectId(data["_id"])},{ '$set': { "is_code_valid": False,"hashed_reset_pin" : hashing.Hash.get_pwd_hashed(str(random_number)),"reset_expire_time":new_time,"updatedAt": datetime.now()}})
 
             #email_
             subject = "Reset Password"
@@ -93,6 +93,7 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Something went wrong')
     else:
         if hashing.Hash.verify_hashed_password(str(request.code), data["hashed_reset_pin"]) and not (datetime.now()> data["reset_expire_time"]):
+            student_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{'$set':{"is_code_valid": True,"updatedAt": datetime.now()}})
             return {
                     "detail": "Code is valid",
                     "reset_id": data["_id"]
@@ -101,13 +102,38 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Code is invalid or has expired')   
      
 
-@router.patch('/student_auth/reset-password')
-async def change_password(reset_id:str,request:schemas.ResetPassword):
+@router.patch('/student_auth/reset-password', status_code=200)
+async def change_password(reset_id:str,response:Response,request:schemas.ResetPassword):
       hashed_password = hashing.Hash.get_pwd_hashed(request.new_password)
       try:
-         state = student_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': { "password" : hashed_password,"hashed_reset_pin":None,"reset_expire_time":None,"updatedAt": datetime.now()}}) 
-         return {
-              "detail": "Password reset successful"
-         } 
+         data = student_auth_collection.find_one({"_id": ObjectId(reset_id)})
+         if data["is_code_valid"] == True:
+            result1 = student_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': 
+                                                                                             { "password" : hashed_password,
+                                                                                              "is_code_valid": False,
+                                                                                              "hashed_reset_pin":None,
+                                                                                              "reset_expire_time":None,
+                                                                                              "updatedAt": datetime.now()
+                                                                                              }
+                                                                                              })
+            result2 = student_profile_collection.find_one_and_update({"owner": ObjectId(reset_id)},{"$push": {
+                                                                                                        "notifications":{
+                                                                                                            "_id": ObjectId(),
+                                                                                                            "title":"Password Changed!",
+                                                                                                            "details":{
+                                                                                                                "description":f'Hi {data["student_name"]}, your password has been changed. Please make sure not to share your password with anyone',
+                                                                                                                "is_read": False
+                                                                                                            },
+                                                                                                            "createdAt":datetime.now()
+                                                                                                        }
+                                                                                                }})
+            return {
+                "detail": "Password reset successful"
+            }
+         else:
+             response.status_code = status.HTTP_400_BAD_REQUEST
+             return {
+                "detail": "Password reset failed"
+            }
       except Exception as e:
            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')

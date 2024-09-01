@@ -34,6 +34,10 @@ def create_student_auth_collection():
                     "minLength":8,
                     "description": "must be a string and is required"
                 },
+                "is_code_valid":{
+                    "bsonType": "bool",
+                    "description": "must be a bool and is required"
+                },
                 "hashed_reset_pin":{
                     "bsonType": "string",
                     "description": "must be a string and is required"
@@ -164,6 +168,31 @@ def create_student_profile_collection():
                             }
                         }
                     }
+                },
+                "notifications":{
+                    "bsonType": "array",
+                    "uniqueItems": True,
+                    "additionalProperties": False,
+                    "items":{
+                                    "bsonType": "object",
+                                    "required": ["title","details","createdAt"],
+                                    "additionalProperties": False,
+                                    "description": "'items' must contain the stated fields.",
+                                    "properties":{
+                                        "title":{
+                                            "bsonType": "string",
+                                            "description": "must be a string and is required"
+                                        },
+                                        "details":{
+                                            "bsonType": "object",
+                                            "description": "must be an object and is required"
+                                        },
+                                        "createdAt":{
+                                            "bsonType": "date",
+                                            "description": "must be a date and is required"
+                                        },
+                                    }
+                            }
                 },
                 "createdAt":{
                     "bsonType": "date",

@@ -1,4 +1,5 @@
 import math
+import random
 from fastapi import APIRouter, Depends, Response, UploadFile, status, HTTPException
 from routers.lecturers import EncodeGen, recognition
 import schemas
@@ -239,6 +240,8 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
                 "end_time": request.end_time,
                 "no_of_attendees": 0,
                 "attendee_names": [],
+                "test_link": request.test_link,
+                "test_attendee_names":[],
                 "createdAt": datetime.now()
             })
             if create_class:
@@ -271,3 +274,154 @@ async def delete_class(id, current_user:schemas.User = Depends(oauth2_lecturer.g
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
+@router.patch("/lecturer/classes/class")
+async def update_class(id, request: schemas.UpdateClass,response: Response,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+    if current_user.user_role == "lecturer":
+        try:
+            update_class = class_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': 
+                                                                                       { 
+                                                                                        "class_name": request.class_name,
+                                                                                        "location":{
+                                                                                            "longitude": request.location.longitude,
+                                                                                            "latitude": request.location.latitude
+                                                                                        },
+                                                                                        "start_time": request.start_time,
+                                                                                        "end_time": request.end_time,
+                                                                                        "test_link": request.test_link,
+                                                                                        "updatedAt": datetime.now()
+                                                                                        } })
+            if update_class:
+                #sending notification
+                if request.test_link == "":
+                    match update_class["course_semester_level"]:
+                        case 1:
+                            student_profile_collection.update_many(
+                                                            {"$and":[
+                                                                {"student_current_level": {"$eq": update_class["course_level"]}},
+                                                                {"student_current_semester":{"$eq": update_class["course_semester_level"]}},
+                                                                {f'allowed_courses.{((update_class["course_level"])//100)-1}.first_semester_courses':{ "$elemMatch": { "course_title": update_class["course_title"]} }}
+                                                                ]},
+                                                            {"$push": {
+                                                                "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'{update_class["course_title"]} has been updated!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(update_class['_id']),
+                                                                        "description":"Please check your upcoming classes to view changes",
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                                }
+                                                            }
+                                                        )
+                            return{
+                                   "detail": "Class updated Successfully"
+                                   }
+                        case _:
+                            student_profile_collection.update_many(
+                                                    {"$and":[
+                                                        {"student_current_level": {"$eq": update_class["course_level"]}},
+                                                        {"student_current_semester":{"$eq": update_class["course_semester_level"]}},
+                                                        {f'allowed_courses.{((update_class["course_level"])//100)-1}.second_semester_courses':{ "$elemMatch": { "course_title": update_class["course_title"]} }}
+                                                        ]},
+                                                    {"$push": {
+                                                        "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'{update_class["course_title"]} has been updated!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(update_class['_id']),
+                                                                        "description":"Please check your upcoming classes to view changes",
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                        }
+                                                    },
+                                                )
+                            return{
+                                "detail": "Class updated Successfully"
+                            }
+                else:
+                    match update_class["course_semester_level"]:
+                        case 1:
+                            student_profile_collection.update_many(
+                                                            {"$and":[
+                                                                {"student_current_level": {"$eq": update_class["course_level"]}},
+                                                                {"student_current_semester":{"$eq": update_class["course_semester_level"]}},
+                                                                {f'allowed_courses.{((update_class["course_level"])//100)-1}.first_semester_courses':{ "$elemMatch": { "course_title": update_class["course_title"]} }}
+                                                                ]},
+                                                            {"$push": {
+                                                                "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'Class assessment for {update_class["course_title"]}!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(update_class['_id']),
+                                                                        "description":"Please tap on this notification to partake the assessment.Note that once you leave the app during the assessment you wont be able to re-take it",
+                                                                        "link":request.test_link,
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                                }
+                                                            },
+                                                        )
+                            return{
+                                   "detail": "Class updated Successfully"
+                                   }
+                        case _:
+                            student_profile_collection.update_many(
+                                                    {"$and":[
+                                                        {"student_current_level": {"$eq": update_class["course_level"]}},
+                                                        {"student_current_semester":{"$eq": update_class["course_semester_level"]}},
+                                                        {f'allowed_courses.{((update_class["course_level"])//100)-1}.second_semester_courses':{ "$elemMatch": { "course_title": update_class["course_title"]} }}
+                                                        ]},
+                                                    {"$push": {
+                                                        "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'Class assessment for {update_class["course_title"]}!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(update_class['_id']),
+                                                                        "description":"Please tap on this notification to partake the assessment\n Note that once you leave the app you wont be able to re-take the assessment",
+                                                                        "link":request.test_link,
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                        }
+                                                    },
+                                                )
+                            return{
+                                "detail": "Class updated Successfully"
+                            }
+                
+            else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return {
+                    "detail": "Class not found"
+                }
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+    
+@router.patch("/lecturer/update-notifications", status_code=200)
+async def notification_update(id,response: Response,request:schemas.UpdateNotification,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+    if current_user.user_role == "lecturer":
+        try:
+            result = lecturer_profile_collection.update_one({"owner": ObjectId(current_user.user_id),"notifications._id":ObjectId(id)},
+                                                                     {"$set":{"notifications.$[elem].details.is_read": True}},
+                                                                     array_filters = [{
+                                                                            "elem._id": ObjectId(id)
+                                                                        }]
+                                                                     )
+            # Check if the update was successful
+            if result.modified_count > 0:
+                return "Update successful"
+            else:
+                response.status_code = status.HTTP_400_BAD_REQUEST
+                return "Update failed"
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")

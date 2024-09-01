@@ -3,14 +3,14 @@ from email.mime.text import MIMEText
 import random
 import smtplib
 from dotenv import dotenv_values
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, Response, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 import schemas
 from typing import Annotated
 import pydantic
 from bson.objectid import ObjectId
 from security import hashing, jwt_auth
-from database.lecturer_auth_profile_db import lecturer_auth_collection
+from database.lecturer_auth_profile_db import lecturer_auth_collection, lecturer_profile_collection
 config = dotenv_values('.env')
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
@@ -91,6 +91,7 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Something went wrong')
     else:
         if hashing.Hash.verify_hashed_password(str(request.code), data["hashed_reset_pin"]) and not (datetime.now()> data["reset_expire_time"]):
+            lecturer_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{'$set':{"is_code_valid": True,"updatedAt": datetime.now()}})
             return {
                     "detail": "Code is valid",
                     "reset_id": data["_id"]
@@ -98,14 +99,39 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Code is invalid or has expired')
         
-@router.patch('/lecturer_auth/reset-password')
-async def change_password(reset_id:str,request:schemas.ResetPassword):
+@router.patch('/lecturer_auth/reset-password',status_code=200)
+async def change_password(reset_id:str,response:Response,request:schemas.ResetPassword):
       hashed_password = hashing.Hash.get_pwd_hashed(request.new_password)
       try:
-         state = lecturer_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': { "password" : hashed_password,"hashed_reset_pin":None,"reset_expire_time":None,"updatedAt": datetime.now()}}) 
-         return {
-              "detail": "Password reset successful"
-         } 
+         data = lecturer_auth_collection.find_one({"_id": ObjectId(reset_id)})
+         if data["is_code_valid"] == True:
+            state = lecturer_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': 
+                                                                                              { "password" : hashed_password,
+                                                                                               "is_code_valid": False,
+                                                                                               "hashed_reset_pin":None,
+                                                                                               "reset_expire_time":None,
+                                                                                               "updatedAt": datetime.now()
+                                                                                               }
+                                                                                               })
+            result2 = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(reset_id)},{"$push": {
+                                                                                                        "notifications":{
+                                                                                                            "_id": ObjectId(),
+                                                                                                            "title":"Password Changed!",
+                                                                                                            "details":{
+                                                                                                                "description":f'Hi {data["lecturer_name"]}, your password has been changed. Please make sure not to share your password with anyone',
+                                                                                                                "is_read": False
+                                                                                                            },
+                                                                                                            "createdAt":datetime.now()
+                                                                                                        }
+                                                                                                }})
+            return {
+                "detail": "Password reset successful"
+            }
+         else:
+             response.status_code = status.HTTP_400_BAD_REQUEST
+             return {
+                "detail": "Password reset failed"
+            }
       except Exception as e:
            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
          

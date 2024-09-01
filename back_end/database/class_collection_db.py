@@ -80,6 +80,18 @@ def create_class_collection():
                         "bsonType": "string",
                     }
                 },
+                "test_link": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                },
+                "test_attendee_names":{
+                    "bsonType": "array",
+                    "uniqueItems": True,
+                    "additionalProperties": False,
+                    "items":{
+                        "bsonType": "string",
+                    }
+                },
                 "createdAt":{
                     "bsonType": "date",
                     "description": "must be a date and is required"

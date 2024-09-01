@@ -96,6 +96,14 @@ class CreateClass(BaseModel):
      location: ClassLocation
      start_time: datetime
      end_time: datetime
+     test_link: str
+
+class UpdateClass(BaseModel):
+     class_name : str
+     location: ClassLocation
+     start_time: datetime
+     end_time: datetime
+     test_link: str
 
 class CreateClassLocation(BaseModel):
      class_name: str
@@ -110,3 +118,6 @@ class VerifyCode(BaseModel):
 
 class ResetPassword(BaseModel):
      new_password: str
+
+class UpdateNotification(BaseModel):
+     is_read: bool

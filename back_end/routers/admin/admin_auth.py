@@ -66,17 +66,17 @@ async def admin_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 @router.post('/admin_auth/forgot-password')
 async def admin_forgot_pwd(request:schemas.forgetPwd):
         
-    def send_email(subject, body, sender, recipients, password):
+    def send_email(subject, body, sender, recipient, password):
         try:
             msg = MIMEText(body)
             msg['Subject'] = subject
             msg['From'] = sender
-            msg['To'] = recipients
+            msg['To'] = recipient
 
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
                 smtp_server.login(sender, password)
-                smtp_server.sendmail(sender, recipients, msg.as_string())
-                   
+                smtp_server.sendmail(sender, recipient, msg.as_string())
+                
 
         except smtplib.SMTPException as e:
             print(f"SMTP error occurred: {e}")
@@ -123,6 +123,7 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Something went wrong')
     else:
         if hashing.Hash.verify_hashed_password(str(request.code), data["hashed_reset_pin"]) and not (datetime.now()> data["reset_expire_time"]):
+            admin_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{'$set':{"is_code_valid": True,"updatedAt": datetime.now()}})
             return {
                     "detail": "Code is valid",
                     "reset_id": data["_id"]
@@ -131,14 +132,21 @@ async def verify_code(reset_id:str,request:schemas.VerifyCode):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Code is invalid or has expired')
         
 
-@router.patch('/admin_auth/reset-password')
-async def change_password(reset_id:str,request:schemas.ResetPassword):
+@router.patch('/admin_auth/reset-password',status_code=200)
+async def change_password(reset_id:str,response:Response,request:schemas.ResetPassword):
       hashed_password = hashing.Hash.get_pwd_hashed(request.new_password)
       try:
-         state = admin_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': { "password" : hashed_password,"hashed_reset_pin":None,"reset_expire_time":None,"updatedAt": datetime.now()}}) 
-         return {
-              "detail": "Password reset successful"
-         } 
+         data = admin_auth_collection.find_one({"_id": ObjectId(reset_id)})
+         if data["is_code_valid"] == True:
+            state = admin_auth_collection.find_one_and_update({"_id": ObjectId(reset_id)},{ '$set': { "password" : hashed_password,"is_code_valid": False,"hashed_reset_pin":None,"reset_expire_time":None,"updatedAt": datetime.now()}}) 
+            return {
+                "detail": "Password reset successful"
+            }
+         else:
+             response.status_code = status.HTTP_400_BAD_REQUEST
+             return {
+                "detail": "Password reset failed"
+            }
       except Exception as e:
            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'{e}')
          
