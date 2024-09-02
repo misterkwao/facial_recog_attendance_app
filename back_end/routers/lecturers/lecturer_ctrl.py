@@ -406,7 +406,7 @@ async def update_class(id, request: schemas.UpdateClass,response: Response,curre
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 @router.patch("/lecturer/update-notifications", status_code=200)
-async def notification_update(id,response: Response,request:schemas.UpdateNotification,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
+async def notification_update(id,response: Response,current_user:schemas.User = Depends(oauth2_lecturer.get_current_user)):
     if current_user.user_role == "lecturer":
         try:
             result = lecturer_profile_collection.update_one({"owner": ObjectId(current_user.user_id),"notifications._id":ObjectId(id)},
