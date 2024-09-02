@@ -185,7 +185,7 @@ async def mark_assessment_attendance(id,file: UploadFile,response: Response,curr
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
 @router.patch("/student/update-notification", status_code=200)
-async def notification_update(id,response: Response,request:schemas.UpdateNotification,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+async def notification_update(id,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     if current_user.user_role == "student":
         try:
             result = student_profile_collection.update_one({"owner": ObjectId(current_user.user_id),"notifications._id":ObjectId(id)},
