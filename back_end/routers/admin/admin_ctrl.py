@@ -221,7 +221,6 @@ async def delete_lecturer(id: str,current_user:schemas.User = Depends(oauth2_Adm
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
     
-
 # Admin to student  functionalities
 @router.post('/admin/user-manangement/student')
 async def create_student(request:schemas.CreateStudent,current_user:schemas.User = Depends(oauth2_Admin.get_current_user)):
