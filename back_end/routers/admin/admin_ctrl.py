@@ -178,6 +178,8 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         # if you want to added new courses, just add the new course to the already existing courses and send the json array of objects
         # if you want to delete a course, remove the course from the existing courses and send the json array of objects
         try:
+            #This is just to get the lecturers name
+            lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
             lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': 
                                                                                                         { "allowed_courses" : request.allowed_courses, 
                                                                                                          "is_face_enrolled": request.is_face_enrolled,
@@ -187,7 +189,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
                                                                                                                 "_id": ObjectId(),
                                                                                                                 "title":"Profile Updated!",
                                                                                                                 "details":{
-                                                                                                                    "description":f"Hi{current_user.user_name} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                                                                    "description":f"Hi {lecturer["lecturer_name"]} your profile has been updated. If there are any errors kindly contact your administrator",
                                                                                                                     "is_read": False
                                                                                                                 },
                                                                                                                 "createdAt":datetime.now()
@@ -267,7 +269,8 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
     if current_user.user_role == "admin":
         # These are the selected fields that can be changed without affecting data integrity
         try:
-            # student_name_update = student_auth_collection.find_one_and_update({"_id": ObjectId(id)},{ '$set': { "student_name": request.student_name} })
+            #this is just to get the students name
+            profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
             student_update = student_profile_collection.find_one_and_update({"owner": ObjectId(id)},
                                                         { '$set': { "year_enrolled" : request.year_enrolled,
                                                                     "student_current_level": request.student_current_level,
@@ -281,7 +284,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
                                                                     "_id": ObjectId(),
                                                                     "title":"Profile Updated!",
                                                                     "details":{
-                                                                        "description":f"Hi{current_user.user_name} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                        "description":f"Hi {profile["student_name"]} your profile has been updated. If there are any errors kindly contact your administrator",
                                                                         "is_read": False
                                                                     },
                                                                     "createdAt":datetime.now()
