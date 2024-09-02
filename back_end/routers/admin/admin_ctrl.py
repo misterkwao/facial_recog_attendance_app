@@ -189,7 +189,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
                                                                                                                 "_id": ObjectId(),
                                                                                                                 "title":"Profile Updated!",
                                                                                                                 "details":{
-                                                                                                                    "description":f"Hi {lecturer["lecturer_name"]} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                                                                    "description":f'Hi {lecturer["lecturer_name"]} your profile has been updated. If there are any errors kindly contact your administrator',
                                                                                                                     "is_read": False
                                                                                                                 },
                                                                                                                 "createdAt":datetime.now()
@@ -283,7 +283,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
                                                                     "_id": ObjectId(),
                                                                     "title":"Profile Updated!",
                                                                     "details":{
-                                                                        "description":f"Hi {profile["student_name"]} your profile has been updated. If there are any errors kindly contact your administrator",
+                                                                        "description":f'Hi {profile["student_name"]} your profile has been updated. If there are any errors kindly contact your administrator',
                                                                         "is_read": False
                                                                     },
                                                                     "createdAt":datetime.now()
