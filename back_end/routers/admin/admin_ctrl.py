@@ -179,7 +179,7 @@ async def update_lecturer(request:schemas.AdminUpdateLecturer,id: str,current_us
         # if you want to delete a course, remove the course from the existing courses and send the json array of objects
         try:
             #This is just to get the lecturers name
-            lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
+            lecturer = lecturer_profile_collection.find_one({"owner": ObjectId(id)})
             lecturer_profile = lecturer_profile_collection.find_one_and_update({"owner": ObjectId(id)},{ '$set': 
                                                                                                         { "allowed_courses" : request.allowed_courses, 
                                                                                                          "is_face_enrolled": request.is_face_enrolled,
@@ -269,7 +269,7 @@ async def update_student(request:schemas.StudentProfileUpdate,id: str,current_us
         # These are the selected fields that can be changed without affecting data integrity
         try:
             #this is just to get the students name
-            profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
+            profile = student_profile_collection.find_one({"owner": ObjectId(id)})
             student_update = student_profile_collection.find_one_and_update({"owner": ObjectId(id)},
                                                         { '$set': { "year_enrolled" : request.year_enrolled,
                                                                     "student_current_level": request.student_current_level,

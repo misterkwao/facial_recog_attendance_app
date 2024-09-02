@@ -55,6 +55,7 @@ class CreateLecturer(BaseModel):
 
 class AdminUpdateLecturer(BaseModel):
      allowed_courses: Union[list,allowedCourses]
+     is_face_enrolled: bool
 
 class semesterCourses(BaseModel):
      course_title: str
