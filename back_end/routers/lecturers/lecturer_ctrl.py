@@ -244,7 +244,60 @@ async def create_class(request:schemas.CreateClass,current_user:schemas.User = D
                 "test_attendee_names":[],
                 "createdAt": datetime.now()
             })
-            if create_class:
+            #Sending notification if link is added
+            if request.test_link !="":
+                match request.course_semester_level:
+                        case 1:
+                            student_profile_collection.update_many(
+                                                            {"$and":[
+                                                                {"student_current_level": {"$eq": request.course_level}},
+                                                                {"student_current_semester":{"$eq": request.course_semester_level}},
+                                                                {f'allowed_courses.{((request.course_level)//100)-1}.first_semester_courses':{ "$elemMatch": { "course_title": request.course_title} }}
+                                                                ]},
+                                                            {"$push": {
+                                                                "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'Class assessment for {request.course_title}!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(create_class),
+                                                                        "description":"Please tap on this notification to partake the assessment.Note that once you leave the app during the assessment you wont be able to re-take it",
+                                                                        "link":request.test_link,
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                                }
+                                                            },
+                                                        )
+                            return{
+                                   "detail": "Class created Successfully"
+                                   }
+                        case _:
+                            student_profile_collection.update_many(
+                                                    {"$and":[
+                                                        {"student_current_level": {"$eq": request.course_level}},
+                                                        {"student_current_semester":{"$eq": request.course_semester_level}},
+                                                        {f'allowed_courses.{((request.course_level)//100)-1}.second_semester_courses':{ "$elemMatch": { "course_title": request.course_title} }}
+                                                        ]},
+                                                    {"$push": {
+                                                        "notifications":{
+                                                                    "_id": ObjectId(),
+                                                                    "title":f'Class assessment for {request.course_title}!',
+                                                                    "details":{
+                                                                        "class_id":ObjectId(create_class),
+                                                                        "description":"Please tap on this notification to partake the assessment\n Note that once you leave the app you wont be able to re-take the assessment",
+                                                                        "link":request.test_link,
+                                                                        "is_read": False
+                                                                    },
+                                                                    "createdAt":datetime.now()
+                                                                }
+                                                        }
+                                                    },
+                                                )
+                            return{
+                                "detail": "Class created Successfully"
+                            }
+            elif create_class:
                 return {
                     "detail": "Class created Successfully"
                 }
