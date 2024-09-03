@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Student/notifications.dart';
 
 import '../Pages/student_page.dart';
 
@@ -36,9 +37,11 @@ class _StudentDrawerState extends State<StudentDrawer> {
             dashList(context, 1, const StudentPage(), "D A S H B O A R D",
                 Icons.dashboard_rounded),
             SizedBox(height: height * 0.02),
+            dashList(context, 2, const Notifications(),
+                "N O T I F I C A T I O N S", Icons.notifications),
             // ListTile(
             //   leading: const Icon(
-            //     Icons.face_2_rounded,
+            //     Icons.notifications,
             //     color: Colors.black,
             //   ),
             //   title: const Align(
@@ -46,7 +49,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
             //     child: FittedBox(
             //       fit: BoxFit.scaleDown,
             //       child: Text(
-            //         "M A R K  A T T E N D A N C E",
+            //         "NOTIFICATIONS",
             //         style: TextStyle(
             //             color: Colors.black,
             //             fontWeight: FontWeight.w500,
@@ -62,7 +65,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
             //       selectedpage = 2;
             //     });
             //     Navigator.of(context).push(MaterialPageRoute(
-            //       builder: (context) => const MarkAttendance(),
+            //       builder: (context) => const Notifications(),
             //     ));
             //     setState(() {
             //       selectedpage = 1;

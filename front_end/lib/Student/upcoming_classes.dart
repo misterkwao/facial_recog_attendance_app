@@ -19,6 +19,8 @@ class StudentUpcomingClass extends StatefulWidget {
   State<StudentUpcomingClass> createState() => _StudentUpcomingClassState();
 }
 
+bool studentMarked = false;
+
 class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
   // Get current date and time
   DateTime now = DateTime.now();
@@ -27,26 +29,34 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
 
   // Function to check if student is within a 10 meter radius of the location
   Future<bool> isWithinLocationRadius(double latitude, double longitude) async {
+    Completer<bool> completer = Completer<bool>();
+
     LocationSettings locationSettings = const LocationSettings(
         accuracy: LocationAccuracy.best, distanceFilter: 0);
-    StreamSubscription<Position> positionStream =
+
+    // Declare the variable first
+    late StreamSubscription<Position> positionStream;
+
+    positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((Position? position) {
-      print(
-          '${position?.latitude.toString()}, ${position?.longitude.toString()}');
-      setState(() {
-        distance = Geolocator.distanceBetween(
-          position!.latitude,
-          position!.longitude,
-          latitude,
-          longitude,
-        );
-      });
+      double distance = Geolocator.distanceBetween(
+        position!.latitude,
+        position!.longitude,
+        latitude,
+        longitude,
+      );
 
       // Print the distance between the
       print(distance);
+
+      completer.complete(distance <= 10.0);
+
+      // Cancel the subscription after getting the result
+      positionStream.cancel();
     });
-    return distance <= 10.0;
+    print(completer.future);
+    return completer.future;
   }
 
   @override
@@ -113,84 +123,107 @@ class _StudentUpcomingClassState extends State<StudentUpcomingClass> {
                                       ["start_time"])) &&
                                   now.isBefore(DateTime.parse(value
                                       .upcomingClasses[index]["end_time"]))) {
-                                // Show bottom sheet to let user know you are checking location
-                                showModalBottomSheet(
-                                  barrierColor: Colors.black26,
-                                  backgroundColor: Colors.white,
-                                  // showDragHandle: true,
-                                  sheetAnimationStyle:
-                                      AnimationStyle(curve: Curves.easeIn),
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                      height: 410,
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child: Center(
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(height: 10),
-                                            modalDrag(width),
-                                            Image.asset(
-                                              "assets/images/map.gif",
-                                              height: 150,
-                                            ),
-                                            const Text(
-                                                "Making sure you are in class")
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-
-                                await Future.delayed(
-                                    const Duration(seconds: 1));
-
-                                // Check location of student
-                                if (await isWithinLocationRadius(
-                                    classLatitude, classLongitude)) {
-                                  // Pop modal bottom sheet
-                                  Navigator.pop(context);
-
-                                  // Wait for the pop animation to complete
-                                  await Future.delayed(
-                                      const Duration(milliseconds: 200));
-
-                                  QuickAlert.show(
-                                    context: context,
-                                    type: QuickAlertType.confirm,
-                                    title: "Attendance",
-                                    text:
-                                        "Mark attendance for ${value.upcomingClasses[index]["course_title"]}",
-
-                                    // Navigate to mark attendance page
-                                    onConfirmBtnTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MarkAttendance(
-                                          classId: value.upcomingClasses[index]
-                                              ["_id"],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  // Pop modal bottom sheet
-                                  Navigator.pop(context);
-
-                                  // Wait for the pop animation to complete
-                                  await Future.delayed(
-                                      const Duration(milliseconds: 200));
-
+                                // check if student has already marked attendance
+                                if ((value.upcomingClasses[index]
+                                        ["attendee_names"])
+                                    .contains(
+                                        value.studentProfile["student_name"])) {
                                   QuickAlert.show(
                                       context: context,
                                       type: QuickAlertType.error,
-                                      title: "Sorry",
+                                      title: "Marked",
                                       text:
-                                          "You are not in class and thus can't mark attendance.");
+                                          "You have already marked attendance for this class.");
+                                } else {
+                                  // Show bottom sheet to let user know you are checking location
+                                  showModalBottomSheet(
+                                    barrierColor: Colors.black26,
+                                    backgroundColor: Colors.white,
+                                    // showDragHandle: true,
+                                    sheetAnimationStyle:
+                                        AnimationStyle(curve: Curves.easeIn),
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                        height: 410,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        child: Center(
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              modalDrag(width),
+                                              Image.asset(
+                                                "assets/images/map.gif",
+                                                height: 150,
+                                              ),
+                                              const Text(
+                                                  "Making sure you are in class")
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
+
+                                  // Check location of student
+                                  if (await isWithinLocationRadius(
+                                      classLatitude, classLongitude)) {
+                                    // Pop modal bottom sheet
+                                    Navigator.pop(context);
+
+                                    // Wait for the pop animation to complete
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 200));
+
+                                    studentMarked
+                                        ? QuickAlert.show(
+                                            context: context,
+                                            type: QuickAlertType.error,
+                                            title: "Sorry",
+                                            text:
+                                                "You've already marked attendace for ths class")
+                                        : QuickAlert.show(
+                                            context: context,
+                                            type: QuickAlertType.confirm,
+                                            title: "Attendance",
+                                            text:
+                                                "Mark attendance for ${value.upcomingClasses[index]["course_title"]}",
+
+                                            // Navigate to mark attendance page
+                                            onConfirmBtnTap: () =>
+                                                Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MarkAttendance(
+                                                  classId:
+                                                      value.upcomingClasses[
+                                                          index]["_id"],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                  } else {
+                                    // Pop modal bottom sheet
+                                    Navigator.pop(context);
+
+                                    // Wait for the pop animation to complete
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 200));
+
+                                    QuickAlert.show(
+                                        context: context,
+                                        type: QuickAlertType.error,
+                                        title: "Sorry",
+                                        text:
+                                            "You are not in class and thus can't mark attendance.");
+                                  }
                                 }
                               } else if (now.isBefore(DateTime.parse(value
                                   .upcomingClasses[index]["start_time"]))) {

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
 import 'dart:io';
@@ -18,11 +18,13 @@ import '../Pages/otp_page.dart';
 class StudentsPageProvider with ChangeNotifier {
   Map _studentProfile = {};
   List _studentCourses = [];
+  var _studentNotifications;
   var _upcomingClasses;
   String _resetId = '';
 
   Map get studentProfile => _studentProfile;
   List get studentCourses => _studentCourses;
+  get studentNotifications => _studentNotifications;
   get upcomingClasses => _upcomingClasses;
   String get resetId => _resetId;
 
@@ -115,11 +117,13 @@ class StudentsPageProvider with ChangeNotifier {
 
         List fetchedCourses = await getStudentCoursesFromApi();
         var fetchedUpcomingClasses = await getStudentsUpcomingClassesFromApi();
+        var fetchedNotifications = await getStudentNotificationsFromApi();
 
         if (studentProfile.isNotEmpty) {
           _studentProfile = studentProfile;
           _studentCourses = fetchedCourses;
           _upcomingClasses = fetchedUpcomingClasses;
+          _studentNotifications = fetchedNotifications;
 
           notifyListeners();
         }
@@ -152,6 +156,23 @@ class StudentsPageProvider with ChangeNotifier {
         ));
     if (response.statusCode == 200) {
       return response.data["profile"];
+    } else {
+      return response.data;
+    }
+  }
+
+  // Get student notifications
+  Future<dynamic> getStudentNotificationsFromApi() async {
+    var url = "${baseurl}student";
+    var response = await Dio().get(url,
+        options: Options(
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+          headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"},
+          validateStatus: (status) => true,
+        ));
+    if (response.statusCode == 200) {
+      return response.data["profile"]["notifications"];
     } else {
       return response.data;
     }
@@ -322,6 +343,39 @@ class StudentsPageProvider with ChangeNotifier {
             type: QuickAlertType.error,
             title: "Oops",
             text: "An error occurred.");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  // Set notification is_read to false
+  Future<dynamic> readNotification(
+      BuildContext context, String notificationId) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().patch(
+        "${baseurl}student/update-notification",
+        queryParameters: {"id": notificationId},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            HttpHeaders.authorizationHeader: "Bearer $accessToken",
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        print("success");
+      } else {
+        print(response);
       }
     } else {
       QuickAlert.show(

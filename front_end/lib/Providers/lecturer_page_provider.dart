@@ -23,6 +23,7 @@ class LecturerPageProvider with ChangeNotifier {
   List _lecturerClassStatistics = [];
   Map _lecturerProfile = {};
   String _resetId = '';
+  var _lecturerNotifications;
 
   List get lecturerClassLocations => _lecturerClassLocations;
   List get lecturerCourses => _lecturerCourses;
@@ -30,6 +31,7 @@ class LecturerPageProvider with ChangeNotifier {
   List get lecturerClassStatistics => _lecturerClassStatistics;
   Map get lecturerProfile => _lecturerProfile;
   String get resetId => _resetId;
+  get lecturerNotifications => _lecturerNotifications;
 
   // Function to check internet connectivity
   Future<bool> _checkInternetConnection() async {
@@ -123,6 +125,7 @@ class LecturerPageProvider with ChangeNotifier {
         List fetchedCourses = await getLecturerCoursesFromApi();
         List fetchedUpcomingClasses = await getUpcomingClassesFromApi();
         List fetchedClassStatistics = await getClassStatisticsFromApi();
+        var fetchedNotifications = await getNotificationsFromApi();
 
         if (fetchedClassLocations.isNotEmpty) {
           _lecturerProfile = fetchedProfile;
@@ -130,6 +133,7 @@ class LecturerPageProvider with ChangeNotifier {
           _lecturerClassLocations = fetchedClassLocations;
           _lecturerUpcomingClasses = fetchedUpcomingClasses;
           _lecturerClassStatistics = fetchedClassStatistics;
+          _lecturerNotifications = fetchedNotifications;
 
           print(_lecturerClassStatistics);
 
@@ -494,6 +498,103 @@ class LecturerPageProvider with ChangeNotifier {
             type: QuickAlertType.error,
             title: "Oops",
             text: "An error occurred");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  // Update upcoming class
+  Future<dynamic> updateUpcomingClass(
+      var details, BuildContext context, String id) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().patch(
+        "${baseurl}lecturer/classes/class",
+        queryParameters: {"id": id},
+        data: json.encode(details),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken'
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: "Success",
+            text: "Class details updated successfully.");
+      } else {
+        Navigator.of(context).pop();
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Failed to update class details. Please try again.");
+      }
+    } else {
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.info,
+          title: "No Internet Connection",
+          text: "Please check your internet connection and try again.");
+    }
+  }
+
+  // Get lecturer notifications
+  Future<dynamic> getNotificationsFromApi() async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    var url = "${baseurl}lecturer";
+    var response = await Dio().get(url,
+        options: Options(
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+          headers: {HttpHeaders.authorizationHeader: "Bearer $accessToken"},
+          validateStatus: (status) => true,
+        ));
+    if (response.statusCode == 200) {
+      return response.data["notifications"];
+    } else {
+      return response.data;
+    }
+  }
+
+  // Set notification is_read to false
+  Future<dynamic> readNotification(
+      BuildContext context, String notificationId) async {
+    // Simulating API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (await _checkInternetConnection()) {
+      var response = await Dio().patch(
+        "${baseurl}lecturer/update-notification",
+        queryParameters: {"id": notificationId},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            HttpHeaders.authorizationHeader: "Bearer $accessToken",
+          },
+          responseType: ResponseType.json,
+          validateStatus: (status) => true,
+        ),
+      );
+      if (response.statusCode == 200) {
+        print("success");
+      } else {
+        print(response);
       }
     } else {
       QuickAlert.show(

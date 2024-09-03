@@ -32,8 +32,9 @@ class _AdminDrawerState extends State<AdminDrawer> {
           children: [
             const DrawerHeader(
                 child: Icon(
-              Icons.favorite,
-              color: Colors.black,
+              Icons.security_outlined,
+              color: Color.fromARGB(168, 78, 199, 255),
+              size: 60,
             )),
             dashList(context, 1, const AdminPage(), "D A S H B O A R D",
                 Icons.dashboard_customize_rounded),
@@ -99,7 +100,8 @@ class _AdminDrawerState extends State<AdminDrawer> {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w900,
-                          fontSize: 20),
+                          fontSize: 20,
+                          fontFamily: 'Montserrat'),
                     ),
                   ),
                 ),
@@ -129,7 +131,8 @@ class _AdminDrawerState extends State<AdminDrawer> {
             tilename,
             style: TextStyle(
                 color: selectedpage == pagenumber ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat'),
           ),
         ),
       ),

@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:student_attendance_app/Lecturer/lecturer_notifications.dart';
 import 'package:student_attendance_app/Providers/lecturer_page_provider.dart';
 
 import '../Constants/lecturer_constants.dart';
@@ -25,6 +26,8 @@ class LecturerPage extends StatefulWidget {
 class _AdminPageState extends State<LecturerPage> {
   final ScrollController _scrollController = ScrollController();
   late StreamSubscription _internetSubscription;
+  int notificationCount = 0;
+  bool notify = false;
 
   bool hasInternet = true;
 
@@ -144,6 +147,21 @@ class _AdminPageState extends State<LecturerPage> {
             );
           }
 
+          // Reset notification count
+          notificationCount = 0;
+          notify = false;
+
+          List notification =
+              context.read<LecturerPageProvider>().lecturerNotifications;
+          // print("notifications: " + notification.toString());
+
+          for (var i = 0; i < notification.length; i++) {
+            if (notification[i]['details']['is_read'] == false) {
+              notificationCount++;
+              notify = true;
+            }
+          }
+
           return FutureBuilder(
             future: _checkInternetConnection(),
             builder: (context, snapshot) {
@@ -169,6 +187,32 @@ class _AdminPageState extends State<LecturerPage> {
                       headerSliverBuilder: (context, innerBoxIsScrolled) {
                         return [
                           SliverAppBar(
+                            actions: [
+                              notify
+                                  ? InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              LecturerNotifications(),
+                                        ));
+                                        selectedpage = 3;
+                                      },
+                                      child: Badge(
+                                        label:
+                                            Text(notificationCount.toString()),
+                                        backgroundColor: Colors.red,
+                                        child:
+                                            Icon(Icons.notifications, size: 30),
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.notifications,
+                                      size: 30,
+                                      color: Colors.blueAccent,
+                                    ),
+                              SizedBox(width: 15),
+                            ],
                             backgroundColor: Colors.white,
                             snap: true,
                             floating: true,

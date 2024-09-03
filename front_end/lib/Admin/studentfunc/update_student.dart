@@ -19,6 +19,11 @@ class UpdateStudent extends StatefulWidget {
 class _UpdateStudentState extends State<UpdateStudent> {
   final formKey = GlobalKey<FormState>();
 
+  late String yearEnrolled;
+  late String currentLevel;
+  late String currentSemester;
+  late String is_face_enrolled;
+
   Widget editText(IconData icon, bool enable, String? text) {
     return TextFormField(
       // controller: controller,
@@ -34,7 +39,15 @@ class _UpdateStudentState extends State<UpdateStudent> {
         suffixIcon: Icon(icon),
       ),
       onChanged: (value) => setState(() {
-        text = value;
+        if (text == yearEnrolled) {
+          yearEnrolled = value;
+        } else if (text == currentLevel) {
+          currentLevel = value;
+        } else if (text == currentSemester) {
+          currentSemester = value;
+        } else if (text == is_face_enrolled) {
+          is_face_enrolled = value;
+        }
       }),
       validator: (value) {
         if (value!.isEmpty) {
@@ -47,33 +60,41 @@ class _UpdateStudentState extends State<UpdateStudent> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    List students = Provider.of<AdminPageProvider>(context).allStudents;
+
+    yearEnrolled = (students[selectedStudentIndex]["year_enrolled"]).toString();
+    currentLevel =
+        (students[selectedStudentIndex]["student_current_level"]).toString();
+    currentSemester =
+        (students[selectedStudentIndex]["student_current_semester"]).toString();
+    is_face_enrolled =
+        (students[selectedStudentIndex]["is_face_enrolled"]).toString();
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   List students = Provider.of<AdminPageProvider>(context).allStudents;
+
+  //   yearEnrolled = (students[selectedStudentIndex]["year_enrolled"]).toString();
+  //   currentLevel =
+  //       (students[selectedStudentIndex]["student_current_level"]).toString();
+  //   currentSemester =
+  //       (students[selectedStudentIndex]["student_current_semester"]).toString();
+  //   is_face_enrolled =
+  //       (students[selectedStudentIndex]["is_face_enrolled"]).toString();
+  // }
+
+  @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     List students = Provider.of<AdminPageProvider>(context).allStudents;
     String ownerId = students[selectedStudentIndex]["owner"];
 
     final String name = students[selectedStudentIndex]["student_name"];
-    String yearEnrolled =
-        (students[selectedStudentIndex]["year_enrolled"]).toString();
-    String currentLevel =
-        (students[selectedStudentIndex]["student_current_level"]).toString();
-    String currentSemester =
-        (students[selectedStudentIndex]["student_current_semester"]).toString();
-    String isFaceEnrolled =
-        (students[selectedStudentIndex]["is_face_enrolled"]).toString();
-
-    // final TextEditingController studentName = TextEditingController(
-    //     text: (students[selectedStudentIndex]["student_name"]));
-    // TextEditingController yearEnrolled = TextEditingController(
-    //     text: (students[selectedStudentIndex]["year_enrolled"]).toString());
-    // TextEditingController currentLevel = TextEditingController(
-    //     text: (students[selectedStudentIndex]["student_current_level"])
-    //         .toString());
-    // TextEditingController currentSemester = TextEditingController(
-    //     text: (students[selectedStudentIndex]["student_current_semester"])
-    //         .toString());
-    // TextEditingController isFaceEnrolled = TextEditingController(
-    //     text: (students[selectedStudentIndex]["is_face_enrolled"]).toString());
 
     return Column(
       children: [
@@ -112,7 +133,7 @@ class _UpdateStudentState extends State<UpdateStudent> {
                 const SizedBox(height: 20),
                 const Text("Face enrolled"),
                 const SizedBox(height: 10),
-                editText(Icons.numbers_rounded, true, isFaceEnrolled),
+                editText(Icons.numbers_rounded, true, is_face_enrolled),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -148,8 +169,10 @@ class _UpdateStudentState extends State<UpdateStudent> {
                                   "year_enrolled": yearEnrolled,
                                   "student_current_level": currentLevel,
                                   "student_current_semester": currentSemester,
-                                  "is_face_enrolled": isFaceEnrolled
+                                  "is_face_enrolled": is_face_enrolled
                                 };
+
+                                print(details);
 
                                 try {
                                   await context

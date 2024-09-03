@@ -3,12 +3,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
+import 'package:student_attendance_app/Student/notifications.dart';
 import 'package:student_attendance_app/Student/upcoming_classes.dart';
 import 'package:student_attendance_app/Student/upload_face.dart';
 
@@ -25,6 +27,8 @@ class StudentPage extends StatefulWidget {
 class _StudentPageState extends State<StudentPage> {
   final ScrollController _scrollController = ScrollController();
   late StreamSubscription _internetSubscription;
+  int notificationCount = 0;
+  bool notify = false;
 
   bool hasInternet = true;
 
@@ -134,6 +138,7 @@ class _StudentPageState extends State<StudentPage> {
           if (value.studentProfile.isEmpty && value.studentCourses.isEmpty) {
             // If no data is available, initiate fetch
             value.fetchDetails(context);
+            // print("notifications: " + value.studentNotifications);
 
             return Scaffold(
               backgroundColor: Colors.white,
@@ -141,6 +146,21 @@ class _StudentPageState extends State<StudentPage> {
                 child: Image.asset('assets/images/cloudloading.gif'),
               ),
             );
+          }
+
+          // Reset notification count
+          notificationCount = 0;
+          notify = false;
+
+          List notification =
+              context.read<StudentsPageProvider>().studentNotifications;
+          // print("notifications: " + notification.toString());
+
+          for (var i = 0; i < notification.length; i++) {
+            if (notification[i]['details']['is_read'] == false) {
+              notificationCount++;
+              notify = true;
+            }
           }
 
           return FutureBuilder(
@@ -165,6 +185,31 @@ class _StudentPageState extends State<StudentPage> {
                       headerSliverBuilder: (context, innerBoxIsScrolled) {
                         return [
                           SliverAppBar(
+                            actions: [
+                              notify
+                                  ? InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) => Notifications(),
+                                        ));
+                                        selectedpage = 2;
+                                      },
+                                      child: Badge(
+                                        label:
+                                            Text(notificationCount.toString()),
+                                        backgroundColor: Colors.red,
+                                        child:
+                                            Icon(Icons.notifications, size: 30),
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.notifications,
+                                      size: 30,
+                                      color: Colors.blueAccent,
+                                    ),
+                              SizedBox(width: 15),
+                            ],
                             backgroundColor: Colors.white,
                             snap: true,
                             floating: true,

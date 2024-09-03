@@ -53,6 +53,7 @@ class _CreateClassState extends State<CreateClass> {
   TextEditingController courseTitle = TextEditingController();
   TextEditingController courseLevel = TextEditingController();
   TextEditingController courseSemester = TextEditingController();
+  TextEditingController testLink = TextEditingController();
 
   String startTime = "";
   String endTime = "";
@@ -317,9 +318,13 @@ class _CreateClassState extends State<CreateClass> {
                         child: const Text(
                           "Pick",
                           style: TextStyle(color: Colors.white),
-                        ))
+                        )),
                   ],
                 ),
+                SizedBox(height: 20),
+                Text("Test link"),
+                const SizedBox(height: 10),
+                textfield(Icons.analytics_outlined, testLink),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -361,6 +366,7 @@ class _CreateClassState extends State<CreateClass> {
                                   "location": classMapping,
                                   "start_time": startTime,
                                   "end_time": endTime,
+                                  "test_link": testLink.text
                                 };
 
                                 print(details);

@@ -11,9 +11,13 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Constants/lecturer_constants.dart';
 import 'package:student_attendance_app/Pages/lecturer_page.dart';
 import 'package:student_attendance_app/Providers/lecturer_page_provider.dart';
 import 'package:student_attendance_app/Providers/students_page_provider.dart';
+import 'package:student_attendance_app/Student/notifications.dart';
+import 'package:student_attendance_app/Student/test_page.dart';
+import 'package:student_attendance_app/Student/upcoming_classes.dart';
 
 import '../Auth/api.dart';
 import '../Pages/student_page.dart';
@@ -26,6 +30,11 @@ class ScanFace extends StatefulWidget {
   @override
   State<ScanFace> createState() => _ScanFaceState();
 }
+
+// Check to see if student is marking test
+bool ismarkingTest = false;
+
+bool result = false;
 
 class _ScanFaceState extends State<ScanFace> {
   late CameraController controller;
@@ -155,6 +164,88 @@ class _ScanFaceState extends State<ScanFace> {
     return await _faceDetector.processImage(inputImage);
   }
 
+  // Mark test attendance for student
+  Future<dynamic> markStudentTestAttendance(image) async {
+    // Get student name
+    final name =
+        context.read<StudentsPageProvider>().studentProfile["student_name"];
+
+    FormData data = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path, filename: "$name.jpg")
+    });
+
+    final response = await Dio().post(
+      "${baseurl}student/attendance/assessment",
+      queryParameters: {"id": widget.classId},
+      data: data,
+      options: Options(
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        validateStatus: (status) => true,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      setState(() {
+        result = true;
+      });
+
+      // Pop the screen and return to student's dashboard
+      // Navigator.of(context).pushAndRemoveUntil(
+      //   MaterialPageRoute(
+      //     builder: (context) => const Notifications(),
+      //   ),
+      //   (route) => false,
+      // );
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => TestPage(),
+        ),
+      );
+
+      // Successfully enrolled the face
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: "Success",
+        text: "Test attendance marked successfully",
+      );
+      print("Test attendance successfully marked");
+      return true;
+    } else {
+      // Dispose of the camera controller
+      controller.dispose();
+
+      setState(() {
+        result = false;
+      });
+
+      // Pop the screen and return to student's dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const Notifications(),
+        ),
+        (route) => false,
+      );
+
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: response.data["detail"],
+      );
+      print("Failed to mark test attendance: ${response.data["detail"]}");
+      return false;
+    }
+  }
+
   // Mark course attendance for student
   Future<dynamic> markStudentCourseAttendance(image) async {
     // Get student name
@@ -175,12 +266,17 @@ class _ScanFaceState extends State<ScanFace> {
           'Accept': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
+        validateStatus: (status) => true,
       ),
     );
 
     if (response.statusCode == 200) {
       // Dispose of the camera controller
       controller.dispose();
+
+      setState(() {
+        studentMarked = true;
+      });
 
       // Pop the screen and return to student's dashboard
       Navigator.of(context).pushAndRemoveUntil(
@@ -199,7 +295,7 @@ class _ScanFaceState extends State<ScanFace> {
       );
       print("Class attendance successfully marked");
 
-      return response.data;
+      return true;
     } else {
       // Dispose of the camera controller
       controller.dispose();
@@ -219,6 +315,7 @@ class _ScanFaceState extends State<ScanFace> {
         text: response.data["detail"],
       );
       print("Failed to mark attendance: ${response.data["detail"]}");
+      return false;
     }
   }
 
@@ -242,12 +339,17 @@ class _ScanFaceState extends State<ScanFace> {
           'Accept': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
+        validateStatus: (status) => true,
       ),
     );
 
     if (response.statusCode == 200) {
       // Dispose of the camera controller
       controller.dispose();
+
+      setState(() {
+        lecturerMarked = true;
+      });
 
       // Pop the screen and return to student's dashboard
       Navigator.of(context).pushAndRemoveUntil(
@@ -266,7 +368,7 @@ class _ScanFaceState extends State<ScanFace> {
       );
       print("Class attendance successfully marked");
 
-      return response.data;
+      return true;
     } else {
       // Dispose of the camera controller
       controller.dispose();
@@ -286,8 +388,11 @@ class _ScanFaceState extends State<ScanFace> {
         text: response.data["detail"],
       );
       print("Failed to mark attendance: ${response.data["detail"]}");
+      return false;
     }
   }
+
+  bool success = false;
 
   void takePicture() async {
     if (_isPictureTaken) return; // Prevent multiple pictures
@@ -306,7 +411,10 @@ class _ScanFaceState extends State<ScanFace> {
     if (_isUserLookingAtCamera) {
       if (user == "lecturer") {
         await markLecturerCourseAttendance(image);
-      } else if (user == "student") {
+      } else if (user == 'student' && ismarkingTest == true) {
+        await markStudentTestAttendance(image);
+        print("success value: " + success.toString());
+      } else if (user == "student" && ismarkingTest == false) {
         await markStudentCourseAttendance(image);
       }
     } else {

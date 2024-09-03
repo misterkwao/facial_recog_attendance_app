@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:quickalert/quickalert.dart';
+import 'package:student_attendance_app/Lecturer/update_upcoming_class.dart';
 
 import '../Lecturer/delete_upcoming_class.dart';
 import '../Providers/lecturer_page_provider.dart';
@@ -269,6 +270,8 @@ Widget lecClassLocations(double width, BuildContext context) {
 
 int selectedUpcomingClass = 0;
 
+bool lecturerMarked = false;
+
 Widget lecUpcomingClasses(BuildContext context, double width, double height) {
   return Container(
     width: width,
@@ -510,26 +513,34 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                         await Future.delayed(
                                             const Duration(milliseconds: 200));
 
-                                        QuickAlert.show(
-                                          context: context,
-                                          type: QuickAlertType.confirm,
-                                          title: "Attendance",
-                                          text:
-                                              "Mark attendance for ${value.lecturerUpcomingClasses[index]["course_title"]}",
+                                        lecturerMarked
+                                            ? QuickAlert.show(
+                                                context: context,
+                                                type: QuickAlertType.error,
+                                                title: "Sorry",
+                                                text:
+                                                    "You've already marked attendace for ths class")
+                                            : QuickAlert.show(
+                                                context: context,
+                                                type: QuickAlertType.confirm,
+                                                title: "Attendance",
+                                                text:
+                                                    "Mark attendance for ${value.lecturerUpcomingClasses[index]["course_title"]}",
 
-                                          // Navigate to mark attendance page
-                                          onConfirmBtnTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MarkAttendance(
-                                                classId: value
-                                                        .lecturerUpcomingClasses[
-                                                    index]["_id"],
-                                              ),
-                                            ),
-                                          ),
-                                        );
+                                                // Navigate to mark attendance page
+                                                onConfirmBtnTap: () =>
+                                                    Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MarkAttendance(
+                                                      classId: value
+                                                              .lecturerUpcomingClasses[
+                                                          index]["_id"],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
                                       } else {
                                         // Pop modal bottom sheet
 
@@ -563,6 +574,14 @@ Widget lecUpcomingClasses(BuildContext context, double width, double height) {
                                     }
                                   },
                                   child: const Text("Mark Attendance"),
+                                ),
+                                PopupMenuItem(
+                                  onTap: () {
+                                    selectedUpcomingClass = index;
+                                    modalSheet(context, 0.6, width, height,
+                                        const UpdateUpcomingClass());
+                                  },
+                                  child: Text("Update class"),
                                 ),
                                 PopupMenuItem(
                                   onTap: () {

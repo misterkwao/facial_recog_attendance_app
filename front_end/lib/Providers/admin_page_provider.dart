@@ -580,6 +580,11 @@ class AdminPageProvider with ChangeNotifier {
           text: "Student details updated successfully");
     } else {
       print(response.data);
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: "Error",
+          text: "Failed to update student details");
     }
   }
 

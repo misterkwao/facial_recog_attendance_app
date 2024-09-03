@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_attendance_app/Lecturer/lecturer_notifications.dart';
 
 import '../Lecturer/classes.dart';
 import '../Pages/lecturer_page.dart';
@@ -28,14 +29,18 @@ class _LecturerDrawerState extends State<LecturerDrawer> {
           children: [
             const DrawerHeader(
                 child: Icon(
-              Icons.favorite,
-              color: Colors.black,
+              Icons.security_outlined,
+              color: Color.fromARGB(168, 78, 199, 255),
+              size: 60,
             )),
             dashList(context, 1, const LecturerPage(), "D A S H B O A R D",
                 Icons.dashboard_rounded),
             SizedBox(height: height * 0.02),
             dashList(context, 2, const LectureClasses(), "C L A S S",
                 Icons.class_rounded),
+            SizedBox(height: height * 0.02),
+            dashList(context, 3, const LecturerNotifications(),
+                "N O T I F I C A T I O N S", Icons.notifications),
             // ListTile(
             //   leading: const Icon(
             //     Icons.face_2_rounded,
@@ -65,7 +70,7 @@ class _LecturerDrawerState extends State<LecturerDrawer> {
             //     });
             //   },
             // ),
-            SizedBox(height: height * 0.5),
+            SizedBox(height: height * 0.4),
             ListTile(
               leading: const Icon(
                 Icons.logout_rounded,
@@ -81,7 +86,8 @@ class _LecturerDrawerState extends State<LecturerDrawer> {
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,
-                        fontSize: 20),
+                        fontSize: 20,
+                        fontFamily: 'Montserrat'),
                   ),
                 ),
               ),
@@ -145,7 +151,8 @@ class _LecturerDrawerState extends State<LecturerDrawer> {
             tilename,
             style: TextStyle(
                 color: selectedpage == pagenumber ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat'),
           ),
         ),
       ),
