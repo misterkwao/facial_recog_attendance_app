@@ -163,199 +163,198 @@ class _StudentPageState extends State<StudentPage> {
             }
           }
 
-          return FutureBuilder(
-            future: _checkInternetConnection(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Scaffold(
-                  backgroundColor: Colors.white,
-                  body: Center(
-                    child: Image.asset('assets/images/cloudloading.gif'),
-                  ),
-                );
-              } else if (snapshot.hasData && snapshot.data == true) {
-                // If data is available, build the screen
-                if (constraints.maxWidth < 700) {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    drawer: StudentDrawer(newwidth: width * 0.5),
-                    body: NestedScrollView(
-                      floatHeaderSlivers: true,
-                      controller: _scrollController,
-                      headerSliverBuilder: (context, innerBoxIsScrolled) {
-                        return [
-                          SliverAppBar(
-                            actions: [
-                              notify
-                                  ? InkWell(
-                                      onTap: () {
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                          builder: (context) => Notifications(),
-                                        ));
-                                        selectedpage = 2;
-                                      },
-                                      child: Badge(
-                                        label:
-                                            Text(notificationCount.toString()),
-                                        backgroundColor: Colors.red,
-                                        child:
-                                            Icon(Icons.notifications, size: 30),
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.notifications,
-                                      size: 30,
-                                      color: Colors.blueAccent,
-                                    ),
-                              SizedBox(width: 15),
-                            ],
-                            backgroundColor: Colors.white,
-                            snap: true,
-                            floating: true,
-                            forceElevated: innerBoxIsScrolled,
-                          )
-                        ];
-                      },
-                      body: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: RefreshIndicator(
-                          strokeWidth: 5,
-                          color: Colors.black,
-                          onRefresh: () async {
-                            Future.delayed(const Duration(seconds: 2));
-                            await Provider.of<StudentsPageProvider>(context,
-                                    listen: false)
-                                .fetchDetails(context);
+          // If data is available, build the screen
+          if (constraints.maxWidth < 700) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              drawer: StudentDrawer(newwidth: width * 0.5),
+              body: NestedScrollView(
+                floatHeaderSlivers: true,
+                controller: _scrollController,
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      actions: [
+                        notify
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => Notifications(),
+                                  ));
+                                  selectedpage = 2;
+                                },
+                                child: Badge(
+                                  label: Text(notificationCount.toString()),
+                                  backgroundColor: Colors.red,
+                                  child: Icon(Icons.notifications, size: 30),
+                                ),
+                              )
+                            : Icon(
+                                Icons.notifications,
+                                size: 30,
+                                color: Colors.blueAccent,
+                              ),
+                        SizedBox(width: 15),
+                      ],
+                      backgroundColor: Colors.white,
+                      snap: true,
+                      floating: true,
+                      forceElevated: innerBoxIsScrolled,
+                    )
+                  ];
+                },
+                body: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: RefreshIndicator(
+                    strokeWidth: 5,
+                    color: Colors.black,
+                    onRefresh: () async {
+                      Future.delayed(const Duration(seconds: 2));
+                      await Provider.of<StudentsPageProvider>(context,
+                              listen: false)
+                          .fetchDetails(context);
 
-                            // check if is_face_enrolled is false
-                            if (Provider.of<StudentsPageProvider>(context,
-                                        listen: false)
-                                    .studentProfile["is_face_enrolled"] ==
-                                false) {
-                              QuickAlert.show(
-                                context: context,
-                                type: QuickAlertType.info,
-                                title: "Urgent!",
-                                barrierDismissible: false,
-                                text:
-                                    "Please you need to upload your face to the database to be able to mark attendance for classes.",
-                                onConfirmBtnTap: () => Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                  builder: (context) => const UploadFace(),
-                                )),
-                              );
-                            }
-                          },
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20),
-                                profile(width, height),
-                                const SizedBox(height: 25),
-                                allCourses(context),
-                                const SizedBox(height: 25),
-                                courses(height, width, context),
-                                const SizedBox(height: 25),
-                                attendances(width, 3, context),
-                                const SizedBox(height: 25),
-                                const StudentUpcomingClass(),
-                                const SizedBox(height: 25),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                } else if (constraints.maxHeight < 1500) {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Row(
-                      children: [
-                        StudentDrawer(newwidth: width * 0.3),
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20)
-                                .copyWith(bottom: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  profile(width, height),
-                                  const SizedBox(height: 25),
-                                  allCourses(context),
-                                  const SizedBox(height: 25),
-                                  courses(height, width, context),
-                                  const SizedBox(height: 25),
-                                  attendances(width, 4, context),
-                                  const SizedBox(height: 25),
-                                  const StudentUpcomingClass(),
-                                  const SizedBox(height: 25),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Row(
-                      children: [
-                        StudentDrawer(newwidth: width * 0.3),
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20)
-                                .copyWith(bottom: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 25),
-                                  profile(width, height),
-                                  const SizedBox(height: 25),
-                                  allCourses(context),
-                                  const SizedBox(height: 25),
-                                  courses(height, width, context),
-                                  const SizedBox(height: 25),
-                                  attendances(width, 5, context),
-                                  const SizedBox(height: 25),
-                                  const StudentUpcomingClass(),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              } else {
-                return Scaffold(
-                  backgroundColor: Colors.white,
-                  body: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      // check if is_face_enrolled is false
+                      if (Provider.of<StudentsPageProvider>(context,
+                                  listen: false)
+                              .studentProfile["is_face_enrolled"] ==
+                          false) {
+                        QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.info,
+                          title: "Urgent!",
+                          barrierDismissible: false,
+                          text:
+                              "Please you need to upload your face to the database to be able to mark attendance for classes.",
+                          onConfirmBtnTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const UploadFace(),
+                          )),
+                        );
+                      }
+                    },
+                    child: SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset("assets/images/Warning.gif", height: 200),
-                          const Text(
-                            'No internet connection. Please check your connection and try again.',
-                            textAlign: TextAlign.center,
-                          ),
+                          const SizedBox(height: 20),
+                          profile(width, height),
+                          const SizedBox(height: 25),
+                          allCourses(context),
+                          const SizedBox(height: 25),
+                          courses(height, width, context),
+                          const SizedBox(height: 25),
+                          attendances(width, 3, context),
+                          const SizedBox(height: 25),
+                          const StudentUpcomingClass(),
+                          const SizedBox(height: 25),
                         ],
                       ),
                     ),
                   ),
-                );
-              }
-            },
-          );
+                ),
+              ),
+            );
+          } else if (constraints.maxHeight < 1500) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: Row(
+                children: [
+                  StudentDrawer(newwidth: width * 0.3),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20)
+                          .copyWith(bottom: 20),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            profile(width, height),
+                            const SizedBox(height: 25),
+                            allCourses(context),
+                            const SizedBox(height: 25),
+                            courses(height, width, context),
+                            const SizedBox(height: 25),
+                            attendances(width, 4, context),
+                            const SizedBox(height: 25),
+                            const StudentUpcomingClass(),
+                            const SizedBox(height: 25),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: Row(
+                children: [
+                  StudentDrawer(newwidth: width * 0.3),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20)
+                          .copyWith(bottom: 20),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 25),
+                            profile(width, height),
+                            const SizedBox(height: 25),
+                            allCourses(context),
+                            const SizedBox(height: 25),
+                            courses(height, width, context),
+                            const SizedBox(height: 25),
+                            attendances(width, 5, context),
+                            const SizedBox(height: 25),
+                            const StudentUpcomingClass(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          // return FutureBuilder(
+          //   future: _checkInternetConnection(),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return Scaffold(
+          //         backgroundColor: Colors.white,
+          //         body: Center(
+          //           child: Image.asset('assets/images/cloudloading.gif'),
+          //         ),
+          //       );
+          //     } else if (snapshot.hasData && snapshot.data == true) {
+
+          //     } else {
+          //       return Scaffold(
+          //         backgroundColor: Colors.white,
+          //         body: Center(
+          //           child: Container(
+          //             padding: const EdgeInsets.symmetric(horizontal: 20),
+          //             child: Column(
+          //               mainAxisAlignment: MainAxisAlignment.center,
+          //               children: [
+          //                 Image.asset("assets/images/Warning.gif", height: 200),
+          //                 const Text(
+          //                   'No internet connection. Please check your connection and try again.',
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     }
+          //   },
+          // );
         },
       ),
     );

@@ -75,135 +75,137 @@ class _AdminPageState extends State<AdminPage> {
               ),
             );
           }
-          return FutureBuilder(
-            future: _checkInternetConnection(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Scaffold(
-                  backgroundColor: Colors.white,
-                  body: Center(
-                    child: Image.asset('assets/images/cloudloading.gif'),
-                  ),
-                );
-              } else if (snapshot.hasData && snapshot.data == true) {
-                // If data is available, build the screen
-                if (constraints.maxWidth < 700) {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    drawer: AdminDrawer(newwidth: width * 0.65),
-                    body: NestedScrollView(
-                      controller: _scrollController,
-                      floatHeaderSlivers: true,
-                      headerSliverBuilder: (context, innerBoxIsScrolled) {
-                        return [
-                          SliverAppBar(
-                            backgroundColor: Colors.white,
-                            snap: true,
-                            floating: true,
-                            forceElevated: innerBoxIsScrolled,
-                          )
-                        ];
-                      },
-                      body: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        child: RefreshIndicator(
-                          strokeWidth: 5,
-                          color: Colors.black,
-                          onRefresh: () async {
-                            Future.delayed(const Duration(seconds: 2));
-                            return await Provider.of<AdminPageProvider>(context,
-                                    listen: false)
-                                .fetchDetails(context);
-                          },
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                adminProfile(context),
-                                const SizedBox(height: 25),
-                                userTally(),
-                                const SizedBox(height: 25),
-                                const AllClassLocations(),
-                                const SizedBox(height: 15),
-                              ],
-                            ),
-                          ),
-                        ),
+
+          // If data is available, build the screen
+          if (constraints.maxWidth < 700) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              drawer: AdminDrawer(newwidth: width * 0.65),
+              body: NestedScrollView(
+                controller: _scrollController,
+                floatHeaderSlivers: true,
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      snap: true,
+                      floating: true,
+                      forceElevated: innerBoxIsScrolled,
+                    )
+                  ];
+                },
+                body: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: RefreshIndicator(
+                    strokeWidth: 5,
+                    color: Colors.black,
+                    onRefresh: () async {
+                      Future.delayed(const Duration(seconds: 2));
+                      return await Provider.of<AdminPageProvider>(context,
+                              listen: false)
+                          .fetchDetails(context);
+                    },
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          adminProfile(context),
+                          const SizedBox(height: 25),
+                          userTally(),
+                          const SizedBox(height: 25),
+                          const AllClassLocations(),
+                          const SizedBox(height: 15),
+                        ],
                       ),
                     ),
-                  );
-                } else if (constraints.maxWidth < 1500) {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Row(
+                  ),
+                ),
+              ),
+            );
+          } else if (constraints.maxWidth < 1500) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: Row(
+                children: [
+                  AdminDrawer(newwidth: width * 0.3),
+                  Expanded(
+                      child: Container(
+                          child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        AdminDrawer(newwidth: width * 0.3),
-                        Expanded(
-                            child: Container(
-                                child: SingleChildScrollView(
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           child: Column(
                             children: [
-                              Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                child: Column(
-                                  children: [
-                                    adminProfile(context),
-                                    const SizedBox(height: 25),
-                                    userTally(),
-                                    const SizedBox(height: 10),
-                                    const AllClassLocations(),
-                                    const SizedBox(height: 15),
-                                  ],
-                                ),
-                              ),
+                              adminProfile(context),
+                              const SizedBox(height: 25),
+                              userTally(),
+                              const SizedBox(height: 10),
+                              const AllClassLocations(),
+                              const SizedBox(height: 15),
                             ],
                           ),
-                        )))
-                      ],
-                    ),
-                  );
-                } else {
-                  return Scaffold(
-                    backgroundColor: const Color.fromRGBO(83, 178, 246, 1),
-                    body: Row(
-                      children: [
-                        AdminDrawer(newwidth: width * 0.3),
-                        Expanded(
-                            child: Container(
-                                child: const Column(
-                          children: [],
-                        )))
-                      ],
-                    ),
-                  );
-                }
-              } else {
-                return Scaffold(
-                  backgroundColor: Colors.white,
-                  body: GestureDetector(
-                    onTap: () => _checkInternetConnection(),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset("assets/images/Warning.gif",
-                                height: 200),
-                            const Text(
-                              'No internet connection. Please check your connection and try again.',
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
                         ),
-                      ),
+                      ],
                     ),
-                  ),
-                );
-              }
-            },
-          );
+                  )))
+                ],
+              ),
+            );
+          } else {
+            return Scaffold(
+              backgroundColor: const Color.fromRGBO(83, 178, 246, 1),
+              body: Row(
+                children: [
+                  AdminDrawer(newwidth: width * 0.3),
+                  Expanded(
+                      child: Container(
+                          child: const Column(
+                    children: [],
+                  )))
+                ],
+              ),
+            );
+          }
+          // return FutureBuilder(
+          //   future: _checkInternetConnection(),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return Scaffold(
+          //         backgroundColor: Colors.white,
+          //         body: Center(
+          //           child: Image.asset('assets/images/cloudloading.gif'),
+          //         ),
+          //       );
+          //     } else if (snapshot.hasData && snapshot.data == true) {
+
+          //     } else {
+          //       return Scaffold(
+          //         backgroundColor: Colors.white,
+          //         body: GestureDetector(
+          //           onTap: () => _checkInternetConnection(),
+          //           child: Center(
+          //             child: Container(
+          //               padding: const EdgeInsets.symmetric(horizontal: 20),
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.center,
+          //                 children: [
+          //                   Image.asset("assets/images/Warning.gif",
+          //                       height: 200),
+          //                   const Text(
+          //                     'No internet connection. Please check your connection and try again.',
+          //                     textAlign: TextAlign.center,
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     }
+          //   },
+          // );
         },
       ),
     );

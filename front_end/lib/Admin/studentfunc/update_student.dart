@@ -24,12 +24,13 @@ class _UpdateStudentState extends State<UpdateStudent> {
   late String currentSemester;
   late String is_face_enrolled;
 
-  Widget editText(IconData icon, bool enable, String? text) {
+  Widget editText(
+      IconData icon, bool enable, String? text, Function(String) onChanged) {
     return TextFormField(
       // controller: controller,
       cursorColor: Colors.black,
       enabled: enable,
-      initialValue: text,
+
       decoration: InputDecoration(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -38,17 +39,7 @@ class _UpdateStudentState extends State<UpdateStudent> {
         fillColor: Colors.grey[300],
         suffixIcon: Icon(icon),
       ),
-      onChanged: (value) => setState(() {
-        if (text == yearEnrolled) {
-          yearEnrolled = value;
-        } else if (text == currentLevel) {
-          currentLevel = value;
-        } else if (text == currentSemester) {
-          currentSemester = value;
-        } else if (text == is_face_enrolled) {
-          is_face_enrolled = value;
-        }
-      }),
+      onChanged: onChanged,
       validator: (value) {
         if (value!.isEmpty) {
           return "Field cannot be empty";
@@ -117,23 +108,152 @@ class _UpdateStudentState extends State<UpdateStudent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Student name"),
-                editText(Icons.person_3_rounded, false, name),
+                TextFormField(
+                  // controller: controller,
+                  cursorColor: Colors.black,
+                  enabled: false,
+                  initialValue: name,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    suffixIcon: Icon(Icons.abc),
+                  ),
+                  onChanged: (value) {},
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Field cannot be empty";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                // editText(Icons.person_3_rounded, false, name, (value) {}),
                 const SizedBox(height: 20),
                 const Text("Year enrolled"),
                 const SizedBox(height: 10),
-                editText(Icons.numbers_rounded, true, yearEnrolled),
+                TextFormField(
+                  // controller: controller,
+                  cursorColor: Colors.black,
+                  enabled: true,
+                  initialValue: yearEnrolled,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    suffixIcon: Icon(Icons.numbers),
+                  ),
+                  onChanged: (value) {
+                    yearEnrolled = value;
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Field cannot be empty";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                // editText(Icons.numbers_rounded, true, yearEnrolled, (value) {
+                //   yearEnrolled = value;
+                // }),
                 const SizedBox(height: 20),
                 const Text("Current level"),
                 const SizedBox(height: 10),
-                editText(Icons.numbers_rounded, true, currentLevel),
+                TextFormField(
+                  // controller: controller,
+                  cursorColor: Colors.black,
+                  enabled: true,
+                  initialValue: currentLevel,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    suffixIcon: Icon(Icons.numbers_rounded),
+                  ),
+                  onChanged: (value) {
+                    currentLevel = value;
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Field cannot be empty";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                // editText(Icons.numbers_rounded, true, currentLevel, (value) {
+                //   currentLevel = value;
+                // }),
                 const SizedBox(height: 20),
-                const Text("Current semester"),
+                const Text(
+                  "Current semester",
+                ),
                 const SizedBox(height: 10),
-                editText(Icons.numbers_rounded, true, currentSemester),
+                TextFormField(
+                  // controller: controller,
+                  cursorColor: Colors.black,
+                  enabled: true,
+                  initialValue: currentSemester,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    suffixIcon: Icon(Icons.numbers_rounded),
+                  ),
+                  onChanged: (value) {
+                    currentSemester = value;
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Field cannot be empty";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                // editText(Icons.numbers_rounded, true, currentSemester, (value) {
+                //   currentSemester = value;
+                // }),
                 const SizedBox(height: 20),
                 const Text("Face enrolled"),
                 const SizedBox(height: 10),
-                editText(Icons.numbers_rounded, true, is_face_enrolled),
+                TextFormField(
+                  // controller: controller,
+                  cursorColor: Colors.black,
+                  enabled: true,
+                  initialValue: is_face_enrolled,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    suffixIcon: Icon(Icons.abc),
+                  ),
+                  onChanged: (value) {
+                    is_face_enrolled = value;
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Field cannot be empty";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                // editText(Icons.numbers_rounded, true, is_face_enrolled,
+                //     (value) {
+                //   is_face_enrolled = value;
+                // }),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

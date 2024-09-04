@@ -110,6 +110,7 @@ Widget studentList(double height, double width, BuildContext context) {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 5),
                           Row(
                             children: [
                               Text(
