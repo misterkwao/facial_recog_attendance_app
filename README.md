@@ -1,6 +1,6 @@
 #This is the official readme file for this project.
 
-To run and install this application on your phone you would have to have flutter setup on your laptop.
+To run and install this application on your phone you would need to have flutter setup on your laptop.
 If you do not know how to setup flutter for your windows or macbook,
 this is an official link on how to set up flutter on your laptop
 # MACOS - https://www.youtube.com/watch?v=f09c-nw15K8
