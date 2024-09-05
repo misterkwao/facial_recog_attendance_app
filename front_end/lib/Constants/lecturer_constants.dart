@@ -647,28 +647,27 @@ Widget lecClassStatistics(double width, double height) {
   List<dynamic> flattenedList = [];
 
   return Consumer<LecturerPageProvider>(builder: (context, value, child) {
-    if (value.lecturerClassStatistics["detail"] == "No statistics available") {
-    } else {
-      for (var yearData in value.lecturerClassStatistics) {
-        if (yearData["_id"]["year"] == currentYear) {
-          for (var monthData in yearData["months"]) {
-            if (monthData["month"] == currentMonth) {
-              for (var weekData in monthData["weeks"]) {
-                filteredClassStatistics.add(weekData["classes"]);
-              }
+    print(value.lecturerClassStatistics);
+
+    for (var yearData in value.lecturerClassStatistics) {
+      if (yearData["_id"]["year"] == currentYear) {
+        for (var monthData in yearData["months"]) {
+          if (monthData["month"] == currentMonth) {
+            for (var weekData in monthData["weeks"]) {
+              filteredClassStatistics.add(weekData["classes"]);
             }
           }
         }
       }
-
-      for (var sublist in filteredClassStatistics) {
-        flattenedList.addAll(sublist);
-      }
-
-      print("Filtered classes: $filteredClassStatistics");
-
-      print("Flattened classes: $flattenedList");
     }
+
+    for (var sublist in filteredClassStatistics) {
+      flattenedList.addAll(sublist);
+    }
+
+    print("Filtered classes: $filteredClassStatistics");
+
+    print("Flattened classes: $flattenedList");
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -784,7 +783,7 @@ Widget lecClassStatistics(double width, double height) {
                                           fontSize: 15),
                                     ),
                                     Text(
-                                      "Performance: ${(flattenedList[index]["performance"]).toString()}",
+                                      "Performance: ${(flattenedList[index]["performance"]).toStringAsFixed(2).toString()}",
                                       style: TextStyle(
                                           fontFamily: 'Montserrat',
                                           fontSize: 15),
