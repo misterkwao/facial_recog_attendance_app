@@ -34,11 +34,16 @@ class _UpdateUpcomingClassState extends State<UpdateUpcomingClass> {
         .lecturerUpcomingClasses;
 
     startTimeController = TextEditingController(
-        text: DateFormat("HH:mm     dd-MM-yyyy").format(DateTime.parse(
-            upcomingClasses[selectedUpcomingClass]["start_time"])));
+        text:
+            DateTime.parse(upcomingClasses[selectedUpcomingClass]["start_time"])
+                .toUtc()
+                .toIso8601String()
+                .toString());
     endTimeController = TextEditingController(
-        text: DateFormat("HH:mm     dd-MM-yyyy").format(DateTime.parse(
-            upcomingClasses[selectedUpcomingClass]["end_time"])));
+        text: DateTime.parse(upcomingClasses[selectedUpcomingClass]["end_time"])
+            .toUtc()
+            .toIso8601String()
+            .toString());
 
     classMapping = {
       "longitude": upcomingClasses[selectedUpcomingClass]["location"]
