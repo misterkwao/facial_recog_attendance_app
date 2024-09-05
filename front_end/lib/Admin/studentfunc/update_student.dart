@@ -211,6 +211,7 @@ class _UpdateStudentState extends State<UpdateStudent> {
                   ),
                   onChanged: (value) {
                     currentSemester = value;
+                    print("Semester: " + currentSemester);
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
