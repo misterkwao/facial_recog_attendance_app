@@ -191,16 +191,19 @@ async def get_class_statistics(current_user:schemas.User = Depends(oauth2_lectur
                     {"$sort": {"_id":-1}},
                     {"$limit": 1}
                 ]))
+
+            if statistics: 
+                year = statistics[0]
+                for month in year["months"]:
+                    for week in month["weeks"]:
+                        for week_class in week["classes"]:
+                                week_class["performance"] = ((week_class["no_of_attendees"]/totals[week_class["course_title"]])*100)
+                                week_class["expected_no_attendees"] = totals[week_class["course_title"]]
                 
-            year = statistics[0]
-            for month in year["months"]:
-                for week in month["weeks"]:
-                    for week_class in week["classes"]:
-                            week_class["performance"] = ((week_class["no_of_attendees"]/totals[week_class["course_title"]])*100)
-                            week_class["expected_no_attendees"] = totals[week_class["course_title"]]
-            
-            # print(f"It took {(time.time() - start_time)}")
-            return statistics
+                # print(f"It took {(time.time() - start_time)}")
+                return statistics
+            else:
+                return {"detail":"No statistics available"}
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
     else:
