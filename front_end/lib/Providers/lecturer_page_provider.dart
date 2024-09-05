@@ -20,7 +20,7 @@ class LecturerPageProvider with ChangeNotifier {
   List _lecturerClassLocations = [];
   List _lecturerCourses = [];
   List _lecturerUpcomingClasses = [];
-  List _lecturerClassStatistics = [];
+  var _lecturerClassStatistics;
   Map _lecturerProfile = {};
   String _resetId = '';
   var _lecturerNotifications;
@@ -28,7 +28,7 @@ class LecturerPageProvider with ChangeNotifier {
   List get lecturerClassLocations => _lecturerClassLocations;
   List get lecturerCourses => _lecturerCourses;
   List get lecturerUpcomingClasses => _lecturerUpcomingClasses;
-  List get lecturerClassStatistics => _lecturerClassStatistics;
+  get lecturerClassStatistics => _lecturerClassStatistics;
   Map get lecturerProfile => _lecturerProfile;
   String get resetId => _resetId;
   get lecturerNotifications => _lecturerNotifications;
@@ -124,7 +124,7 @@ class LecturerPageProvider with ChangeNotifier {
         List fetchedClassLocations = await getClassLocationsFromApi();
         List fetchedCourses = await getLecturerCoursesFromApi();
         List fetchedUpcomingClasses = await getUpcomingClassesFromApi();
-        List fetchedClassStatistics = await getClassStatisticsFromApi();
+        var fetchedClassStatistics = await getClassStatisticsFromApi();
         var fetchedNotifications = await getNotificationsFromApi();
 
         if (fetchedClassLocations.isNotEmpty) {

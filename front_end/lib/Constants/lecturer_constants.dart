@@ -647,25 +647,28 @@ Widget lecClassStatistics(double width, double height) {
   List<dynamic> flattenedList = [];
 
   return Consumer<LecturerPageProvider>(builder: (context, value, child) {
-    for (var yearData in value.lecturerClassStatistics) {
-      if (yearData["_id"]["year"] == currentYear) {
-        for (var monthData in yearData["months"]) {
-          if (monthData["month"] == currentMonth) {
-            for (var weekData in monthData["weeks"]) {
-              filteredClassStatistics.add(weekData["classes"]);
+    if (value.lecturerClassStatistics["detail"] == "No statistics available") {
+    } else {
+      for (var yearData in value.lecturerClassStatistics) {
+        if (yearData["_id"]["year"] == currentYear) {
+          for (var monthData in yearData["months"]) {
+            if (monthData["month"] == currentMonth) {
+              for (var weekData in monthData["weeks"]) {
+                filteredClassStatistics.add(weekData["classes"]);
+              }
             }
           }
         }
       }
+
+      for (var sublist in filteredClassStatistics) {
+        flattenedList.addAll(sublist);
+      }
+
+      print("Filtered classes: $filteredClassStatistics");
+
+      print("Flattened classes: $flattenedList");
     }
-
-    for (var sublist in filteredClassStatistics) {
-      flattenedList.addAll(sublist);
-    }
-
-    print("Filtered classes: $filteredClassStatistics");
-
-    print("Flattened classes: $flattenedList");
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -690,101 +693,110 @@ Widget lecClassStatistics(double width, double height) {
                     fontFamily: 'Montserrat'),
               ),
               const SizedBox(height: 10),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: flattenedList.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () => modalSheet(
-                      context,
-                      0.7,
-                      width,
-                      height,
-                      attendeeNames(width, index, flattenedList, context),
-                    ),
-                    child: Container(
-                      width: width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border:
-                            Border.all(color: Colors.grey[300] ?? Colors.black),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                              height: 100,
-                              child: VerticalDivider(
-                                  color: Colors.blue, thickness: 5)),
-                          const SizedBox(width: 15),
-                          Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      flattenedList[index]["class_name"],
+              flattenedList.isEmpty
+                  ? Center(
+                      child: Text("No statistics available"),
+                    )
+                  : ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: flattenedList.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () => modalSheet(
+                            context,
+                            0.7,
+                            width,
+                            height,
+                            attendeeNames(width, index, flattenedList, context),
+                          ),
+                          child: Container(
+                            width: width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                  color: Colors.grey[300] ?? Colors.black),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                    height: 100,
+                                    child: VerticalDivider(
+                                        color: Colors.blue, thickness: 5)),
+                                const SizedBox(width: 15),
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            flattenedList[index]["class_name"],
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 16,
+                                                fontFamily: 'Montserrat'),
+                                          ),
+                                        ),
+                                        Text(
+                                          DateFormat("d MMMM, yyyy").format(
+                                            DateTime.parse(flattenedList[index]
+                                                ["start_time"]),
+                                          ),
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16,
+                                              fontFamily: 'Montserrat'),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      "Course title: ${flattenedList[index]["course_title"]}",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
-                                          fontFamily: 'Montserrat'),
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 15),
                                     ),
-                                  ),
-                                  Text(
-                                    DateFormat("d MMMM, yyyy").format(
-                                      DateTime.parse(
-                                          flattenedList[index]["start_time"]),
+                                    Text(
+                                      "Level taught: ${(flattenedList[index]["course_level"]).toString()}",
+                                      style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 15),
                                     ),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16,
-                                        fontFamily: 'Montserrat'),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Course title: ${flattenedList[index]["course_title"]}",
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat', fontSize: 15),
-                              ),
-                              Text(
-                                "Level taught: ${(flattenedList[index]["course_level"]).toString()}",
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat', fontSize: 15),
-                              ),
-                              Text(
-                                "Expected attendances: ${(flattenedList[index]["expected_no_attendees"]).toString()}",
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat', fontSize: 15),
-                              ),
-                              Text(
-                                "No of attendances: ${(flattenedList[index]["no_of_attendees"]).toString()}",
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat', fontSize: 15),
-                              ),
-                              Text(
-                                "Performance: ${(flattenedList[index]["performance"]).toString()}",
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat', fontSize: 15),
-                              )
-                            ],
-                          ))
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )
+                                    Text(
+                                      "Expected attendances: ${(flattenedList[index]["expected_no_attendees"]).toString()}",
+                                      style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 15),
+                                    ),
+                                    Text(
+                                      "No of attendances: ${(flattenedList[index]["no_of_attendees"]).toString()}",
+                                      style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 15),
+                                    ),
+                                    Text(
+                                      "Performance: ${(flattenedList[index]["performance"]).toString()}",
+                                      style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 15),
+                                    )
+                                  ],
+                                ))
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
             ],
           ),
         ),
