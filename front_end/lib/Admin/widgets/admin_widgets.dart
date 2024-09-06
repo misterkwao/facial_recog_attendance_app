@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:student_attendance_app/Pages/login.dart';
 
 Widget modalDrag(double width) {
   return Container(
@@ -32,7 +33,9 @@ Future modalSheet(BuildContext context, double initsize, double width,
           child: SingleChildScrollView(
               controller: scrollController, child: details)),
     ),
-  );
+  ).whenComplete(() {
+    isloading = false;
+  });
 }
 
 Widget options(

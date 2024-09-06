@@ -335,7 +335,12 @@ class _CreateClassState extends State<CreateClass> {
                         backgroundColor:
                             WidgetStatePropertyAll(Colors.redAccent),
                       ),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          isloading = false;
+                        });
+                      },
                       child: const Text("Cancel"),
                     ),
                     isloading
