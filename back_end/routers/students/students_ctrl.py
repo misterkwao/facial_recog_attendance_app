@@ -161,7 +161,7 @@ async def mark_attendance(id,file: UploadFile,response: Response,current_user:sc
 
 
 @router.post("/student/attendance/assessment", status_code=200)
-async def mark_assessment_attendance(id,file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
+async def mark_assessment_attendance(id, file: UploadFile,response: Response,current_user:schemas.User = Depends(oauth2_student.get_current_user)):
     if current_user.user_role == "student":                         
         try:
             profile = student_profile_collection.find_one({"owner": ObjectId(current_user.user_id)})
